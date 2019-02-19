@@ -33,7 +33,7 @@ def clearData(file):
         i += 1
         
 #put some values into an array
-def readData(maxLines=10000,filename=".\\broken\\2018-12-10_Rfrs_100_2,0.asc",start=0): 
+def readData(maxLines=10000,filename=".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3.asc",start=0): 
     f= open(filename)
     if start == 0:
         clearData(f)
@@ -249,15 +249,16 @@ def theoryVelo(height):
 
 #fix the zero drift!
 #give accel data where nothing happens
-def calc_velo(acc,time,start):
-    corr = sp.integrate.cumtrapz(acc[:start],time[:start],initial = 0)
-    vel = sp.integrate.cumtrapz(acc[start:],time[start:],initial = 0)
-    slope, intercept, r_value, p_value, std_err = sp.stats.linregress(corr,time[:start])
-    truevelo = []    
-    for i, txt in enumerate(vel):
-        truevelo.append(txt - intercept - slope * i)
-    maxvelo = max(truevelo) - min(truevelo)
-    return truevelo, maxvelo
+#def calc_velo(acc,time,start):
+#    corr = sp.integrate.cumtrapz(acc[:start],time[:start],initial = 0)
+#    vel = sp.integrate.cumtrapz(acc[start:],time[start:],initial = 0)
+#    slope, intercept, r_value, p_value, std_err = sp.stats.linregress(corr,time[:start])
+#    truevelo = []    
+#    for i, txt in enumerate(vel):
+#        truevelo.append(txt - intercept - slope * i)
+#    maxvelo = max(truevelo) - min(truevelo)
+#    return truevelo, maxvelo
+
 
 def impulse(array,time):
     a,_ = first_peak(array)
@@ -398,13 +399,15 @@ def Everything(file=".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3.asc"):
     plt.close()
 
 #test of everything
-def something(array,start):
+def something(array):
 #    array = readData(maxLines=-1,filename=file)
     file = ".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3.asc"
-#    startLoad = findStart(array,cushion=1000)
-    startLoad= start
-    startAccel = startLoad - 5000
-    lenAccel = 9000
+    startLoad = findStart(array,1000)
+#    startLoad= start
+    startLongAccel = startLoad - 5000
+    lenLongAccel = 9000
+    startShortAccel,_ = first_peak(array[start:,7])
+    lenShortAccel,_ = last_peak(array[start:,7],0)
     lenLoad = 3000
     
 ##make a folder for each file
@@ -438,7 +441,7 @@ def something(array,start):
 #    text.append(str(theoryVelo(height)) + "\t")
 ##    calculated, needs array and some reworking /take just a tiny snip of the accel array
 ##    text.append(str(calcVelocity(array[startLoad:startLoad+200,7]) + "\t"))
-    velo, peakvelo =  calc_velo(array[startLoad-200:startLoad+200,7],array[startLoad-200:startLoad+200,0],200)
+    velo, peakvelo =  calc_velo(array[startShortAccel-200:lenShortAccel,7],array[startShortAccel-200:lenShortAccel,0],200)
 #    text.append(str(peakvelo) + "\t")
 # #    loadcell 1 to 3
 #    for i in range(1,4):
@@ -462,26 +465,26 @@ def something(array,start):
 #    f.close()
     
     # plot accel
-    x = array[startAccel:startAccel+lenAccel,0]
-    y = sig.medfilt(9.8 * array[startAccel:startAccel+lenAccel,7])
-    plt.plot(x,y)
-    plt.ylabel(r"Acceleration [$m/s^2$]")
-    plt.xlabel("Time [$s$]")
-    plt.title("Acceleration")
-    plt.grid()
-    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "_Accel.png")
-    plt.close()
-    
-#   plot calc velocity
-    x = range(0,200)
-    y = velo
-    plt.plot(x,y)
-    plt.ylabel(r"Calculated Velocity [$m/s$]")
-    plt.xlabel("Time [$s$]")
-    plt.title("Calculated Velocity")
-    plt.grid()
-    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "_Vel.png")
-    plt.close()
+#    x = array[startAccel:startAccel+lenAccel,0]
+#    y = sig.medfilt(9.8 * array[startAccel:startAccel+lenAccel,7])
+#    plt.plot(x,y)
+#    plt.ylabel(r"Acceleration [$m/s^2$]")
+#    plt.xlabel("Time [$s$]")
+#    plt.title("Acceleration")
+#    plt.grid()
+#    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "_Accel.png")
+#    plt.close()
+#    
+##   plot calc velocity
+#    x = range(0,200)
+#    y = velo
+#    plt.plot(x,y)
+#    plt.ylabel(r"Calculated Velocity [$m/s$]")
+#    plt.xlabel("Time [$s$]")
+#    plt.title("Calculated Velocity")
+#    plt.grid()
+#    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "_Vel.png")
+#    plt.close()
     
 #    # load cells
 #
@@ -524,25 +527,64 @@ def something(array,start):
 #    plt.grid()
 #    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "_imp.png")
 #    plt.close()
+    
+def calc_velo(acc,time,start):
+    print(acc.shape)
+    print(time.shape)
+    corr = sp.integrate.cumtrapz(acc[:start],time[:start],initial = 0)
+    vel = sp.integrate.cumtrapz(acc[start:],time[start:],initial = 0)
+    slope, intercept, r_value, p_value, std_err = sp.stats.linregress(corr,time[:start])
+    truevelo = []    
+    for i, txt in enumerate(vel):
+        truevelo.append(txt - intercept - slope * i)
+    maxvelo = max(truevelo) - min(truevelo)
+    x,y = first_peak(acc)
+    plt.plot(acc)
+    plt.plot(x,y,".")
+#    plt.plot(time[start:],vel)
+#    plt.plot(time[:start],corr)
+#    plt.plot(time[start:],truevelo)
+    plt.show()
+    return truevelo, maxvelo
+
 
 #get start peak reliably
 #input: loadsum
+#def first_peak(array):
+#    diff = 0
+#    for i, txt in enumerate(array[:-1]):
+#        if txt < 0 and diff > txt - array[i+1]:
+#            diff = txt - array[i+1]
+#            x = i
+#            y = txt
+#    return x, int(y)
 def first_peak(array):
-    diff = 0
+    diff, x, y = 0,0,0
     for i, txt in enumerate(array[:-1]):
-        if txt < 0 and diff > txt - array[i+1]:
+        if 10 < diff:
             diff = txt - array[i+1]
+        else:
             x = i
             y = txt
     return x, int(y)
 #get end of impulse reliably
 #input: loadsum and position of first peak
+#def last_peak(array,start):
+#    x,y = 0,0
+#    for i, txt in enumerate(array[start+10:]):
+#        if txt < 0:
+#            x = i + start + 10
+#            y = txt
+#            break
+#    return x, int(y)
 def last_peak(array,start):
-    for i, txt in enumerate(array[start+10:]):
-        if txt < 0:
-            x = i + start + 10
+    diff, x, y = 0,0,0
+    for i, txt in enumerate(array[:-5]):
+        if  - 10 > diff:
+            diff = txt - array[i+5]
+        else:
+            x = i
             y = txt
-            break
     return x, int(y)
 
 #make a LaTeX ready table out of the result data
