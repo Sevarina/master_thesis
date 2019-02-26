@@ -10,6 +10,7 @@ import scipy.signal as sig
 import math
 import os
 import re
+import json
 #from matplotlib.backends.backend_pdf import PdfPages
 #import matplotlib.backends.backend_agg as agg
 
@@ -51,7 +52,6 @@ def readData(maxLines=10000,filename=".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3.a
             l1.append(d)   
     f.close()
     return np.array(l1).reshape(-1,26)
-
     
 #Find the beginning of the interesting area
 def findStart(array,cushion=500): 
@@ -587,6 +587,29 @@ def last_peak(array,start):
             y = txt
     return x, int(y)
 
+#find the beginning / end
+def peaks(array):
+    index = sig.find_peaks(-array,distance=10)
+    print(len(index))
+    plt.plot(array)
+    height = []
+    for i in index:
+        height.append(array[i])
+#    #TO DO find first lowest element, overwrite with something(?)
+    firsty = min(height)
+    firstx = height.index(firsty)
+    lasty = height[0]
+    lastx = 0
+    for i, txt in enumerate(height):
+        if lasty > txt:
+            lasty = txt
+            lastx = i
+    if firstx > lastx:
+        firstx,lastx=lastx,firstx
+        firsty, lasty = lasty, firsty
+        return firstx,firsty,lastx,lasty
+
+    
 #make a LaTeX ready table out of the result data
 def makeTable(path="./Results/result.txt"):
     unit, header, name, number = results(path)
@@ -620,7 +643,31 @@ def listtolatex(list):
     l += str(list[-1]) + "\\\\ \n"
     return l
 #TO DO turn this snippets into a one-click programm
+
+#take Data at a certain path and clip it to size
+def turn_json(array,file=".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3.asc"):
+    #make a json file in place of the normal file
+    f = open(file[:-4]+".json","w")
+    #put the max height in the json file
+    json.dump({"maxheight":dropheight(array)},f,sort_keys=True)
+    #find start (when is the magnetventil activated?)
+    start = np.where(array[:,9]==1)
+#    start = findStart(data,0)
+    #find end (10 seconds later)
+    end = start + 10^6
+    #TO DO clip the data further down
+    newarray = array[start:end]
+    mask = np.ones(newarray.shape[1],bool)
+    for i in [0,1,2,3,4,7]:
+        mask[i]=0
+# delete useless data
+    newarray = np.delete(newarray,mask,axis=1)
+    print(newarray.shape)
+
     
+
+    f.close()
+
     
 # values begin at a[38]
 # len(a[38]) = 26 for round samples
