@@ -11,6 +11,7 @@ import math
 import os
 import re
 import json
+
 #from matplotlib.backends.backend_pdf import PdfPages
 #import matplotlib.backends.backend_agg as agg
 
@@ -34,7 +35,7 @@ def clearData(file):
         i += 1
         
 #put some values into an array
-def readData(maxLines=10000,filename=".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3.asc",start=0): 
+def readData(maxLines=-1,filename=".\\Data\\cracked\\2019-02-20-Rfs-100-0,5.asc",start=0): 
     f= open(filename)
     if start == 0:
         clearData(f)
@@ -51,8 +52,32 @@ def readData(maxLines=10000,filename=".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3.a
                 d = np.nan
             l1.append(d)   
     f.close()
-    return np.array(l1).reshape(-1,26)
-    
+    try:
+        return np.array(l1).reshape(-1,26)
+    except:
+        return np.array(l1).reshape(-1,29)
+
+#put some values into an array
+#def read(maxLines=-1,filename=".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3_original_fix.asc",start=0): 
+#    f= open(filename,"r")
+##    clearData(f)
+#    l1=[]
+#    for line in f.readlines():
+#        line = line.replace(",",".").split("\t")
+#
+#        for l in line:
+#            try:
+#                d = np.double(l)
+#            except:
+#                d = np.nan
+#            l1.append(d)
+#    f.close()
+# 
+#    try:
+#        return np.array(l1).reshape(-1,26)
+#    except:
+#        return np.array(l1).reshape(-1,29)
+
 #Find the beginning of the interesting area
 def findStart(array,cushion=500): 
     x = np.where(array[:,9]==1)
@@ -68,19 +93,19 @@ def findStart(array,cushion=500):
 def doAllFiles(direct=".\\Data"):
     respath = ".\\Results\\result.txt"
     res = open(respath,"w")
-    res.write("name \t energy level\t drop height\t theoretical velocity\t measured velocity\t peak loadcell 1\t peak loadcell 2\t peak loadcell 3 \t peak sum loadcell \t peak acceleration \t impulse \t broken/cracked \n")
-    res.write("\tkJ/m^2\tmm\tm/s\tm/s\tkN/m^2\tkN/m^2\tkN/m^2\tkN/m^2\tm/s^2\tNs\t\n")
+    res.write("name \t thickness \t energy level\t drop height\t theoretical velocity\t peak loadcell 1\t peak loadcell 2\t peak loadcell 3 \t peak sum loadcell \t peak acceleration \t broken/cracked \n")
+    res.write("\t mm \t kJ/m^2 \t mm \t m/s \t kN/m^2 \t kN/m^2 \t kN/m^2 \t kN/m^2 \t m/s^2 \t \n")
     res.close()
     for root, folders, files in os.walk(direct):
         for file in files:
-            if file[-3:] == "ASC":
-#                print(file)
+            if file[-3:].lower() == "asc":
                 path = root+"\\"+file
-                if os.path.isfile(path) and os.path.dirname(path)[-1] == "d":
+                if os.path.isfile(path) and os.path.basename(path)[-7:-4] != "fix":
+                    print(path)
+                    clean_array(path)
 #                    Everything(path)
-                    print(path)                    
-                    something(path)
-    allGraphics(respath)
+#                    something(path)
+#    allGraphics(respath)
                     
 #cut accel data out of a file
 def accelData(file = ".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3.asc",length=200):
@@ -93,7 +118,7 @@ def accelData(file = ".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3.asc",length=200):
         x[i,1] = f[i,7] * 9.8
     return x
 
-def loadData(file = ".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3_2.asc",length=500):
+def loadData(file = ".\\Data\\cracked\\2019-02-20-Rfs-100-0,5.asc",length=500):
     f = readData(-1,file,0)
     start = findStart(f,50)
     f = f[start:start+length]
@@ -128,6 +153,7 @@ def results(direct=".\\Results\\result.txt"):
                 except:
                     name.append(str(l))
     f.close()
+    
     number = np.asarray(l1,dtype=np.float64)
     number = number.reshape(len(name),-1)
     return unit, header, name, number
@@ -213,9 +239,6 @@ def allGraphics(direct=".\\Results\\result.txt"):
                 fig.savefig(path + "\\" + head[j] +"_" + head[i] +".jpg")
                 plt.close()
 
-
-
-
     #get drop height            
 def dropheight(array):
     #m has a sampling rate of 10kHz, but the telfer of just 1 Hz
@@ -241,11 +264,20 @@ def Energy(filename="ENERGY.asc"):
         return (x[0]+"."+x[2])
     except:
         return "ENERGY"
+    
+# get thickness
+def thickness(filename):
+    regex = re.compile(r"\_\d*\_")
+    mo = regex.search(filename)
+    try:
+        x = mo.group()
+        return x.strip("\_")
+    except:
+        return "thickness"
 
 #calc velo from height
 def theoryVelo(height):
     return np.round(math.sqrt(2*height*9.8/1000),1)
-
 
 #fix the zero drift!
 #give accel data where nothing happens
@@ -274,9 +306,156 @@ def broken(path):
 
 #TO DO, only plot velocity for cracked plots, plots need to be in the results folder, calculate drop time, velocity is max pos peak - max neg peak
 #draws plots for each diagram and write important info into individual and shared files
-def Everything(file=".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3.asc"):
+#def Everything(file=".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3.asc"):
 #get data
-    array = readData(maxLines=-1,filename=file)
+        
+#def Everything(file=".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3_2.npy"):
+##    file = ".\\Data\\cracked\\2019-02-20-Rfs-100-0,5.asc"  
+##    array = readData(maxLines=-1,filename=file)
+#    array = read_array(file)
+#    array = fix_time(array)
+#    startLoad = findStart(array,cushion=1000)
+#    startAccel = startLoad - 5000
+#    lenAccel = 9000
+#    lenLoad = 3000
+#    
+##make a folder for each file
+#    if os.path.isdir("./Results/" +  os.path.basename(file[:-4])) == False:
+#        os.mkdir(file[:-4])
+#        
+##open the results files 
+#    fpath =".\\Results\\" + os.path.basename(file)[:-4] + "\\" + os.path.basename(file)[:-3] + "txt"
+#    if os.path.exists(fpath) != True:
+#        os.makedirs(".\\Results\\" + os.path.basename(file)[:-4])
+#    f = open(fpath,"w")
+#    respath = ".\\Results\\result.txt"    
+#    result = open(respath,"r")
+#    f.write(result.readline())
+#    f.write(result.readline())
+#    result.close()
+#    result = open(respath,"a")
+##make a list to add each individual line
+#    text = []    
+#    #name
+#    text.append(os.path.basename(file)[:-4] + "\t")
+#    #thickness
+#    text.append(str(thickness(file)) + "\t")    
+#    #energy level
+#    text.append(str(Energy(file)) + "\t")
+#    #drop height
+#    height = dropheight(array)
+#    text.append(str(height) + "\t")
+#    #velocity
+#    #theoretic, just needs drop height
+#    text.append(str(theoryVelo(height)) + "\t")
+#    #calculated, needs array and some reworking /take just a tiny snip of the accel array
+##    text.append(str(calcVelocity(array[startLoad:startLoad+200,7]) + "\t"))
+##    velo, peakvelo =  calc_velo(array[startLoad-200:startLoad+200,7],array[startLoad-200:startLoad+200,0],200)
+##    text.append(str(peakvelo) + "\t")
+#    # loadcell 1 to 3
+#    for i in range(1,4):
+#        text.append(str(peak(array[startLoad:startLoad+lenLoad,i])) + "\t")
+#    #load sum
+#    loadsum = array[startLoad:startLoad+lenLoad,1]+array[startLoad:startLoad+lenLoad,2]+array[startLoad:startLoad+lenLoad,3]
+##    loadtime = array[startLoad:startLoad+lenLoad,0]
+#    text.append(str(peak(loadsum)) + "\t")
+#    #peak accel
+#    text.append(str(peak(array[startAccel:startAccel+lenAccel,7])) + "\t")
+#    #impulse
+#    #text.append(str(impulse(loadsum, loadtime))+"\t")
+#    #broken or cracked?
+#    if broken(file) == 1:
+#        text.append("broken\n")
+#    else: text.append("cracked\n")
+#    for i in text:
+#        f.write(i)
+#        result.write(i)
+#    #put everything into file    
+#    result.close()
+#    f.close()
+#    
+#    # plot accel
+#    x = array[startAccel:startAccel+lenAccel,0]
+#    accel = sig.medfilt(9.8 * array[startAccel:startAccel+lenAccel,7])
+#    plt.plot(x,accel)
+#    plt.ylabel(r"Acceleration [$m/s^2$]")
+#    plt.xlabel("Time [$s$]")
+#    plt.title("Acceleration")
+#    plt.grid()
+#    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "//Accel.png")
+#    plt.close()
+#    
+###   plot calc velocity
+##    x = range(0,200)
+##    y = velo
+##    plt.plot(x,y)
+##    plt.ylabel(r"Calculated Velocity [$m/s$]")
+##    plt.xlabel("Time [$s$]")
+##    plt.title("Calculated Velocity")
+##    plt.grid()
+##    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "//Vel.png")
+##    plt.close()
+#    
+#    # load cells
+#    x = array[startLoad:startLoad+lenLoad,0]
+#    plt.xlabel("Time [$s$]")
+#    plt.ylabel("Load [$kN$]")
+#    for i in range(1,4):
+#        plt.xlabel("Time [$s$]")
+#        plt.ylabel("Load [$kN$]")
+#        y = sig.medfilt(array[startLoad:startLoad+lenLoad,i])
+##        y = f[:,i]
+#        plt.plot(x,y)
+#        plt.title("Loadcell " + str(i))
+#        plt.grid()
+#        plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "//Loadcell" + str(i) + ".png")
+#        plt.close()
+#        
+##    plot sum of all loadcells    
+#    y = sig.medfilt(loadsum)
+#    a,b = first_peak(loadsum)
+#    c,d = last_peak(loadsum,a)
+#    plt.plot(x,y)
+##   TO DO, fix those fucks!
+##    plt.plot(a,array[b+startLoad][0],"r.")
+##    plt.plot(c,array[d+startLoad][0],"b.")
+#    plt.title("Sum of all Loadcells")
+#    plt.xlabel("Time [$s$]")
+#    plt.ylabel("Load [$kN$]")
+#    plt.grid()
+#    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "//Loadcellsum.png")
+#    plt.close()
+#    
+###   plot impulse 
+##    print(loadsum.shape)
+##    print(x.shape)
+##    y = sp.integrate.cumtrapz(loadsum[a:c],x[a:c],initial = 0)*1000
+##    plt.plot(x[a:c],y)
+##    plt.ylabel(r"Impulse [$Ns$]")
+##    plt.xlabel("Time [$s$]")
+##    plt.title("Impulse")
+##    plt.grid()
+##    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "//imp.png")
+##    plt.close()
+#
+## plot laser
+#    y = sig.medfilt(array[startLoad:startLoad+lenLoad,4])
+##   TO DO, fix those fucks!
+##    plt.plot(a,array[b+startLoad][0],"r.")
+##    plt.plot(c,array[d+startLoad][0],"b.")
+#    plt.title("Laser Displacement")
+#    plt.xlabel("Time [$s$]")
+#    plt.ylabel("Displacement [$mm$]")
+#    plt.grid()
+#    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "//displacement.png")
+#    plt.close()
+    
+#alternate Everything for .npy files    
+def Everything(file=".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3_2.npy"):
+#    file = ".\\Data\\cracked\\2019-02-20-Rfs-100-0,5.asc"  
+#    array = readData(maxLines=-1,filename=file)
+    array = read_array(file)
+#    array = fix_time(array)
     startLoad = findStart(array,cushion=1000)
     startAccel = startLoad - 5000
     lenAccel = 9000
@@ -297,12 +476,12 @@ def Everything(file=".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3.asc"):
     f.write(result.readline())
     result.close()
     result = open(respath,"a")
-
 #make a list to add each individual line
-    text = []
-    
-#    name
+    text = []    
+    #name
     text.append(os.path.basename(file)[:-4] + "\t")
+    #thickness
+    text.append(str(thickness(file)) + "\t")    
     #energy level
     text.append(str(Energy(file)) + "\t")
     #drop height
@@ -313,19 +492,21 @@ def Everything(file=".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3.asc"):
     text.append(str(theoryVelo(height)) + "\t")
     #calculated, needs array and some reworking /take just a tiny snip of the accel array
 #    text.append(str(calcVelocity(array[startLoad:startLoad+200,7]) + "\t"))
-    velo, peakvelo =  calc_velo(array[startLoad-200:startLoad+200,7],array[startLoad-200:startLoad+200,0],200)
-    text.append(str(peakvelo) + "\t")
+#    velo, peakvelo =  calc_velo(array[startLoad-200:startLoad+200,7],array[startLoad-200:startLoad+200,0],200)
+#    text.append(str(peakvelo) + "\t")
+
     # loadcell 1 to 3
-    for i in range(1,4):
-        text.append(str(peak(array[startLoad:startLoad+lenLoad,i])) + "\t")
+#    for i in range(1,4):
+#        text.append(str(peak(array[startLoad:startLoad+lenLoad,i])) + "\t")
+
     #load sum
     loadsum = array[startLoad:startLoad+lenLoad,1]+array[startLoad:startLoad+lenLoad,2]+array[startLoad:startLoad+lenLoad,3]
-    loadtime = array[startLoad:startLoad+lenLoad,0]
+#    loadtime = array[startLoad:startLoad+lenLoad,0]
     text.append(str(peak(loadsum)) + "\t")
     #peak accel
     text.append(str(peak(array[startAccel:startAccel+lenAccel,7])) + "\t")
     #impulse
-    text.append(str(impulse(loadsum, loadtime))+"\t")
+    #text.append(str(impulse(loadsum, loadtime))+"\t")
     #broken or cracked?
     if broken(file) == 1:
         text.append("broken\n")
@@ -348,16 +529,16 @@ def Everything(file=".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3.asc"):
     plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "//Accel.png")
     plt.close()
     
-#   plot calc velocity
-    x = range(0,200)
-    y = velo
-    plt.plot(x,y)
-    plt.ylabel(r"Calculated Velocity [$m/s$]")
-    plt.xlabel("Time [$s$]")
-    plt.title("Calculated Velocity")
-    plt.grid()
-    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "//Vel.png")
-    plt.close()
+##   plot calc velocity
+#    x = range(0,200)
+#    y = velo
+#    plt.plot(x,y)
+#    plt.ylabel(r"Calculated Velocity [$m/s$]")
+#    plt.xlabel("Time [$s$]")
+#    plt.title("Calculated Velocity")
+#    plt.grid()
+#    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "//Vel.png")
+#    plt.close()
     
     # load cells
     x = array[startLoad:startLoad+lenLoad,0]
@@ -379,8 +560,9 @@ def Everything(file=".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3.asc"):
     a,b = first_peak(loadsum)
     c,d = last_peak(loadsum,a)
     plt.plot(x,y)
-    plt.plot(a,array[b+startLoad][0],"r.")
-    plt.plot(c,array[d+startLoad][0],"b.")
+#   TO DO, fix those fucks!
+#    plt.plot(a,array[b+startLoad][0],"r.")
+#    plt.plot(c,array[d+startLoad][0],"b.")
     plt.title("Sum of all Loadcells")
     plt.xlabel("Time [$s$]")
     plt.ylabel("Load [$kN$]")
@@ -388,145 +570,29 @@ def Everything(file=".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3.asc"):
     plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "//Loadcellsum.png")
     plt.close()
     
-#   plot impulse 
-    y = sp.integrate.cumtrapz(loadsum[a:c],x[a:c],initial = 0)*1000
-    plt.plot(x[a:c],y)
-    plt.ylabel(r"Impulse [$Ns$]")
-    plt.xlabel("Time [$s$]")
-    plt.title("Impulse")
-    plt.grid()
-    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "//imp.png")
-    plt.close()
-
-#test of everything
-def something(array):
-#    array = readData(maxLines=-1,filename=file)
-    file = ".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3.asc"
-    startLoad = findStart(array,1000)
-#    startLoad= start
-    startLongAccel = startLoad - 5000
-    lenLongAccel = 9000
-    startShortAccel,_ = first_peak(array[start:,7])
-    lenShortAccel,_ = last_peak(array[start:,7],0)
-    lenLoad = 3000
-    
-##make a folder for each file
-#    if os.path.isdir("./Results/" +  os.path.basename(file[:-4])) == False:
-#        os.mkdir("./Results/" +  os.path.basename(file[:-4]))
-#        
-##open the results files 
-#    fpath =".\\Results\\" + os.path.basename(file)[:-4] + "\\" + os.path.basename(file)[:-3] + "txt"
-#    if os.path.exists(fpath) != True:
-#        os.makedirs(".\\Results\\" + os.path.basename(file)[:-4])
-#    f = open(fpath,"w")
-#    respath = ".\\Results\\result.txt"    
-#    result = open(respath,"r")
-#    f.write(result.readline())
-#    f.write(result.readline())
-#    result.close()
-#    result = open(respath,"a")
-
-#make a list to add each individual line
-#    text = []
-#    
-##    name
-#    text.append(os.path.basename(file)[:-4] + "\t")
-##    energy level
-#    text.append(str(Energy(file)) + "\t")
-# #   drop height
-#    height = dropheight(array)
-#    text.append(str(height) + "\t")
-# #   velocity
-#  #  theoretic, just needs drop height
-#    text.append(str(theoryVelo(height)) + "\t")
-##    calculated, needs array and some reworking /take just a tiny snip of the accel array
-##    text.append(str(calcVelocity(array[startLoad:startLoad+200,7]) + "\t"))
-    velo, peakvelo =  calc_velo(array[startShortAccel-200:lenShortAccel,7],array[startShortAccel-200:lenShortAccel,0],200)
-#    text.append(str(peakvelo) + "\t")
-# #    loadcell 1 to 3
-#    for i in range(1,4):
-#        text.append(str(peak(array[startLoad:startLoad+lenLoad,i])) + "\t")
-#  #  load sum
-#    loadsum = array[startLoad:startLoad+lenLoad,1]+array[startLoad:startLoad+lenLoad,2]+array[startLoad:startLoad+lenLoad,3]
-#    text.append(str(peak(loadsum)) + "\t")
-#   # peak accel
-#    text.append(str(peak(array[startAccel:startAccel+lenAccel,7])) + "\t")
-#    #impulse
-#    text.append(str(impulse(loadsum, array[startLoad:startLoad+lenLoad,1]))+"\t")
-##    broken or cracked?
-#    if broken(file) == 1:
-#        text.append("broken\n")
-#    else: text.append("cracked\n")
-#    for i in text:
-#        f.write(i)
-#        result.write(i)
-# #   put everything into file    
-#    result.close()
-#    f.close()
-    
-    # plot accel
-#    x = array[startAccel:startAccel+lenAccel,0]
-#    y = sig.medfilt(9.8 * array[startAccel:startAccel+lenAccel,7])
-#    plt.plot(x,y)
-#    plt.ylabel(r"Acceleration [$m/s^2$]")
-#    plt.xlabel("Time [$s$]")
-#    plt.title("Acceleration")
-#    plt.grid()
-#    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "_Accel.png")
-#    plt.close()
-#    
-##   plot calc velocity
-#    x = range(0,200)
-#    y = velo
-#    plt.plot(x,y)
-#    plt.ylabel(r"Calculated Velocity [$m/s$]")
-#    plt.xlabel("Time [$s$]")
-#    plt.title("Calculated Velocity")
-#    plt.grid()
-#    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "_Vel.png")
-#    plt.close()
-    
-#    # load cells
-#
-#    x = array[startLoad:startLoad+lenLoad,0]
-#    plt.xlabel("Time [$s$]")
-#    plt.ylabel("Load [$kN$]")
-#    for i in range(1,4):
-#        plt.xlabel("Time [$s$]")
-#        plt.ylabel("Load [$kN$]")
-#        y = sig.medfilt(array[startLoad:startLoad+lenLoad,i])
-##        y = f[:,i]
-#        plt.plot(x,y)
-#        plt.title("Loadcell " + str(i))
-#        plt.grid()
-#        plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "//Loadcell" + str(i) + ".png")
-#        plt.close()
-#
-#
-#
-##    plot sum of all loadcells    
-#    y = sig.medfilt(loadsum)
-#    a,b = first_peak(loadsum)
-#    c,d = last_peak(loadsum,a)
-#    plt.plot(x,y)
-#    plt.plot(x[a],y[a],"r.")
-#    plt.plot(x[c],y[c],"b.")
-#    plt.title("Sum of all Loadcells")
-#    plt.xlabel("Time [$s$]")
-#    plt.ylabel("Load [$kN$]")
-#    plt.grid()
-#    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "_Loadcellsum.png")
-#    plt.close()
-#    
 ##   plot impulse 
-#    y = sp.integrate.cumtrapz(y[a:c],x[a:c],initial = 0)*1000
+#    print(loadsum.shape)
+#    print(x.shape)
+#    y = sp.integrate.cumtrapz(loadsum[a:c],x[a:c],initial = 0)*1000
 #    plt.plot(x[a:c],y)
 #    plt.ylabel(r"Impulse [$Ns$]")
 #    plt.xlabel("Time [$s$]")
 #    plt.title("Impulse")
 #    plt.grid()
-#    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "_imp.png")
+#    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "//imp.png")
 #    plt.close()
+
+# plot laser
+    y = sig.medfilt(array[startLoad:startLoad+lenLoad,4])
+#   TO DO, fix those fucks!
+#    plt.plot(a,array[b+startLoad][0],"r.")
+#    plt.plot(c,array[d+startLoad][0],"b.")
+    plt.title("Laser Displacement")
+    plt.xlabel("Time [$s$]")
+    plt.ylabel("Displacement [$mm$]")
+    plt.grid()
+    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "//displacement.png")
+    plt.close()
     
 def calc_velo(acc,time,start):
     print(acc.shape)
@@ -618,7 +684,7 @@ def makeTable(path="./Results/result.txt"):
               \\begin{landscape}
               \\begin{table}[p!]
               \\centering
-              \\begin{tabular}{*{""" + str(len(header)) + """"}{l}}
+              \\begin{tabular}{*{""" + str(len(header)) + """}{l}}
               \\toprule \n""")
     leg.write(listtolatex(header))
     leg.write("&" + listtolatex(unit))
@@ -639,36 +705,99 @@ def makeTable(path="./Results/result.txt"):
 def listtolatex(list):
     l = ""
     for i in list[:-1]:
-        l += str(i) + "\t & \t"
-    l += str(list[-1]) + "\\\\ \n"
+        l += str(i).replace("_","\_") + "\t & \t"
+    l += str(list[-1]).replace("_","\_") + "\\\\ \n"
     return l
 #TO DO turn this snippets into a one-click programm
 
-#take Data at a certain path and clip it to size
-def turn_json(array,file=".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3.asc"):
-    #make a json file in place of the normal file
-    f = open(file[:-4]+".json","w")
-    #put the max height in the json file
-    json.dump({"maxheight":dropheight(array)},f,sort_keys=True)
-    #find start (when is the magnetventil activated?)
-    start = np.where(array[:,9]==1)
-#    start = findStart(data,0)
-    #find end (10 seconds later)
-    end = start + 10^6
-    #TO DO clip the data further down
-    newarray = array[start:end]
-    mask = np.ones(newarray.shape[1],bool)
-    for i in [0,1,2,3,4,7]:
-        mask[i]=0
-# delete useless data
-    newarray = np.delete(newarray,mask,axis=1)
-    print(newarray.shape)
-
     
+def fix_time(array):
+    array[0][0]=0
+    for i in range(1,array.shape[0]):
+        array[i][0] = array[i-1][0] + 0.001
+    return array
 
+#TO DO fix scale of acceleration and time
+def fix_extraaccel(file=".\\Data\\extraAccel\\extraaccel_vertical_1.txt"):
+    f = open(file,"r")
+    r = open(file[:-4] + "_fix.txt","w")
+    for line in f.readlines():
+        start = []
+        for mo in re.finditer(r",",line):
+            start.append(mo.start())
+        r.write(line[:start[0]] + "." + line[start[0]+1:start[2]] + "." + line[start[2]+1:])
     f.close()
+    r.close()
 
+#TO DO fix scale of acceleration and time
+def magnitude_extraaccel(file=".\\Data\\extraAccel\\extraaccel_vertical_2.txt"):
+    f = open(file,"r")
+    r = open(file[:-4] + "_fix.txt","w")
+    for line in f.readlines():
+        line = line.split(",")
+        r.write(str(float(line[0])/10000) +","+ str(float(line[1])*100)+ "\n")
+    f.close()
+    r.close()
+
+def plt_extraaccel(file=".\\Data\\extraAccel\\extraaccel_vertical_2_fix.txt"):
+    f = open(file,"r")
+    x,y = [],[]
+    i,up,down,start = 0,0,0,0
+    for line in f.readlines():
+        line = line.split(",")
+        x.append(float(line[0]))
+        y.append(float(line[1]))
+        if float(line[1]) > up:
+            up = float(line[1])
+            start = i
+        elif float(line[1]) < down:
+            down = float(line[1])
+        i += 1   
+    f.close()
+    plt.plot(x[start-50:start+300],y[start-50:start+300])
     
+    plt.ylabel(r"Acceleration [$m/s^2$]")
+    plt.xlabel("Time [$s$]")
+    plt.title("Acceleration measured directly on sample \n 2019-02-20-Rfs-100-0,5, vertical")
+    plt.grid()
+    plt.savefig(file[:-4] + ".png")
+    plt.close()
+    print(up)
+    print(down)
+
+#turn into two files: one for data and one for drop height
+#def clean_array(file=".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3_original.asc"):    
+#    r = open(file[:-4]+"_fix.asc","w")
+#    array = readData(filename=file)   
+#    for i in range(array.shape[0]):
+#        r.write(str(array[i][0]))
+#        for j in range(1,array.shape[1]):
+#            r.write("\t" + str(array[i][j]))
+#        r.write("\n")
+    
+def clean_array(file=".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3.asc"):
+    array = readData(filename = file)
+    #where telfer is reset, should be the start
+    #throw away all the row you don´t need
+#    delete = [5,6,8,10,11,13,14,15,16,17,18,19,20,21,22]
+    array = fix_time(array)
+    newarray = np.delete(array,[5,6,8,10,11,13,14,15,16,17,18,19,20,21,22],1)
+#    print(newarray.shape)
+    np.save(file[:-4]+".npy",newarray)
+#    array = readData(filename=file)   
+#    for i in range(array.shape[0]):
+#        print(str(array[i][0]))
+#        r.write(str(array[i][0]))
+#        for j in range(1,array.shape[1]):
+#            r.write("\t" + str(array[i][j]))
+#        r.write("\n")
+    
+def read_array(file=".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3_2.npy"):
+    array = np.load(file)
+    return array
+
+
+#############################################################
 # values begin at a[38]
 # len(a[38]) = 26 for round samples
 # a[8] gives the headers
@@ -700,4 +829,3 @@ def turn_json(array,file=".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3.asc"):
 #    23 Dist_up mm
 #    24 Dist_down mm 
 #    25 load average kN
-
