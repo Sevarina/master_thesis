@@ -1,7 +1,6 @@
 #! python3
 #playing with a smaller file
 #round sample
-
 import numpy as np
 import statistics as stat
 import matplotlib.pyplot as plt
@@ -739,14 +738,15 @@ def magnitude_extraaccel(file=".\\Data\\extraAccel\\extraaccel_vertical_2.txt"):
     f.close()
     r.close()
 
-def plt_extraaccel(file=".\\Data\\extraAccel\\extraaccel_vertical_2_fix.txt"):
+def plt_extraaccel(file=".\\Data\\extraAccel\\2019-02-20_Rfrs_100_1,0_vertical.txt"):
     f = open(file,"r")
+    
     x,y = [],[]
     i,up,down,start = 0,0,0,0
     for line in f.readlines():
         line = line.split(",")
         x.append(float(line[0]))
-        y.append(float(line[1]))
+        y.append(float(line[1])*9.8)
         if float(line[1]) > up:
             up = float(line[1])
             start = i
@@ -754,11 +754,13 @@ def plt_extraaccel(file=".\\Data\\extraAccel\\extraaccel_vertical_2_fix.txt"):
             down = float(line[1])
         i += 1   
     f.close()
+    array = np.stack((x,y),axis=1)
+    np.save(file[:-3]+".npy",array)
     plt.plot(x[start-50:start+300],y[start-50:start+300])
     
     plt.ylabel(r"Acceleration [$m/s^2$]")
     plt.xlabel("Time [$s$]")
-    plt.title("Acceleration measured directly on sample \n 2019-02-20-Rfs-100-0,5, vertical")
+#    plt.title("Acceleration measured directly on sample \n 2019-02-20-Rfs-100-0,5, vertical")
     plt.grid()
     plt.savefig(file[:-4] + ".png")
     plt.close()
@@ -775,13 +777,14 @@ def plt_extraaccel(file=".\\Data\\extraAccel\\extraaccel_vertical_2_fix.txt"):
 #            r.write("\t" + str(array[i][j]))
 #        r.write("\n")
     
-def clean_array(file=".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3.asc"):
+def clean_array(file=".\\Data\\cracked\\2019-04-03_Rfrs_100_1,0.asc"):
     array = readData(filename = file)
     #where telfer is reset, should be the start
-    #throw away all the row you don´t need
+    #throw away all the rows you don´t need
 #    delete = [5,6,8,10,11,13,14,15,16,17,18,19,20,21,22]
-    array = fix_time(array)
     newarray = np.delete(array,[5,6,8,10,11,13,14,15,16,17,18,19,20,21,22],1)
+    newarray = fix_time(newarray)
+    newarray = fix_accel(newarray)
 #    print(newarray.shape)
     np.save(file[:-4]+".npy",newarray)
 #    array = readData(filename=file)   
@@ -796,6 +799,13 @@ def read_array(file=".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3_2.npy"):
     array = np.load(file)
     return array
 
+def fix_accel(file):
+    array = np.load(file)
+    for i in range(array.shape[0]):
+        array[i][5] = array[i][5] * 9.8
+    np.save(file[:-4]+"_fix.npy",array)
+
+    
 
 #############################################################
 # values begin at a[38]
