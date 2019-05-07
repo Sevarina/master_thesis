@@ -716,8 +716,8 @@ def fix_time(array):
         array[i][0] = array[i-1][0] + 0.001
     return array
 
-#TO DO fix scale of acceleration and time
-def fix_extraaccel(file=".\\Data\\extraAccel\\extraaccel_vertical_1.txt"):
+#Turn txt accel into npy
+def fix_extraaccel(file=".\\extraAccel\\2019-04-16_Rfrs_75_0,5_vertical.txt"):
     f = open(file,"r")
     r = open(file[:-4] + "_fix.txt","w")
     for line in f.readlines():
@@ -728,8 +728,8 @@ def fix_extraaccel(file=".\\Data\\extraAccel\\extraaccel_vertical_1.txt"):
     f.close()
     r.close()
 
-#TO DO fix scale of acceleration and time
-def magnitude_extraaccel(file=".\\Data\\extraAccel\\extraaccel_vertical_2.txt"):
+#fix scale of acceleration and time
+def magnitude_extraaccel(file=".\\extraAccel\\extraaccel_vertical_2.txt"):
     f = open(file,"r")
     r = open(file[:-4] + "_fix.txt","w")
     for line in f.readlines():
@@ -777,14 +777,16 @@ def plt_extraaccel(file=".\\Data\\extraAccel\\2019-02-20_Rfrs_100_1,0_vertical.t
 #            r.write("\t" + str(array[i][j]))
 #        r.write("\n")
     
-def clean_array(file=".\\Data\\cracked\\2019-04-03_Rfrs_100_1,0.asc"):
+def clean_array(file=".\\Data\\cracked\\2019-05-06_Rfrs_75_0,8.asc"):
     array = readData(filename = file)
     #where telfer is reset, should be the start
     #throw away all the rows you don´t need
 #    delete = [5,6,8,10,11,13,14,15,16,17,18,19,20,21,22]
     newarray = np.delete(array,[5,6,8,10,11,13,14,15,16,17,18,19,20,21,22],1)
     newarray = fix_time(newarray)
-    newarray = fix_accel(newarray)
+    for i in range(newarray.shape[0]):
+        newarray[i][5] = newarray[i][5] * 9.8
+#    newarray = fix_accel(newarray)
 #    print(newarray.shape)
     np.save(file[:-4]+".npy",newarray)
 #    array = readData(filename=file)   
