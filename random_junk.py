@@ -4,20 +4,39 @@
 import numpy as np
 import statistics as stat
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import scipy as sp
 import scipy.signal as sig
 import math
 import os
 import re
 import json
+import random
+mpl.style.use('classic')
+from matplotlib import rc
+import matplotlib.pyplot as plt
 
-#from matplotlib.backends.backend_pdf import PdfPages
-#import matplotlib.backends.backend_agg as agg
+#rc('text.latex', preamble=r'\usepackage{helvet}\renewcommand\familydefault{\sfdefault}')
+mpl.rcParams['text.latex.preamble'] = [r'\usepackage{helvet}\renewcommand\familydefault{\sfdefault}', r'\usepackage{amsmath}' , r'\usepackage[T1]{fontenc}'] 
 
-#import logging
+#"fix" matplotlib font - it´s arial instead of helvetica but better than nothing
+#plt.rcParams['mathtext.fontset'] = 'custom'
+mpl.rcParams['font.sans-serif'] = "Arial"
+mpl.rcParams['font.family'] = "sans-serif"
+mpl.rcParams['mathtext.default']='default'
 
-#set up logging correctly
-#logging.basicConfig(level=logging.DEBUG, format= '%(asctime)s - %(levelname)s - %(message)s')
+
+def totally_useless():
+    x = [random.randint(1,10)] * 10
+    plt.plot(x)
+    plt.xlabel("\\([\\text{\\textdegree}]\\)", usetex=True)
+#    plt.xlabel = (r"\([\text{\textdegree}]\)", usetex=True)
+
+def las_start(array):
+    x = np.where(array[:,6]==1)
+#    print(x[0][0])
+    start = np.where(array[x[0][0]:,4] < -10)[0][0]
+    return start 
 
 def clearData(file):
 # Read and ignore header lines
@@ -807,7 +826,7 @@ def fix_accel(file):
         array[i][5] = array[i][5] * 9.8
     np.save(file[:-4]+"_fix.npy",array)
 
-    
+
 
 #############################################################
 # values begin at a[38]
