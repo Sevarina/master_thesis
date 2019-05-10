@@ -20,6 +20,8 @@ import os
 import re
 import pandas as pd
 from adjustText import adjust_text
+import locale
+locale.setlocale(locale.LC_ALL, 'deu_deu')
 
 
 
@@ -54,7 +56,7 @@ def doAllFiles(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data"):
     
     #write the seed for the appendix
     res.write("Name;Energy level;Thickness;Drop height;Age;Velocity;Force;Acceleration;Displacement;Broken/Cracked;Crack area;Opening angle\n")
-    res.write(r"nan;\([\text{kJ}]\);\([\text{mm}]\);\([\text{mm}]\);\([\text{days}]\);\(\Big[\frac{\text{m}}{\text{s}}\Big]\);\([\text{kN}]\);\(\Big[\frac{\text{m}}{\text{s}^\text{2}}\Big]\);\([\text{mm}]\);nan;\([\text{mm}^\text{2}]\);\([\text{\textdegree}]\)"+ "\n")
+    res.write(r"nan;\([\text{kJ}]\);\([\text{mm}]\);\([\text{mm}]\);\([\text{days}]\);\(\big[\frac{\text{m}}{\text{s}}\big]\);\([\text{kN}]\);\(\Big[\frac{\text{m}}{\text{s}^\text{2}}\Big]\);\([\text{mm}]\);nan;\([\text{mm}^\text{2}]\);\([\text{\textdegree}]\)"+ "\n")
     res.close()
     for root, folders, files in os.walk(direct):
         for file in files:
@@ -62,7 +64,7 @@ def doAllFiles(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data"):
                 path = root+"\\"+file
                 if os.path.isfile(path):
                     print(file)
-                    Everything(path)
+                    Everything(path,direct)
     
     #draw all the Graphs
     allGraphics(respath)
@@ -76,16 +78,21 @@ def add_list(lst,thing,rnd=0,sep=";"):
 #    .replace(".",",")
        
 #alternate Everything for .npy files    
-def Everything(file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\cracked\2019-05-06_Rfrs_75_0,8.npy"):
+def Everything(file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\cracked\2019-05-06_Rfrs_75_0,8.npy",direct=""):
+#change directory
+    if direct == "":    
+        os.chdir(os.path.dirname(file))    	
+        os.chdir("..")
+        os.chdir("..")
 
 #open array
     array = np.load(file)
 
 ##correct values
-    startLoad = findStart(array,cushion=1000)
-    startAccel = startLoad - 500
-    lenAccel = 3000
-    lenLoad = 3000
+    startLoad = findStart(array,cushion=500)
+    startAccel = startLoad
+    lenAccel = 1500
+    lenLoad = 1500
     
 #####play values ###############
 #    startLoad, startAccel = 0,0 
@@ -200,8 +207,8 @@ def Everything(file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\cracked\
     x = array[startLoad:startLoad+lenLoad,0]
 #    x = array[startLoad+950:startLoad+1020,0]
     for i in range(1,4):
-        plt.xlabel("Time \([\text{s}]\)", usetex=True)
-        plt.ylabel("Load \([\text{kN}]\)", usetex=True)
+        plt.xlabel(r"Time \([\text{s}]\)", usetex=True)
+        plt.ylabel(r"Load \([\text{kN}]\)", usetex=True)
         y = sig.medfilt(array[startLoad:startLoad+lenLoad,i])
 #        y = f[:,i]
         plt.plot(x,y)
@@ -220,8 +227,8 @@ def Everything(file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\cracked\
 #    plt.plot(a,array[b+startLoad][0],"r.")
 #    plt.plot(c,array[d+startLoad][0],"b.")
 #    plt.title("Sum of all Loadcells")
-    plt.xlabel("Time \([\text{s}]\)", usetex=True)
-    plt.ylabel("Load \([\text{kN}]\)", usetex=True)
+    plt.xlabel(r"Time \([\text{s}]\)", usetex=True)
+    plt.ylabel(r"Load \([\text{kN}]\)", usetex=True)
     plt.grid()
     plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "//Loadcellsum.png")
     plt.close()
@@ -247,8 +254,8 @@ def Everything(file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\cracked\
     bottom,top= plt.ylim()
     if bottom < -100 and top > -100:
         plt.ylim(bottom=-100)
-    plt.xlabel("Time \([\text{kN}]\)", usetex=True)
-    plt.ylabel("Displacement \([\text{mm}]\)", usetex=True)
+    plt.xlabel(r"Time \([\text{kN}]\)", usetex=True)
+    plt.ylabel(r"Displacement \([\text{mm}]\)", usetex=True)
     plt.grid()
     plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "/displacement.png")
     plt.close()
@@ -397,12 +404,6 @@ def allGraphics(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\re
             plt.plot(broke[i].astype(float),broke[j].astype(float),"r.",label="broken")
             
             #labels
-#            plt.xlabel(i + " [$" + unit[i][2:-2] + "$]")
-#            plt.ylabel(j + " [$" + unit[j][2:-2] + "$]")
-            
-            #try label
-            #TO DO get silly large brackets working
-
             plt.xlabel(i + " " + unit[i], usetex = True)
             plt.ylabel(j + " " + unit[j], usetex = True)
             
@@ -440,14 +441,41 @@ def allGraphics(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\re
             plt.close()
 
 #make a latex table out of the .csv       
-def results(direct=".\\Results\\result.csv"):
+def results(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\result.csv"):
+    
+    #result file
     res = pd.read_csv(direct,sep=";",header=[0,1])
-    res.to_latex(".\\Results\\result.tex",na_rep="", decimal =",", escape=False,index=False)
+    ## format latex table
+    form = column_format(len(res.columns))
+    ## format numbers with thousand separator . and decimal separator ,
+    decimal = [number_format] * len(res.columns)
+    res.fillna(0, inplace = True)
+    
+    res.to_latex(os.path.dirname(direct) + "\\result.tex",na_rep="", formatters = decimal, column_format = form, escape=False, index=False)
+
+    #just cracks
     crack = res[res["Broken/Cracked","nan"] == "cracked"]
     cracks = crack.drop(["Broken/Cracked","nan"], axis=1,level = 0)
-    cracks.to_latex(".\\Results\\crack.tex",na_rep="", decimal =",", escape=False,index=False)
+    ## format numbers with thousand separator . and decimal separator ,
+    form = column_format(len(crack.columns))
+    decimal = [number_format] * len(crack.columns)    
+    cracks.to_latex(os.path.dirname(direct) + "\\crack.tex",na_rep="", formatters = decimal, column_format = form, escape=False, index=False)
     print()
     
+#make a string to format latex
+def column_format(number):
+    help_list = ["l"] * number
+    return " ".join(help_list)
+    
+# format numbers with thousand separator . and decimal separator ,
+def number_format(number):
+    if number == 0:
+        return ""
+    if type(number) == str:
+        return number
+    else:
+        return "{:n}".format(number)
+        
 #write something in the appendix
 def write_appendix(appendix,filename,typ):
     appendix.write("""\\begin{figure}
@@ -461,57 +489,10 @@ def fix_time(array):
         array[i][0] = array[i-1][0] + 0.0001
     return array
 
-def fix_accel(file):
-    array = np.load(file)
-    for i in range(array.shape[0]):
-        array[i][5] = array[i][5] * 9.8
-    np.save(file[:-4]+"_fix.npy",array)
-
-def plt_extraaccel(file=".\\extraAccel\\2019-04-16_Rfrs_75_0,5_horizontal.npy"):
-###### .TXT
-#    f = open(file,"r")
-#    x,y = [],[]
-#    i,up,down,start = 0,0,0,0
-#    for line in f.readlines():
-#        line = line.split(",")
-#        x.append(float(line[0]))
-#        y.append(float(line[1])*50*9.8) #50 because x 10 amplification an 0,5 mV/g
-#        if float(line[1]) > up:
-#            up = float(line[1])
-#            start = i
-#        elif float(line[1]) < down:
-#            down = float(line[1])
-#        i += 1   
-#    f.close()
-#    array = np.stack((x,y),axis=1)
-#    np.save(file[:-3]+"npy",array)
-#    print(up,down)
-###### .NPY
-    array = np.load(file)
-    array = fix_time(array)
-    start = np.argmax(array[:,1])
-    down = np.argmin(array[:,1])
-    plt.plot(array[start-50:start+300,0],array[start-50:start+300,1])
-    
-    plt.ylabel(r"Acceleration [$\frac{m}{s^2}$]")
-    plt.xlabel("Time [$s$]")
-#    plt.title("Acceleration measured directly on sample \n 2019-02-20-Rfs-100-0,5, vertical")
-    plt.grid()
-    plt.savefig(file[:-4] + ".png")
-    plt.close()
-    print(array[start][1])
-    print(array[down][1])
-
 def panda_fun(excel=r'C:\Users\kekaun\OneDrive - LKAB\roundSamples\panda.xlsx',filename="2019-02-20_Rfs_100_0,5"):
     data = pd.ExcelFile(excel)
     array = data.parse(skiprows=4, index_col ="Name")
     first = array.loc[filename]
-#    if first.loc["cracked/broken"] == "broken":
-#        text.append("broken")
-#    else:
-#        text.append(first.loc["age"])
-#        text.append(first.loc["crack area"])
-#        text.append(first.loc["opening angle"])
     return(first)
     
 #writes a legend
@@ -533,172 +514,4 @@ def write_legend(direct,df):
 \\end{table}
               """)
     leg.close()
-
-#integrate the PCB Data, not working too well yet, zero drift and zero offset
-def integrate(file="C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\extraAccel\\2019-04-16_Rfrs_75_0,5_horizontal.npy"):
-    array = np.load(file)
-    peak = np.argmax(array[:,1])
-    start = peak - 15
-    end = peak + 500
-    plt.ylabel(r"Acceleration [$\frac{m}{s^2}$]")
-    plt.xlabel("Time [$s$]")
-    plt.grid()
-    time = array[start:end,0]/1000
-    plt.plot(time,array[start:end,1])
-
-#    dx=0.0001
-#    x = time
-    velo = sp.integrate.cumtrapz(array[start:end,1],dx=0.0001,initial = 0)
-    disp = sp.integrate.cumtrapz(velo,initial = 0)
-#    peak = np.argmax(array[:,1])
-#    plt.plot(time,velo)
-#    plt.plot(time,disp)
-#    plt.savefig(file[:-4] + ".png")
     
-#function
-def help_func(x, a, b, c):
-    return a + b*x + c*x*x
-
-#minimum curves
-def fitdata(file = "C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Results\\result.csv"):
-
-    #where to save stuff
-    path = os.path.dirname(file) + "\\Diagram"
-    if os.path.isdir(path) == False:
-        os.makedirs(path)
-    #open csv
-    res = pd.read_csv(file,sep=";")
-
-    #make a mask to filter out broken/cracked
-    mask = res['Broken/Cracked'] == 'cracked'
-    
-    #throw useless info away
-    res = res.drop(['Name','Broken/Cracked'],axis = 1)
-
-    res = res.drop(res.index[0])
-    res = res.astype(float)
-    
-    #make two frames for broken/cracked - easier use later
-    crack = res[mask]
-    broke = res[~mask]
-    crack.sort_values("Energy level",inplace = True)
-    broke.sort_values("Energy level",inplace = True)
-    
-    y = crack["Thickness"]
-    x = crack["Energy level"]
-    y1 = broke["Thickness"]
-    x1 = broke["Energy level"]
-    x2 = res["Thickness"]
-    y2 = res["Energy level"]
-    
-    popt, pcov = curve_fit(help_func, x, y)
-    popt1, pcov1 = curve_fit(help_func, x1, y1)
-    plt.grid()
-    plt.plot(x, y,"b.")
-    plt.plot(x,help_func(x,*popt), 'r-', label='fit: a=%5.3f, b=%5.3f, c=%5.3f' % tuple(popt))
-#    plt.plot(x1,help_func(x1,*popt1), 'b-', label='fit: a=%5.3f, b=%5.3f, c=%5.3f' % tuple(popt1))
-    plt.ylabel('Thickness')
-    plt.xlabel('Energy level')
-    plt.legend()
-    
-
-#            fig = plt.figure()
-#    ax = plt.subplot(111)
-            #plot
-#    plt.plot(crack[i].astype(float),crack[j].astype(float),"b.",label="cracked")
-#    plt.plot(broke[i].astype(float),broke[j].astype(float),"r.",label="broken")
-            #labels
-#            plt.xlabel(i + " [$" + unit[i][2:-2] + "$]")
-#            plt.ylabel(j + " [$" + unit[j][2:-2] + "$]")
-            #grid
-#            plt.grid()
-
-#            dx = (plt.xlim()[1] - plt.xlim()[0]) * 0.01
-#            dy = (plt.ylim()[1] + plt.ylim()[0]) * 0.01
-            
-
-#            #linear interpolation
-#            slope, intercept, r_value, p_value, std_err = sp.stats.linregress(crack[i].astype(float),crack[j].astype(float))
-#            sortx = list(crack[i].astype(float).sort_values())
-#            sorty =[]
-#            for m in sortx:
-#                sorty.append(m * slope + intercept)
-#            #broken line
-##            slope1, intercept2, r_value3, p_value4, std_err5 = sp.stats.linregress(broke[i].astype(float),broke[j].astype(float))
-##            sortx1 = list(broke[i].astype(float).sort_values())
-##            sorty1 =[]
-##            for n in sortx1:
-##                sorty1.append(n * slope1 + intercept2)
-##            ax.plot(sortx1,sorty1,"r--")
-#            ax.plot(sortx, sorty,"b--", label="R = %0.04f \nx = %0.02f \ny = %0.02f" %(r_value,slope,intercept))
-#            
-#            #text
-#            texts = [plt.text(res.iloc[k-1][i], res.iloc[k-1][j], k) for k in res.index]
-#            adjust_text(texts)
-#
-#            plt.grid()
-#            #legend            
-#            chartBox = ax.get_position()            
-#            ax.set_position([chartBox.x0, chartBox.y0, chartBox.width*0.8, chartBox.height])
-#            ax.legend(loc='upper center', bbox_to_anchor=(1.2, 0.8), shadow=True, ncol=1)
-#            #save
-#            filename = path + "\\" + j.replace(" ","-") + "_" + i.replace(" ","-") + ".png"
-#            plt.savefig(filename,format="png")
-#            plt.close()
-            
-def clean_array(file=".\\Data\\cracked\\2019-05-06_Rfrs_75_0,8.asc"):
-    array = readData(filename = file)
-    #where telfer is reset, should be the start
-    #throw away all the rows you don´t need
-#    delete = [5,6,8,10,11,13,14,15,16,17,18,19,20,21,22]
-    newarray = np.delete(array,[5,6,8,10,11,13,14,15,16,17,18,19,20,21,22],1)
-    newarray = fix_time(newarray)
-    for i in range(newarray.shape[0]):
-        newarray[i][5] = newarray[i][5] * 9.8
-#    newarray = fix_accel(newarray)
-#    print(newarray.shape)
-    np.save(file[:-4]+".npy",newarray)
-#    array = readData(filename=file)   
-#    for i in range(array.shape[0]):
-#        print(str(array[i][0]))
-#        r.write(str(array[i][0]))
-#        for j in range(1,array.shape[1]):
-#            r.write("\t" + str(array[i][j]))
-#        r.write("\n")
-
-def clearData(file):
-# Read and ignore header lines
-    i = 0
-    while i < 8:
-        file.readline()
-        i += 1
-# I checked the file, this is where the real headings are hidden
-    global header # it´s dangerous to go alone, take this!
-    header = file.readline().split("\t")
-# ignore the useless stuff
-    while i < 38:
-        file.readline()
-        i += 1
-        
-#put some values into an array
-def readData(maxLines=-1,filename=".\\Data\\cracked\\2019-02-20-Rfs-100-0,5.asc",start=0): 
-    f= open(filename)
-    if start == 0:
-        clearData(f)
-    else: 
-        for i in range(start):
-            f.readline()
-    l1 = []
-    for line in f.readlines()[:maxLines]:
-        line = line.replace(",",".").split("\t")[:-1]
-        for l in line:
-            try:
-                d = np.double(l)
-            except:
-                d = np.nan
-            l1.append(d)   
-    f.close()
-    try:
-        return np.array(l1).reshape(-1,26)
-    except:
-        return np.array(l1).reshape(-1,29)

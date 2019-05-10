@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import scipy as sp
 import scipy.signal as sig
+from scipy.interpolate import interp1d
 import math
 import os
 import re
@@ -15,6 +16,8 @@ import random
 mpl.style.use('classic')
 from matplotlib import rc
 import matplotlib.pyplot as plt
+import pandas as pd
+
 
 #rc('text.latex', preamble=r'\usepackage{helvet}\renewcommand\familydefault{\sfdefault}')
 mpl.rcParams['text.latex.preamble'] = [r'\usepackage{helvet}\renewcommand\familydefault{\sfdefault}', r'\usepackage{amsmath}' , r'\usepackage[T1]{fontenc}'] 
@@ -26,11 +29,73 @@ mpl.rcParams['font.family'] = "sans-serif"
 mpl.rcParams['mathtext.default']='default'
 
 
-def totally_useless():
-    x = [random.randint(1,10)] * 10
-    plt.plot(x)
-    plt.xlabel("\\([\\text{\\textdegree}]\\)", usetex=True)
-#    plt.xlabel = (r"\([\text{\textdegree}]\)", usetex=True)
+#integrate the PCB Data, not working too well yet, zero drift and zero offset
+def integrate(file="C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\extraAccel\\2019-04-16_Rfrs_75_0,5_horizontal.npy"):
+    array = np.load(file)
+    peak = np.argmax(array[:,1])
+    start = peak - 15
+    end = peak + 500
+    plt.ylabel(r"Acceleration [$\frac{m}{s^2}$]")
+    plt.xlabel("Time [$s$]")
+    plt.grid()
+    time = array[start:end,0]/1000
+    plt.plot(time,array[start:end,1])
+
+#    dx=0.0001
+#    x = time
+    velo = sp.integrate.cumtrapz(array[start:end,1],dx=0.0001,initial = 0)
+    disp = sp.integrate.cumtrapz(velo,initial = 0)
+#    peak = np.argmax(array[:,1])
+#    plt.plot(time,velo)
+#    plt.plot(time,disp)
+#    plt.savefig(file[:-4] + ".png")
+    
+#function
+def help_func(x, a, b, c):
+    return a + b*x + c*x*x
+
+#minimum curves
+def fitdata(file = "C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Results\\result.csv"):
+
+    #where to save stuff
+    path = os.path.dirname(file) + "\\Diagram"
+    if os.path.isdir(path) == False:
+        os.makedirs(path)
+    #open csv
+    res = pd.read_csv(file,sep=";")
+
+    #make a mask to filter out broken/cracked
+    mask = res['Broken/Cracked'] == 'cracked'
+    
+    #throw useless info away
+    res = res.drop(['Name','Broken/Cracked'],axis = 1)
+
+    res = res.drop(res.index[0])
+    res = res.astype(float)
+    
+    #make two frames for broken/cracked - easier use later
+    crack = res[mask]
+    broke = res[~mask]
+    crack.sort_values("Energy level",inplace = True)
+    broke.sort_values("Energy level",inplace = True)
+    
+    y = crack["Thickness"]
+    x = crack["Energy level"]
+    y1 = broke["Thickness"]
+    x1 = broke["Energy level"]
+    x2 = res["Thickness"]
+    y2 = res["Energy level"]
+    
+    popt, pcov = curve_fit(help_func, x, y)
+    popt1, pcov1 = curve_fit(help_func, x1, y1)
+    plt.grid()
+    plt.plot(x, y,"b.")
+    plt.plot(x,help_func(x,*popt), 'r-', label='fit: a=%5.3f, b=%5.3f, c=%5.3f' % tuple(popt))
+#    plt.plot(x1,help_func(x1,*popt1), 'b-', label='fit: a=%5.3f, b=%5.3f, c=%5.3f' % tuple(popt1))
+    plt.ylabel('Thickness')
+    plt.xlabel('Energy level')
+    plt.legend()
+
 
 def las_start(array):
     x = np.where(array[:,6]==1)
@@ -816,9 +881,31 @@ def clean_array(file=".\\Data\\cracked\\2019-05-06_Rfrs_75_0,8.asc"):
 #            r.write("\t" + str(array[i][j]))
 #        r.write("\n")
     
-def read_array(file=".\\Data\\cracked\\2018-12-04_Rfrs_50_0,3_2.npy"):
+def findStart(array,cushion=500): 
+    x = np.where(array[:,6]==1)
+    a = np.argmax(array[x[0][0]:],axis=0)
+    c=[]
+    for i in range(1,4):
+# just the load cells        
+        c.append(a[i])
+#        c.append(b[i])
+    return(int(math.floor(stat.median(c)) - cushion + x[0][0]))    
+
+def read_array(file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\cracked\2018-02-14_Rfrs_75_0,5.npy"):
     array = np.load(file)
-    return array
+    start = findStart(array,cushion=500)
+    end = start + 2000
+    newarray = np.where(array[start:end,4] > -15,array[start:end,4],0)
+    ##############
+    x = np.arange(end-start)
+    idx = np.nonzero(newarray)
+    interp = interp1d(x[idx],newarray[idx], fill_value="extrapolate")
+    
+    ###############
+#    for i in range(array.shape[0]):
+#        array[i,3] = 0
+#    plt.plot(interp)
+#    np.save(file[:-4]+"_fix.npy",array)
 
 def fix_accel(file):
     array = np.load(file)
