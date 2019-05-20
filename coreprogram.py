@@ -78,7 +78,7 @@ def add_list(lst,thing,rnd=0,sep=";"):
 #    .replace(".",",")
        
 #alternate Everything for .npy files    
-def Everything(file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\cracked\2019-05-06_Rfrs_75_0,8.npy",direct=""):
+def Everything(file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\cracked\2018-11-29_Rfrs_75_1,0.npy",direct=""):
 #change directory
     if direct == "":    
         os.chdir(os.path.dirname(file))    	
@@ -248,8 +248,8 @@ def Everything(file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\cracked\
 #    write_appendix(app,os.path.basename(file)[:-4] + "/imp.png")
 #     
 # plot laser
-    y = sig.medfilt(array[startLoad+800:startLoad+2000,4])
-    x = array[startLoad+800:startLoad+2000,0]
+    y = sig.medfilt(array[startLoad:startLoad+2000,4])
+    x = array[startLoad:startLoad+2000,0]
     plt.plot(x,y)
     bottom,top= plt.ylim()
     if bottom < -100 and top > -100:
@@ -514,4 +514,67 @@ def write_legend(direct,df):
 \\end{table}
               """)
     leg.close()
+# some online code
+def make_zero(start,end):
+    length = end - start
+    helper = np.empty(length)
+    helper[:] = np.nan
+    return helper
+    
+def nan_helper(y):
+  return np.isnan(y), lambda z: z.nonzero()[0]
+
+def fix_disp(file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\cracked\2019-02-20_Rfrs_75_0,5.npy"):
+#open array
+    array = np.load(file)
+
+    start = findStart(array,cushion=500)
+    end = start + 1500
+    y = array[:,4]
+#
+#
+##    # fix the first part
+    start1 = start + 883
+    end1 = end - 600
+    y[start1:end1] = make_zero(start1,end1)
+
+##    
+    start2 = start + 1250
+    end2 = end - 190
+    y[start2:end2] = make_zero(start2,end2)
+#    
+#    start3 = start + 1075
+#    end3 = end - 345
+#    y[start3:end3] = make_zero(start3,end3)
+#    
+#    start4 = start + 1440
+#    end4 = end - 30
+#    y[start4:end4] = make_zero(start4,end4)
+##    len2 = end2 - start2
+##    helper2 = np.empty(len2)
+##    helper2[:] = np.nan
+##    y[1030:1030+len2] = helper2
+#
+##    start1 = start + 800
+##    end1 = end - 50
+##    
+#    for i in range(1500):
+#        if y[i] < - 14.3:
+#            y[i] = np.nan
+#    
+##    start1 = start + 800
+    nans, x= nan_helper(y)
+    y[nans] = np.interp(x(nans), x(~nans), y[~nans])
+    array[start:end,4] = y[start:end]
+    
+    y = sig.medfilt(array[start:end,4])
+    x = array[start:end,0]
+    
+    y1 = sig.medfilt(array[start2:end2,4])
+    x1 = array[start2:end2,0]
+    
+    plt.grid()
+    plt.plot(x,y)
+    plt.plot(x1,y1)
+    np.save(file[:-4] + "_fix.npy",array)
     
