@@ -28,6 +28,10 @@ mpl.rcParams['font.sans-serif'] = "Arial"
 mpl.rcParams['font.family'] = "sans-serif"
 mpl.rcParams['mathtext.default']='default'
 
+def exclude(file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\exclude.csv"):
+    df = pd.read_csv(file, sep = ";", header = 0, index_col = 0,)
+    df= df.astype(bool)
+    print(df["Force"].iloc[1])
 
 #integrate the PCB Data, not working too well yet, zero drift and zero offset
 def integrate(file="C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\extraAccel\\2019-04-16_Rfrs_75_0,5_horizontal.npy"):

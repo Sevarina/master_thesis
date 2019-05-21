@@ -40,8 +40,8 @@ mpl.rcParams['mathtext.default']='default'
 #run all the things we really want on all files
 def doAllFiles(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data"):
     
-    #go to the right directory - save time    	
-    os.chdir(direct)    	
+    #go to the right directory - save time        
+    os.chdir(direct)        
     os.chdir("..")
     
     #open results file
@@ -81,7 +81,7 @@ def add_list(lst,thing,rnd=0,sep=";"):
 def Everything(file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\cracked\2018-11-29_Rfrs_75_1,0.npy",direct=""):
 #change directory
     if direct == "":    
-        os.chdir(os.path.dirname(file))    	
+        os.chdir(os.path.dirname(file))        
         os.chdir("..")
         os.chdir("..")
 
@@ -323,7 +323,7 @@ def findStart(array,cushion=500):
         c.append(a[i])
 #        c.append(b[i])
     return(int(math.floor(stat.median(c)) - cushion + x[0][0]))
-       
+    
     #get drop height            
 def dropheight(array):
     #m has a sampling rate of 10kHz, but the telfer of just 1 Hz
@@ -372,24 +372,41 @@ def allGraphics(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\re
     if os.path.isdir(path) == False:
         os.makedirs(path)
     #open csv
-    res = pd.read_csv(direct,sep=";")
+    res = pd.read_csv(direct,sep=";",index_col = 0)
     
     #write a legend    
     write_legend(direct,res.drop(res.index[0]))
     #make a latex table
     results(direct)
-    #make a mask to filter out broken/cracked
-    mask = res['Broken/Cracked'] == 'cracked'
+    #make a mask to filter out everything that is useless
+    mask = pd.read_csv(r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\exclude.csv", sep = ";", header = 0, index_col = 0)
+    mask = mask.astype(bool)
+    
+#    #make a mask to filter out broken/cracked
+#    mask = res['Broken/Cracked'] == 'cracked'
+    
     #throw useless info away
-    res = res.drop(['Name','Broken/Cracked'],axis = 1)
+
+    res = res.drop(['Broken/Cracked'],axis = 1)
+
     #keep the unit
     unit = res.iloc[0]
+    
+    #don't need the unit in the data anymore
     res = res.drop(res.index[0])
+    
+    #make data usable
     res = res.astype(float)
     
-    #make two frames for broken/cracked - easier use later
-    crack = res[mask]
-    broke = res[~mask]
+#    #make two frames for broken/cracked - easier use later
+        #TO DO make the data sets
+            #first separate into broken/cracked globally
+            #second seperate into exclude/include globally (exclude gets a x, and include a . as marker)
+
+
+
+    crack = res[mask["Crack area"]]
+    broke = res[~mask["Crack area"]]
     second = res.copy()
     
     #draw all the silly graphics    
@@ -398,7 +415,8 @@ def allGraphics(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\re
         for j in second.columns:
 #            fig = plt.figure()
             ax = plt.subplot(111)
-            
+            #TO DO make the data sets
+                #first exclude 
             #plot
             plt.plot(crack[i].astype(float),crack[j].astype(float),"b.",label="cracked")
             plt.plot(broke[i].astype(float),broke[j].astype(float),"r.",label="broken")
@@ -418,13 +436,13 @@ def allGraphics(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\re
                 sorty.append(m * slope + intercept)
             ax.plot(sortx, sorty,"b--", label="R = %0.04f \nx = %0.02f \ny = %0.02f" %(r_value,slope,intercept))
 
-            #broken line
-            slope1, intercept2, r_value3, p_value4, std_err5 = sp.stats.linregress(broke[i].astype(float),broke[j].astype(float))
-            sortx1 = list(broke[i].astype(float).sort_values())
-            sorty1 =[]
-            for n in sortx1:
-                sorty1.append(n * slope1 + intercept2)
-            ax.plot(sortx1,sorty1,"r--")
+#            #broken line
+#            slope1, intercept2, r_value3, p_value4, std_err5 = sp.stats.linregress(broke[i].astype(float),broke[j].astype(float))
+#            sortx1 = list(broke[i].astype(float).sort_values())
+#            sorty1 =[]
+#            for n in sortx1:
+#                sorty1.append(n * slope1 + intercept2)
+#            ax.plot(sortx1,sorty1,"r--")
             
             #text
 #            texts = [plt.text(res.iloc[k-1][i], res.iloc[k-1][j], k) for k in res.index]
@@ -497,7 +515,6 @@ def panda_fun(excel=r'C:\Users\kekaun\OneDrive - LKAB\roundSamples\panda.xlsx',f
     
 #writes a legend
 def write_legend(direct,df):
-    print(df)
     leg = open(os.path.dirname(direct) + "\\legend.tex","w")
     leg.write("""\\begin{table}
     \\centering
@@ -505,7 +522,7 @@ def write_legend(direct,df):
     \\toprule
     Name & Symbol \\\\
     \\midrule \n""")
-    for l, m in enumerate(df["Name"]):
+    for l, m in enumerate(df.index):
         leg.write(str(m) + "\t&\t" + str(l + 1)+"\t\\\\\n")
     leg.write("""\\bottomrule
 \\end{tabular}
