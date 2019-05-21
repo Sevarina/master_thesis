@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import scipy as sp
 import scipy.signal as sig
 from scipy.optimize import curve_fit
+import seaborn as sns
 import math
 import os
 import re
@@ -403,23 +404,68 @@ def allGraphics(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\re
             #first separate into broken/cracked globally
             #second seperate into exclude/include globally (exclude gets a x, and include a . as marker)
 
+    
 
-
-    crack = res[mask["Crack area"]]
-    broke = res[~mask["Crack area"]]
+#    crack = res[mask["Crack area"]]
+#    broke = res[~mask["Crack area"]]
     second = res.copy()
+    
+    #correlation dataframe
+    corr = pd.DataFrame(index = res.columns, columns = res.columns, dtype = float)
     
     #draw all the silly graphics    
     for i in res.columns:
+        
         second = second.drop(i,axis = 1)
         for j in second.columns:
+            print(i,j)
 #            fig = plt.figure()
             ax = plt.subplot(111)
             #TO DO make the data sets
-                #first exclude 
-            #plot
-            plt.plot(crack[i].astype(float),crack[j].astype(float),"b.",label="cracked")
-            plt.plot(broke[i].astype(float),broke[j].astype(float),"r.",label="broken")
+            
+            #make the masks
+            if i not in mask.columns and j not in mask.columns:
+                #if the data is not in the exlusion table just make a totally true mask
+                #otherwise check if only one value is in there
+                #lastly if both values are on the list, make a mixed list
+                data = [True] * (res.shape[0])
+                submask = pd.Series(data, index = res.index, dtype = bool)
+            elif i in mask.columns and j not in mask.columns:
+                submask = mask[i]
+            elif i not in mask.columns and j in mask.columns:
+                submask = mask[j]
+            else:
+                submask = mask[i] & mask[j]
+
+            
+            #exclude the data
+            exclude = res[~submask]
+            
+            crack = res[submask][mask["Crack area"]]
+            broke = res[submask][~mask["Crack area"]]
+            
+
+            plt.plot(crack[i], crack[j], "b.",label="cracked")
+            plt.plot(broke[i], broke[j], "r.", label = "broken")
+            plt.plot(exclude[i],exclude[j],"xk", label = "excluded")
+            
+#            ## split cracked in exclude an include
+#            incl_crack = crack[i][submask]
+#            excl_crack = crack[i][~submask]
+#            ## split broken in exclude and include
+#            incl_broke = broke[i][submask]
+#            excl_broke = broke[i][~submask]
+#
+#            #plot
+#            #include crack
+#            plt.plot(incl_crack[i],incl_crack[j],"b.",label="cracked")
+#            #exclude crack
+#            plt.plot(excl_crack[i],excl_crack[j],"bx",label="excluded cracked")
+#            
+#            #include broke
+#            plt.plot(incl_broke[i],incl_broke[j],"r.",label="broken")
+#            #exclude broke
+#            plt.plot(excl_broke[i],excl_broke[j],"rx",label="excluded broken")
             
             #labels
             plt.xlabel(i + " " + unit[i], usetex = True)
@@ -436,6 +482,10 @@ def allGraphics(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\re
                 sorty.append(m * slope + intercept)
             ax.plot(sortx, sorty,"b--", label="R = %0.04f \nx = %0.02f \ny = %0.02f" %(r_value,slope,intercept))
 
+            #put R2 in the correct spot of the dataframe
+            corr[i][j] = r_value**2
+            corr[j][i] = r_value**2
+
 #            #broken line
 #            slope1, intercept2, r_value3, p_value4, std_err5 = sp.stats.linregress(broke[i].astype(float),broke[j].astype(float))
 #            sortx1 = list(broke[i].astype(float).sort_values())
@@ -444,9 +494,9 @@ def allGraphics(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\re
 #                sorty1.append(n * slope1 + intercept2)
 #            ax.plot(sortx1,sorty1,"r--")
             
-            #text
-#            texts = [plt.text(res.iloc[k-1][i], res.iloc[k-1][j], k) for k in res.index]
-#            adjust_text(texts)
+#            #text
+            texts = [plt.text(res.iloc[k-1][i], res.iloc[k-1][j], k) for k in range(1, res.shape[0] + 1)]
+            adjust_text(texts)
 
             #legend            
             chartBox = ax.get_position()            
@@ -457,6 +507,7 @@ def allGraphics(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\re
             filename = path + "\\" + j.replace(" ","-") + "_" + i.replace(" ","-") + ".png"
             plt.savefig(filename,format="png")
             plt.close()
+    heatmap(corr, os.path.dirname(direct))
 
 #make a latex table out of the .csv       
 def results(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\result.csv"):
@@ -595,3 +646,30 @@ def fix_disp(file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\cracked\20
     plt.plot(x1,y1)
     np.save(file[:-4] + "_fix.npy",array)
     
+def heatmap(df,direct):
+    
+    #colormap
+    blackoutside = {
+            'blue':  ((0.0, 0.0, 0.0),
+                    (0.3, 0.0, 0.0),
+                     (0.5, 1.0, 1.0),
+                     (0.7, 1.0, 1.0),
+                     (1.0, 0.0, 0.0)),
+                     
+            'green': ((0.0, 0.0, 0.0),
+                      (0.3, 0.0, 0.0),
+                      (0.5, 1.0, 1.0),
+                      (0.7, 0.0, 0.0),
+                      (1.0, 0.0, 0.0)),
+    
+            'red': ((0.0, 0.0, 0.0),
+                     (0.3, 1.0, 1.0),
+                     (0.5, 1.0, 1.0),
+                     (0.7, 0.0, 0.0),
+                     (1.0, 0.0, 0.0))}
+            
+    plt.register_cmap(name='LKAB', data=blackoutside)
+    sns_plot = sns.heatmap(df,  center = 0, annot=True, fmt='.2f',cmap = "LKAB", vmin = 0.0, vmax = 1.00,)
+    plt.tight_layout()
+    fig = sns_plot.get_figure()
+    fig.savefig(direct + r"\heatmap.png")
