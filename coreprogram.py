@@ -12,6 +12,7 @@ import matplotlib as mpl
 mpl.style.use('classic')
 from matplotlib import rc
 import matplotlib.pyplot as plt
+
 import scipy as sp
 import scipy.signal as sig
 from scipy.optimize import curve_fit
@@ -382,132 +383,108 @@ def allGraphics(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\re
     #make a mask to filter out everything that is useless
     mask = pd.read_csv(r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\exclude.csv", sep = ";", header = 0, index_col = 0)
     mask = mask.astype(bool)
-    
-#    #make a mask to filter out broken/cracked
-#    mask = res['Broken/Cracked'] == 'cracked'
-    
-    #throw useless info away
-
-    res = res.drop(['Broken/Cracked'],axis = 1)
-
-    #keep the unit
-    unit = res.iloc[0]
-    
-    #don't need the unit in the data anymore
-    res = res.drop(res.index[0])
-    
-    #make data usable
-    res = res.astype(float)
-    
-#    #make two frames for broken/cracked - easier use later
-        #TO DO make the data sets
-            #first separate into broken/cracked globally
-            #second seperate into exclude/include globally (exclude gets a x, and include a . as marker)
-
-    
-
-#    crack = res[mask["Crack area"]]
-#    broke = res[~mask["Crack area"]]
-    second = res.copy()
-    
-    #correlation dataframe
-    corr = pd.DataFrame(index = res.columns, columns = res.columns, dtype = float)
-    
-    #draw all the silly graphics    
-    for i in res.columns:
+    mask.to_latex(os.path.dirname(direct) + "\\exclude.tex",escape = False)
         
-        second = second.drop(i,axis = 1)
-        for j in second.columns:
-            print(i,j)
-#            fig = plt.figure()
-            ax = plt.subplot(111)
-            #TO DO make the data sets
-            
-            #make the masks
-            if i not in mask.columns and j not in mask.columns:
-                #if the data is not in the exlusion table just make a totally true mask
-                #otherwise check if only one value is in there
-                #lastly if both values are on the list, make a mixed list
-                data = [True] * (res.shape[0])
-                submask = pd.Series(data, index = res.index, dtype = bool)
-            elif i in mask.columns and j not in mask.columns:
-                submask = mask[i]
-            elif i not in mask.columns and j in mask.columns:
-                submask = mask[j]
-            else:
-                submask = mask[i] & mask[j]
-
-            
-            #exclude the data
-            exclude = res[~submask]
-            
-            crack = res[submask][mask["Crack area"]]
-            broke = res[submask][~mask["Crack area"]]
-            
-
-            plt.plot(crack[i], crack[j], "b.",label="cracked")
-            plt.plot(broke[i], broke[j], "r.", label = "broken")
-            plt.plot(exclude[i],exclude[j],"xk", label = "excluded")
-            
-#            ## split cracked in exclude an include
-#            incl_crack = crack[i][submask]
-#            excl_crack = crack[i][~submask]
-#            ## split broken in exclude and include
-#            incl_broke = broke[i][submask]
-#            excl_broke = broke[i][~submask]
+#    #throw useless info away
+#    res = res.drop(['Broken/Cracked'],axis = 1)
 #
-#            #plot
-#            #include crack
-#            plt.plot(incl_crack[i],incl_crack[j],"b.",label="cracked")
-#            #exclude crack
-#            plt.plot(excl_crack[i],excl_crack[j],"bx",label="excluded cracked")
+#    #keep the unit
+#    unit = res.iloc[0]
+#    
+#    #don't need the unit in the data anymore
+#    res = res.drop(res.index[0])
+#    
+#    #make data usable
+#    res = res.astype(float)
+#    
+#    #correlation dataframe
+#    corr = pd.DataFrame(index = res.columns, columns = res.columns, dtype = float)
+#    
+#    #draw all the silly graphics    
+#    for j in res.columns:
+#        
+##        second = second.drop(j,axis = 1)
+#        for i in res.columns:
+#            print(i,j)
+#            ax = plt.subplot(111)
 #            
-#            #include broke
-#            plt.plot(incl_broke[i],incl_broke[j],"r.",label="broken")
-#            #exclude broke
-#            plt.plot(excl_broke[i],excl_broke[j],"rx",label="excluded broken")
-            
-            #labels
-            plt.xlabel(i + " " + unit[i], usetex = True)
-            plt.ylabel(j + " " + unit[j], usetex = True)
-            
-            #grid
-            plt.grid()
-
-            #linear interpolation
-            slope, intercept, r_value, p_value, std_err = sp.stats.linregress(crack[i].astype(float),crack[j].astype(float))
-            sortx = list(crack[i].astype(float).sort_values())
-            sorty =[]
-            for m in sortx:
-                sorty.append(m * slope + intercept)
-            ax.plot(sortx, sorty,"b--", label="R = %0.04f \nx = %0.02f \ny = %0.02f" %(r_value,slope,intercept))
-
-            #put R2 in the correct spot of the dataframe
-            corr[i][j] = r_value**2
-            corr[j][i] = r_value**2
-
-#            #broken line
-#            slope1, intercept2, r_value3, p_value4, std_err5 = sp.stats.linregress(broke[i].astype(float),broke[j].astype(float))
-#            sortx1 = list(broke[i].astype(float).sort_values())
-#            sorty1 =[]
-#            for n in sortx1:
-#                sorty1.append(n * slope1 + intercept2)
-#            ax.plot(sortx1,sorty1,"r--")
-            
-#            #text
-            texts = [plt.text(res.iloc[k-1][i], res.iloc[k-1][j], k) for k in range(1, res.shape[0] + 1)]
-            adjust_text(texts)
-
-            #legend            
-            chartBox = ax.get_position()            
-            ax.set_position([chartBox.x0, chartBox.y0, chartBox.width*0.8, chartBox.height])
-            ax.legend(loc='upper center', bbox_to_anchor=(1.2, 0.8), shadow=True, ncol=1)
-
-            #save
-            filename = path + "\\" + j.replace(" ","-") + "_" + i.replace(" ","-") + ".png"
-            plt.savefig(filename,format="png")
-            plt.close()
-    heatmap(corr, os.path.dirname(direct))
+#            #make the masks
+#            if i not in mask.columns and j not in mask.columns:
+#                #if the data is not in the exlusion table just make a totally true mask
+#                #otherwise check if only one value is in there
+#                #lastly if both values are on the list, make a mixed list
+#                data = [True] * (res.shape[0])
+#                submask = pd.Series(data, index = res.index, dtype = bool)
+#            elif i in mask.columns and j not in mask.columns:
+#                submask = mask[i]
+#            elif i not in mask.columns and j in mask.columns:
+#                submask = mask[j]
+#            else:
+#                submask = mask[i] & mask[j]
+#
+#            
+#            #exclude the data
+#            exclude = res[~submask]
+#            
+#            crack = res[submask][mask["Crack area"]]
+#            broke = res[submask][~mask["Crack area"]]
+#            
+#            mpl.rcParams["figure.figsize"] = (10,7)
+#            ax.plot(crack[i], crack[j], "b.",label="cracked")
+#            ax.plot(broke[i], broke[j], "r.", label = "broken")
+#            ax.plot(exclude[i],exclude[j],"xk", label = "excluded")
+#            
+#            #make limits nice
+#            xlim = ax.get_xlim()
+#            ax.set_xlim((xlim[0] - 0.05 * xlim[0],xlim[1]+ 0.05 * xlim[1]))
+#            ylim = ax.get_ylim()
+#            ax.set_ylim((ylim[0] - 0.05 * ylim[0], ylim[1] + 0.05 * ylim[1]))
+#            
+#            #labels
+#            ax.set_xlabel(i + " " + unit[i], usetex = True, fontsize = 14)
+#            ax.set_ylabel(j + " " + unit[j], usetex = True, fontsize = 14)
+#            
+#            #grid
+#            plt.grid()
+#            
+#            #linear interpolation
+#            slope, intercept, r_value, p_value, std_err = sp.stats.linregress(crack[i].astype(float),crack[j].astype(float))
+#            sortx = list(crack[i].astype(float).sort_values())
+#            sorty =[]
+#            for m in sortx:
+#                sorty.append(m * slope + intercept)
+#            ax.plot(sortx, sorty,"b--", label="R = %0.04f \nx = %0.04f \ny = %0.04f" %(r_value,slope,intercept))
+#
+#            #put R2 in the correct spot of the dataframe
+#            corr[i][j] = r_value**2
+#            corr[j][i] = r_value**2
+#
+##            #broken line
+##            slope1, intercept2, r_value3, p_value4, std_err5 = sp.stats.linregress(broke[i].astype(float),broke[j].astype(float))
+##            sortx1 = list(broke[i].astype(float).sort_values())
+##            sorty1 =[]
+##            for n in sortx1:
+##                sorty1.append(n * slope1 + intercept2)
+##            ax.plot(sortx1,sorty1,"r--")
+#            
+###            #text
+#            texts = [plt.text(res.iloc[k-1][i], res.iloc[k-1][j], k) for k in range(1, res.shape[0] + 1)]
+#            adjust_text(texts)
+#
+#            #legend            
+#            chartBox = ax.get_position()            
+#            ax.set_position([chartBox.x0, chartBox.y0, chartBox.width*0.8, chartBox.height])
+#            ax.legend(loc='center left', bbox_to_anchor=(1.0, 0.75), ncol=1,fontsize = 14)
+#
+#            #save
+#            filename = path + "\\" + j.replace(" ","-") + "_" + i.replace(" ","-") + ".png"
+#            plt.savefig(filename,format="png")
+#            plt.close()
+#            
+#    #draw a heatmap
+#    heatmap(corr, os.path.dirname(direct))
+    
+    
 
 #make a latex table out of the .csv       
 def results(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\result.csv"):
@@ -647,7 +624,6 @@ def fix_disp(file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\cracked\20
     np.save(file[:-4] + "_fix.npy",array)
     
 def heatmap(df,direct):
-    
     #colormap
     blackoutside = {
             'blue':  ((0.0, 0.0, 0.0),
