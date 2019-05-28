@@ -382,107 +382,107 @@ def allGraphics(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\re
     results(direct)
     #make a mask to filter out everything that is useless
     mask = pd.read_csv(r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\exclude.csv", sep = ";", header = 0, index_col = 0)
-    mask = mask.astype(bool)
+#    mask = mask.astype(bool)
     mask.to_latex(os.path.dirname(direct) + "\\exclude.tex",escape = False)
         
-#    #throw useless info away
-#    res = res.drop(['Broken/Cracked'],axis = 1)
-#
-#    #keep the unit
-#    unit = res.iloc[0]
-#    
-#    #don't need the unit in the data anymore
-#    res = res.drop(res.index[0])
-#    
-#    #make data usable
-#    res = res.astype(float)
-#    
-#    #correlation dataframe
-#    corr = pd.DataFrame(index = res.columns, columns = res.columns, dtype = float)
-#    
-#    #draw all the silly graphics    
-#    for j in res.columns:
-#        
-##        second = second.drop(j,axis = 1)
-#        for i in res.columns:
-#            print(i,j)
-#            ax = plt.subplot(111)
-#            
-#            #make the masks
-#            if i not in mask.columns and j not in mask.columns:
-#                #if the data is not in the exlusion table just make a totally true mask
-#                #otherwise check if only one value is in there
-#                #lastly if both values are on the list, make a mixed list
-#                data = [True] * (res.shape[0])
-#                submask = pd.Series(data, index = res.index, dtype = bool)
-#            elif i in mask.columns and j not in mask.columns:
-#                submask = mask[i]
-#            elif i not in mask.columns and j in mask.columns:
-#                submask = mask[j]
-#            else:
-#                submask = mask[i] & mask[j]
-#
-#            
-#            #exclude the data
-#            exclude = res[~submask]
-#            
-#            crack = res[submask][mask["Crack area"]]
-#            broke = res[submask][~mask["Crack area"]]
-#            
-#            mpl.rcParams["figure.figsize"] = (10,7)
-#            ax.plot(crack[i], crack[j], "b.",label="cracked")
-#            ax.plot(broke[i], broke[j], "r.", label = "broken")
-#            ax.plot(exclude[i],exclude[j],"xk", label = "excluded")
-#            
-#            #make limits nice
-#            xlim = ax.get_xlim()
-#            ax.set_xlim((xlim[0] - 0.05 * xlim[0],xlim[1]+ 0.05 * xlim[1]))
-#            ylim = ax.get_ylim()
-#            ax.set_ylim((ylim[0] - 0.05 * ylim[0], ylim[1] + 0.05 * ylim[1]))
-#            
-#            #labels
-#            ax.set_xlabel(i + " " + unit[i], usetex = True, fontsize = 14)
-#            ax.set_ylabel(j + " " + unit[j], usetex = True, fontsize = 14)
-#            
-#            #grid
-#            plt.grid()
-#            
-#            #linear interpolation
-#            slope, intercept, r_value, p_value, std_err = sp.stats.linregress(crack[i].astype(float),crack[j].astype(float))
-#            sortx = list(crack[i].astype(float).sort_values())
-#            sorty =[]
-#            for m in sortx:
-#                sorty.append(m * slope + intercept)
-#            ax.plot(sortx, sorty,"b--", label="R = %0.04f \nx = %0.04f \ny = %0.04f" %(r_value,slope,intercept))
-#
-#            #put R2 in the correct spot of the dataframe
-#            corr[i][j] = r_value**2
-#            corr[j][i] = r_value**2
-#
-##            #broken line
-##            slope1, intercept2, r_value3, p_value4, std_err5 = sp.stats.linregress(broke[i].astype(float),broke[j].astype(float))
-##            sortx1 = list(broke[i].astype(float).sort_values())
-##            sorty1 =[]
-##            for n in sortx1:
-##                sorty1.append(n * slope1 + intercept2)
-##            ax.plot(sortx1,sorty1,"r--")
-#            
-###            #text
-#            texts = [plt.text(res.iloc[k-1][i], res.iloc[k-1][j], k) for k in range(1, res.shape[0] + 1)]
-#            adjust_text(texts)
-#
-#            #legend            
-#            chartBox = ax.get_position()            
-#            ax.set_position([chartBox.x0, chartBox.y0, chartBox.width*0.8, chartBox.height])
-#            ax.legend(loc='center left', bbox_to_anchor=(1.0, 0.75), ncol=1,fontsize = 14)
-#
-#            #save
-#            filename = path + "\\" + j.replace(" ","-") + "_" + i.replace(" ","-") + ".png"
-#            plt.savefig(filename,format="png")
-#            plt.close()
-#            
-#    #draw a heatmap
-#    heatmap(corr, os.path.dirname(direct))
+    #throw useless info away
+    res = res.drop(['Broken/Cracked'],axis = 1)
+
+    #keep the unit
+    unit = res.iloc[0]
+    
+    #don't need the unit in the data anymore
+    res = res.drop(res.index[0])
+    
+    #make data usable
+    res = res.astype(float)
+    
+    #correlation dataframe
+    corr = pd.DataFrame(index = res.columns, columns = res.columns, dtype = float)
+    
+    #draw all the silly graphics    
+    for j in res.columns:
+        
+#        second = second.drop(j,axis = 1)
+        for i in res.columns:
+            print(i,j)
+            ax = plt.subplot(111)
+            
+            #make the masks
+            if i not in mask.columns and j not in mask.columns:
+                #if the data is not in the exlusion table just make a totally true mask
+                #otherwise check if only one value is in there
+                #lastly if both values are on the list, make a mixed list
+                data = [True] * (res.shape[0])
+                submask = pd.Series(data, index = res.index, dtype = bool)
+            elif i in mask.columns and j not in mask.columns:
+                submask = mask[i]
+            elif i not in mask.columns and j in mask.columns:
+                submask = mask[j]
+            else:
+                submask = mask[i] & mask[j]
+
+            
+            #exclude the data
+            exclude = res[~submask]
+            
+            crack = res[submask][mask["Crack area"]]
+            broke = res[submask][~mask["Crack area"]]
+            
+            mpl.rcParams["figure.figsize"] = (10,7)
+            ax.plot(crack[i], crack[j], "b.",label="cracked")
+            ax.plot(broke[i], broke[j], "r.", label = "broken")
+            ax.plot(exclude[i],exclude[j],"xk", label = "excluded")
+            
+            #make limits nice
+            xlim = ax.get_xlim()
+            ax.set_xlim((xlim[0] - 0.05 * xlim[0],xlim[1]+ 0.05 * xlim[1]))
+            ylim = ax.get_ylim()
+            ax.set_ylim((ylim[0] - 0.05 * ylim[0], ylim[1] + 0.05 * ylim[1]))
+            
+            #labels
+            ax.set_xlabel(i + " " + unit[i], usetex = True, fontsize = 14)
+            ax.set_ylabel(j + " " + unit[j], usetex = True, fontsize = 14)
+            
+            #grid
+            plt.grid()
+            
+            #linear interpolation
+            slope, intercept, r_value, p_value, std_err = sp.stats.linregress(crack[i].astype(float),crack[j].astype(float))
+            sortx = list(crack[i].astype(float).sort_values())
+            sorty =[]
+            for m in sortx:
+                sorty.append(m * slope + intercept)
+            ax.plot(sortx, sorty,"b--", label="R = %0.04f \nx = %0.04f \ny = %0.04f" %(r_value,slope,intercept))
+
+            #put R2 in the correct spot of the dataframe
+            corr[i][j] = r_value**2
+            corr[j][i] = r_value**2
+
+#            #broken line
+#            slope1, intercept2, r_value3, p_value4, std_err5 = sp.stats.linregress(broke[i].astype(float),broke[j].astype(float))
+#            sortx1 = list(broke[i].astype(float).sort_values())
+#            sorty1 =[]
+#            for n in sortx1:
+#                sorty1.append(n * slope1 + intercept2)
+#            ax.plot(sortx1,sorty1,"r--")
+            
+##            #text
+            texts = [plt.text(res.iloc[k-1][i], res.iloc[k-1][j], k) for k in range(1, res.shape[0] + 1)]
+            adjust_text(texts)
+
+            #legend            
+            chartBox = ax.get_position()            
+            ax.set_position([chartBox.x0, chartBox.y0, chartBox.width*0.8, chartBox.height])
+            ax.legend(loc='center left', bbox_to_anchor=(1.0, 0.75), ncol=1,fontsize = 14)
+
+            #save
+            filename = path + "\\" + j.replace(" ","-") + "_" + i.replace(" ","-") + ".png"
+            plt.savefig(filename,format="png")
+            plt.close()
+            
+    #draw a heatmap
+    heatmap(corr, os.path.dirname(direct))
     
     
 
@@ -569,24 +569,24 @@ def make_zero(start,end):
 def nan_helper(y):
   return np.isnan(y), lambda z: z.nonzero()[0]
 
-def fix_disp(file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\cracked\2019-02-20_Rfrs_75_0,5.npy"):
+def fix_disp(file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\cracked\2018-12-10_Rfrs_100_1,5.npy"):
 #open array
     array = np.load(file)
 
     start = findStart(array,cushion=500)
-    end = start + 1500
+    end = start + 2500
     y = array[:,4]
 #
 #
 ##    # fix the first part
-    start1 = start + 883
-    end1 = end - 600
+    start1 = start + 1670
+    end1 = end - 375
     y[start1:end1] = make_zero(start1,end1)
 
 ##    
-    start2 = start + 1250
-    end2 = end - 190
-    y[start2:end2] = make_zero(start2,end2)
+#    start2 = start + 1250
+#    end2 = end - 190
+#    y[start2:end2] = make_zero(start2,end2)
 #    
 #    start3 = start + 1075
 #    end3 = end - 345
@@ -615,8 +615,8 @@ def fix_disp(file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\cracked\20
     y = sig.medfilt(array[start:end,4])
     x = array[start:end,0]
     
-    y1 = sig.medfilt(array[start2:end2,4])
-    x1 = array[start2:end2,0]
+    y1 = sig.medfilt(array[start1:end1,4])
+    x1 = array[start1:end1,0]
     
     plt.grid()
     plt.plot(x,y)

@@ -33,7 +33,7 @@ hend = peak + 80 - start
 
 
 
-plt.ylabel(r"Acceleration [$\frac{m}{s^2}$]")
+plt.ylabel(r"Acceleration \Big[\(\frac{\text{m}}{\text{s}^2}\)\Big]", usetex = True)
 plt.xlabel("Time [$s$]")
 plt.grid()
 time = array[start:end,0]/1000
