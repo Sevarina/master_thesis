@@ -15,9 +15,11 @@ import matplotlib.pyplot as plt
 
 import scipy as sp
 import scipy.signal as sig
+import scipy.integrate as integrate
 from scipy.optimize import curve_fit
 import seaborn as sns
 import math
+
 import os
 import re
 import pandas as pd
@@ -38,6 +40,7 @@ mpl.rcParams['font.sans-serif'] = "Arial"
 mpl.rcParams['font.family'] = "sans-serif"
 mpl.rcParams['mathtext.default']='default'
 
+###############################################################
 
 #run all the things we really want on all files
 def doAllFiles(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data"):
@@ -57,17 +60,18 @@ def doAllFiles(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data"):
     app.close()
     
     #write the seed for the appendix
-    res.write("Name;Energy level;Thickness;Drop height;Age;Velocity;Force;Acceleration;Displacement;Broken/Cracked;Crack area;Opening angle\n")
-    res.write(r"nan;\([\text{kJ}]\);\([\text{mm}]\);\([\text{mm}]\);\([\text{days}]\);\(\big[\frac{\text{m}}{\text{s}}\big]\);\([\text{kN}]\);\(\Big[\frac{\text{m}}{\text{s}^\text{2}}\Big]\);\([\text{mm}]\);nan;\([\text{mm}^\text{2}]\);\([\text{\textdegree}]\)"+ "\n")
+    res.write("Name;Number;Energy level;Thickness;Drop weight;Drop height;Age;Velocity;Force;Acceleration;Displacement;Broken/Cracked;Crack area;Opening angle\n")
+    res.write(r" ; ;\([\text{kJ}]\);\([\text{mm}]\);\([\text{kg}]\);\([\text{mm}]\);\([\text{days}]\);\(\big[\frac{\text{m}}{\text{s}}\big]\);\([\text{kN}]\);\(\Big[\frac{\text{m}}{\text{s}^\text{2}}\Big]\);\([\text{mm}]\); ;\([\text{mm}^\text{2}]\);\([\text{\textdegree}]\)"+ "\n")
     res.close()
+    k = 1
     for root, folders, files in os.walk(direct):
         for file in files:
             if file[-3:].lower() == "npy":
                 path = root+"\\"+file
                 if os.path.isfile(path):
-                    print(file)
-                    Everything(path,direct)
-    
+                    print(file)           
+                    Everything(path,direct,k)
+                    k += 1
     #draw all the Graphs
     allGraphics(respath)
 
@@ -80,7 +84,7 @@ def add_list(lst,thing,rnd=0,sep=";"):
 #    .replace(".",",")
        
 #alternate Everything for .npy files    
-def Everything(file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\cracked\2018-11-29_Rfrs_75_1,0.npy",direct=""):
+def Everything(file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\cracked\2018-11-29_Rfrs_75_1,0.npy",direct="",k = 1):
 #change directory
     if direct == "":    
         os.chdir(os.path.dirname(file))        
@@ -127,14 +131,20 @@ def Everything(file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\cracked\
     #name
     add_list(text,os.path.basename(file)[:-4].replace("_","\_"))
     
+    #legend
+    add_list(text,k)
+        
     #energy level
-    weig = ponder.loc["weight"]
+    weig = ponder.loc["Drop weight"]
     heig = dropheight(array)
     add_list(text,energy(heig,weig),2) 
 
     #thickness
     add_list(text,ponder.loc["thickness"])
-#    text.append(str(ponder.loc["thickness"]) + ";")    
+#    text.append(str(ponder.loc["thickness"]) + ";") 
+    
+    #drop weight
+    add_list(text,weig,0)
 
     #drop height
     add_list(text,heig,1)
@@ -368,6 +378,13 @@ def broken(path):
 
 #create every graphic imaginable
 #make a legend to compare names with numbers
+        
+def ex_in_clude(boolean):
+    if boolean == True:
+        return ""
+    else:
+        return "faulty"
+
 def allGraphics(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\result.csv"):
     #where to save stuff
     path = os.path.dirname(direct) + "\\Diagram"
@@ -378,111 +395,119 @@ def allGraphics(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\re
     
     #write a legend    
     write_legend(direct,res.drop(res.index[0]))
+    
     #make a latex table
     results(direct)
+    
     #make a mask to filter out everything that is useless
-    mask = pd.read_csv(r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\exclude.csv", sep = ";", header = 0, index_col = 0)
-#    mask = mask.astype(bool)
-    mask.to_latex(os.path.dirname(direct) + "\\exclude.tex",escape = False)
-        
-    #throw useless info away
-    res = res.drop(['Broken/Cracked'],axis = 1)
-
-    #keep the unit
-    unit = res.iloc[0]
+    mask = pd.read_csv(r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\exclude.csv", sep = ";", header = 0, index_col = 0)
+    mask = mask.astype(bool)
+    excl = mask.rename(index = str, columns={"Force":"Loadcells","Acceleration":"Accelerometer","Displacement":"Laser sensor","Vertical acceleration of sample":"Additional accelerometer vertical","Horizontal acceleration of sample":"Additional accelerometer horizontal"})
+    excl_accl = excl[["Additional accelerometer vertical","Additional accelerometer horizontal"]].loc["2019-02-20\_Rfrs\_75\_0,5":]
+    excl = excl.drop(["Opening angle","Crack area","Additional accelerometer vertical","Additional accelerometer horizontal"], axis = 1)
     
-    #don't need the unit in the data anymore
-    res = res.drop(res.index[0])
-    
-    #make data usable
-    res = res.astype(float)
-    
-    #correlation dataframe
-    corr = pd.DataFrame(index = res.columns, columns = res.columns, dtype = float)
-    
-    #draw all the silly graphics    
-    for j in res.columns:
-        
-#        second = second.drop(j,axis = 1)
-        for i in res.columns:
-            print(i,j)
-            ax = plt.subplot(111)
-            
-            #make the masks
-            if i not in mask.columns and j not in mask.columns:
-                #if the data is not in the exlusion table just make a totally true mask
-                #otherwise check if only one value is in there
-                #lastly if both values are on the list, make a mixed list
-                data = [True] * (res.shape[0])
-                submask = pd.Series(data, index = res.index, dtype = bool)
-            elif i in mask.columns and j not in mask.columns:
-                submask = mask[i]
-            elif i not in mask.columns and j in mask.columns:
-                submask = mask[j]
-            else:
-                submask = mask[i] & mask[j]
-
-            
-            #exclude the data
-            exclude = res[~submask]
-            
-            crack = res[submask][mask["Crack area"]]
-            broke = res[submask][~mask["Crack area"]]
-            
-            mpl.rcParams["figure.figsize"] = (10,7)
-            ax.plot(crack[i], crack[j], "b.",label="cracked")
-            ax.plot(broke[i], broke[j], "r.", label = "broken")
-            ax.plot(exclude[i],exclude[j],"xk", label = "excluded")
-            
-            #make limits nice
-            xlim = ax.get_xlim()
-            ax.set_xlim((xlim[0] - 0.05 * xlim[0],xlim[1]+ 0.05 * xlim[1]))
-            ylim = ax.get_ylim()
-            ax.set_ylim((ylim[0] - 0.05 * ylim[0], ylim[1] + 0.05 * ylim[1]))
-            
-            #labels
-            ax.set_xlabel(i + " " + unit[i], usetex = True, fontsize = 14)
-            ax.set_ylabel(j + " " + unit[j], usetex = True, fontsize = 14)
-            
-            #grid
-            plt.grid()
-            
-            #linear interpolation
-            slope, intercept, r_value, p_value, std_err = sp.stats.linregress(crack[i].astype(float),crack[j].astype(float))
-            sortx = list(crack[i].astype(float).sort_values())
-            sorty =[]
-            for m in sortx:
-                sorty.append(m * slope + intercept)
-            ax.plot(sortx, sorty,"b--", label="R = %0.04f \nx = %0.04f \ny = %0.04f" %(r_value,slope,intercept))
-
-            #put R2 in the correct spot of the dataframe
-            corr[i][j] = r_value**2
-            corr[j][i] = r_value**2
-
-#            #broken line
-#            slope1, intercept2, r_value3, p_value4, std_err5 = sp.stats.linregress(broke[i].astype(float),broke[j].astype(float))
-#            sortx1 = list(broke[i].astype(float).sort_values())
-#            sorty1 =[]
-#            for n in sortx1:
-#                sorty1.append(n * slope1 + intercept2)
-#            ax.plot(sortx1,sorty1,"r--")
-            
-##            #text
-            texts = [plt.text(res.iloc[k-1][i], res.iloc[k-1][j], k) for k in range(1, res.shape[0] + 1)]
-            adjust_text(texts)
-
-            #legend            
-            chartBox = ax.get_position()            
-            ax.set_position([chartBox.x0, chartBox.y0, chartBox.width*0.8, chartBox.height])
-            ax.legend(loc='center left', bbox_to_anchor=(1.0, 0.75), ncol=1,fontsize = 14)
-
-            #save
-            filename = path + "\\" + j.replace(" ","-") + "_" + i.replace(" ","-") + ".png"
-            plt.savefig(filename,format="png")
-            plt.close()
-            
-    #draw a heatmap
-    heatmap(corr, os.path.dirname(direct))
+    excl_format = [ex_in_clude] * len(excl.columns)
+    excl_accl_format = [ex_in_clude] * len(excl_accl.columns)
+    excl.to_latex(os.path.dirname(direct) + "\\exclude.tex",formatters = excl_format, escape = False,na_rep=" ")
+    excl_accl.to_latex(os.path.dirname(direct) + "\\exclude_accel.tex",formatters = excl_accl_format, escape = False,na_rep=" ")
+#    #throw useless info away
+#    res = res.drop(['Broken/Cracked'],axis = 1)
+#
+#    #keep the unit
+#    unit = res.iloc[0]
+#    
+#    #don't need the unit in the data anymore
+#    res = res.drop(res.index[0])
+#    
+#    #make data usable
+#    res = res.astype(float)
+#    
+#    #correlation dataframe
+#    corr = pd.DataFrame(index = res.columns, columns = res.columns, dtype = float)
+#    
+#    #draw all the silly graphics    
+#    for j in res.columns:
+#        
+##        second = second.drop(j,axis = 1)
+#        for i in res.columns:
+#            print(i,j)
+#            ax = plt.subplot(111)
+#            
+#            #make the masks
+#            if i not in mask.columns and j not in mask.columns:
+#                #if the data is not in the exlusion table just make a totally true mask
+#                #otherwise check if only one value is in there
+#                #lastly if both values are on the list, make a mixed list
+#                data = [True] * (res.shape[0])
+#                submask = pd.Series(data, index = res.index, dtype = bool)
+#            elif i in mask.columns and j not in mask.columns:
+#                submask = mask[i]
+#            elif i not in mask.columns and j in mask.columns:
+#                submask = mask[j]
+#            else:
+#                submask = mask[i] & mask[j]
+#
+#            #exclude the data
+#            exclude = res[~submask]
+#            
+#            crack = res[submask][mask["Crack area"]]
+#            broke = res[submask][~mask["Crack area"]]
+#            
+#            mpl.rcParams["figure.figsize"] = (10,7)
+#            ax.plot(crack[i], crack[j], "b.",label="cracked")
+#            ax.plot(broke[i], broke[j], "r.", label = "broken")
+#            ax.plot(exclude[i],exclude[j],"xk", label = "excluded")
+#            
+#            #make limits nice
+#            xlim = ax.get_xlim()
+#            ax.set_xlim((xlim[0] - 0.05 * xlim[0],xlim[1]+ 0.05 * xlim[1]))
+#            ylim = ax.get_ylim()
+#            ax.set_ylim((ylim[0] - 0.05 * ylim[0], ylim[1] + 0.05 * ylim[1]))
+#            
+#            #labels
+#            print(i, unit[i])
+#            ax.set_xlabel(i + " " + unit[i], usetex = True, fontsize = 14)
+#            ax.set_ylabel(j + " " + unit[j], usetex = True, fontsize = 14)
+#            
+#            #grid
+#            plt.grid()
+#            
+#            #linear interpolation
+#            slope, intercept, r_value, p_value, std_err = sp.stats.linregress(crack[i].astype(float),crack[j].astype(float))
+#            sortx = list(crack[i].astype(float).sort_values())
+#            sorty =[]
+#            for m in sortx:
+#                sorty.append(m * slope + intercept)
+#            ax.plot(sortx, sorty,"b--", label="R = %0.04f \nx = %0.04f \ny = %0.04f" %(r_value,slope,intercept))
+#
+#            #put R2 in the correct spot of the dataframe
+#            corr[i][j] = r_value**2
+#            corr[j][i] = r_value**2
+#
+##            #broken line
+##            slope1, intercept2, r_value3, p_value4, std_err5 = sp.stats.linregress(broke[i].astype(float),broke[j].astype(float))
+##            sortx1 = list(broke[i].astype(float).sort_values())
+##            sorty1 =[]
+##            for n in sortx1:
+##                sorty1.append(n * slope1 + intercept2)
+##            ax.plot(sortx1,sorty1,"r--")
+#            
+###            #text
+#            texts = [plt.text(res.iloc[k-1][i], res.iloc[k-1][j], k) for k in range(1, res.shape[0] + 1)]
+#            adjust_text(texts)
+#
+#            #legend            
+#            chartBox = ax.get_position()            
+#            ax.set_position([chartBox.x0, chartBox.y0, chartBox.width*0.8, chartBox.height])
+#            ax.legend(loc='center left', bbox_to_anchor=(1.0, 0.75), ncol=1,fontsize = 14)
+#
+#            #save
+#            filename = path + "\\" + j.replace(" ","-") + "_" + i.replace(" ","-") + ".png"
+#            plt.savefig(filename,format="png")
+#            plt.close()
+#            
+#    #draw a heatmap
+#    heatmap(corr, os.path.dirname(direct))
     
     
 
@@ -491,17 +516,26 @@ def results(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\result
     
     #result file
     res = pd.read_csv(direct,sep=";",header=[0,1])
+    
+
     ## format latex table
     form = column_format(len(res.columns))
     ## format numbers with thousand separator . and decimal separator ,
     decimal = [number_format] * len(res.columns)
     res.fillna(0, inplace = True)
-    
     res.to_latex(os.path.dirname(direct) + "\\result.tex",na_rep="", formatters = decimal, column_format = form, escape=False, index=False)
-
+    
+    #test_values
+    test_values = res[["Number","Name","Energy level", "Thickness", "Drop weight", "Drop height", "Age"]]
+    test_values.to_latex(os.path.dirname(direct) + "\\test_values.tex",na_rep="", formatters = decimal, column_format = form, escape=False, index=False)
+    
+    #short_result
+    short_result = res[["Number","Name","Velocity", "Force", "Acceleration", "Displacement", "Broken/Cracked", "Crack area", "Opening angle"]]
+    short_result.to_latex(os.path.dirname(direct) + "\\short_result.tex",na_rep="", formatters = decimal, column_format = form, escape=False, index=False)
+    
     #just cracks
-    crack = res[res["Broken/Cracked","nan"] == "cracked"]
-    cracks = crack.drop(["Broken/Cracked","nan"], axis=1,level = 0)
+    crack = res[res["Broken/Cracked"," "] == "cracked"]
+    cracks = crack.drop(["Broken/Cracked"," "], axis=1,level = 0)
     ## format numbers with thousand separator . and decimal separator ,
     form = column_format(len(crack.columns))
     decimal = [number_format] * len(crack.columns)    
@@ -649,3 +683,97 @@ def heatmap(df,direct):
     plt.tight_layout()
     fig = sns_plot.get_figure()
     fig.savefig(direct + r"\heatmap.png")
+    
+def helpline(start,end,offset,array):
+    hline = np.ones((end-start,))
+    for i in range(end-start):
+        hline[i] = offset * i / (end - start)
+    for j in range(start,end):
+        array[j] = array[j] + hline[j - start]
+    return array
+
+
+def extra_accel(file="C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\extraAccel\\2019-02-20_Rfrs_100_0,5_vertical.npy"):
+    mpl.rcParams["figure.figsize"] = (8,5)
+    array = np.load(file)
+    peak = np.argmax(array[:,1])
+    
+    ##off set coordinates
+    #for 2019-04-16_Rfrs_75_0,5_horizontal and vertical
+    #start = peak - 10
+    #end = peak + 150
+    #hstart = peak - 5 - start
+    #hend = peak + 80 - start
+    
+    #for 2019-02-20_Rfrs_100_1,0_vertical
+    #start = peak - 25
+    #end = peak + 500
+    #hstart = peak - 20 - start
+    #hend = peak + 185 - start
+    
+    #for 2019-02-20_Rfrs_100_0,5_vertical
+    start = peak - 25
+    end = peak + 200
+    hstart = peak - 20 - start
+    hend = peak + 170 - start
+    
+    time = array[start:end,0]
+    accel = array[start:end,1]
+    
+    velo = integrate.cumtrapz(accel,x = time,initial = 0)
+    hine = helpline(hstart,hend,-0.15,velo)
+    hine[hend:] = sig.detrend(hine[hend:])
+    
+    disp = integrate.cumtrapz(hine,initial = 0)
+    #disp = integrate.cumtrapz(velo,initial = 0)
+    
+    
+    
+    # ACCEL
+    plt.plot(time,accel)
+    plt.xlabel("Time [s]")
+    plt.ylabel(r"Acceleration \Big[\(\frac{\text{m}}{\text{s}^2}\)\Big]", usetex=True)
+    plt.grid()
+    plt.savefig(file[:-4] + "_acceleration.png")
+    plt.close()
+    
+    # VELOCITY
+    
+    plt.plot(time,velo)
+    #plt.plot(time,hine)
+    plt.grid()
+    plt.xlabel("Time [s]")
+    plt.ylabel(r"Velocity \big[\(\frac{\text{m}}{\text{s}}\)\big]", usetex=True)
+    plt.savefig(file[:-4] + "_velocity.png")
+    plt.close()
+    #
+    ### DISPLACEMENT
+    plt.plot(time,disp)
+    plt.xlabel("Time [s]")
+    plt.ylabel(r"Displacement [mm]")
+    plt.grid()
+    plt.savefig(file[:-4] + "_displacement.png")
+    plt.close()
+    
+def replace_(string):
+#    print(type(string))
+    if type(string) == str:
+        string = string.replace("_","\_")
+    return string
+
+def minitables():
+    aray = pd.read_csv(r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\result.csv",sep=";",index_col = 0)
+    bray = pd.ExcelFile(r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\panda.xlsx").parse(skiprows=4, index_col ="Name")
+    
+    bray = bray["Drop weight"]
+    
+    helpy = {}
+    for i in bray.index:
+        helpy.update({i:replace_(i)})
+    
+    bray = bray.rename(index = helpy)
+    aray = aray[["Thickness","Drop height", "Broken/Cracked"]]
+    
+    aray.insert(1, column = "Drop weight",value = bray)
+    
+    aray.iloc[[0,1,2]].to_latex(r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\try.tex", escape = False, na_rep="", decimal = ".")

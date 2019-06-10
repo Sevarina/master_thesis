@@ -1,66 +1,142 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue May 21 14:12:35 2019
-
-@author: kekaun
-"""
 import numpy as np
+import statistics as stat
+import matplotlib as mpl
+#make all plots look nice
+mpl.style.use('classic')
+from matplotlib import rc
 import matplotlib.pyplot as plt
-import scipy.integrate as integrate
+
+import scipy as sp
 import scipy.signal as sig
+import scipy.integrate as integrate
+from scipy.optimize import curve_fit
+import seaborn as sns
+import math
 
-def helpline(start,end,offset,array):
-    hline = np.ones((end-start,))
-    for i in range(end-start):
-        hline[i] = offset * i / (end - start)
-    for j in range(start,end):
-        array[j] = array[j] + hline[j - start]
-    return array
+import os
+import re
+import pandas as pd
+from adjustText import adjust_text
+import locale
+locale.setlocale(locale.LC_ALL, 'deu_deu')
 
-file="C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\extraAccel\\2019-04-16_Rfrs_75_0,5_vertical.npy"
+
+
+#rc('text', usetex=True)
+
+#rc('text.latex', preamble=r'\usepackage{helvet}\renewcommand\familydefault{\sfdefault}')
+mpl.rcParams['text.latex.preamble'] = [r'\usepackage{helvet}\renewcommand\familydefault{\sfdefault}', r'\usepackage{amsmath}' , r'\usepackage[T1]{fontenc}'] 
+
+#"fix" matplotlib font - it´s arial instead of helvetica but better than nothing
+#plt.rcParams['mathtext.fontset'] = 'custom'
+mpl.rcParams['font.sans-serif'] = "Arial"
+mpl.rcParams['font.family'] = "sans-serif"
+mpl.rcParams['mathtext.default']='default'
+
+
+
+file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\cracked\2018-11-29_Rfrs_75_1,0.npy"
+
+#open array
 array = np.load(file)
-peak = np.argmax(array[:,1])
-
-#2019-04-16_Rfrs_75_0,5_horizontal
-##total coordinates 
-start = peak - 10
-end = peak + 500
-
-##off set coordinates
-hstart = peak - 5 - start
-hend = peak + 80 - start
 
 
-
-
-plt.ylabel(r"Acceleration \Big[\(\frac{\text{m}}{\text{s}^2}\)\Big]", usetex = True)
-plt.xlabel("Time [$s$]")
+# plot accel
+#    x = array[startAccel:startAccel+lenAccel,0]
+#    accel = sig.medfilt(array[startAccel:startAccel+lenAccel,5])
+x = array[:,0]
+print(array.shape)
+#accel = array[5815216:5915216,5]
+#plt.plot(accel)
+plt.plot(array[:,5])
+bottom,top = plt.ylim()
+if bottom < - 1000:
+    plt.ylim(bottom=-1000)
+plt.ylabel(r"Acceleration \Big[\(\frac{\text{m}}{\text{s}^2}\)\Big]", usetex=True)
+plt.xlabel(r"Time \([\text{s}]\)", usetex=True)
+#    plt.title("Acceleration")
 plt.grid()
-time = array[start:end,0]/1000
-#plt.plot(time,array[start:end,1])
-
-
-
-#    dx=0.0001
-#    x = time
-
-velo = integrate.cumtrapz(array[start:end,1],x = time,initial = 0)
-
-hine = helpline(hstart,hend,0.02,velo)
-hine[hend:] = sig.detrend(hine[hend:])
-
-disp = integrate.cumtrapz(hine,x = time,initial = 0)
-#nuvelo = velo + hine
-#nudisp =  sig.detrend(disp)
-#    peak = np.argmax(array[:,1])
-#nuvelo = sig.detrend(velo,type="linear")
-#plt.plot(hine)
-#plt.plot(time,velo)
-#plt.plot(time,hine)
-plt.plot(time,disp)
-#plt.plot(time,nudisp)
-plt.show()
-#    plt.savefig(file[:-4] + ".png")
 
 
     
+###   plot calc velocity
+##    x = range(0,200)
+##    y = velo
+##    plt.plot(x,y)
+##    plt.ylabel(r"Calculated Velocity [$m/s$]")
+##    plt.xlabel("Time [$s$]")
+##    plt.title("Calculated Velocity")
+##    plt.grid()
+##    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "//Vel.png")
+##    plt.close()
+##   write_appendix(app,os.path.basename(file)[:-4] + "/Vel.png")
+#        
+##    load cells
+#    x = array[startLoad:startLoad+lenLoad,0]
+##    x = array[startLoad+950:startLoad+1020,0]
+#    for i in range(1,4):
+#        plt.xlabel(r"Time \([\text{s}]\)", usetex=True)
+#        plt.ylabel(r"Load \([\text{kN}]\)", usetex=True)
+#        y = sig.medfilt(array[startLoad:startLoad+lenLoad,i])
+##        y = f[:,i]
+#        plt.plot(x,y)
+##        plt.title(os.path.basename(file)[:-4] + " Loadcell " + str(i))
+#        plt.grid()
+#        plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "//Loadcell" + str(i) + ".png")
+#        plt.close()
+#        write_appendix(app,os.path.basename(file)[:-4] + "/Loadcell" + str(i) + ".png", "Loadcell " + str(i))
+#        
+##    plot sum of all loadcells    
+#    y = sig.medfilt(loadsum)
+##    a,b = first_peak(loadsum)
+##    c,d = last_peak(loadsum,a)
+#    plt.plot(x,y)
+##   TO DO, fix those fucks!
+##    plt.plot(a,array[b+startLoad][0],"r.")
+##    plt.plot(c,array[d+startLoad][0],"b.")
+##    plt.title("Sum of all Loadcells")
+#    plt.xlabel(r"Time \([\text{s}]\)", usetex=True)
+#    plt.ylabel(r"Load \([\text{kN}]\)", usetex=True)
+#    plt.grid()
+#    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "//Loadcellsum.png")
+#    plt.close()
+#    write_appendix(app,os.path.basename(file)[:-4]+ "/Loadcellsum.png","Sum of all loadcells")
+#    
+###   plot impulse 
+##    print(loadsum.shape)
+##    print(x.shape)
+##    y = sp.integrate.cumtrapz(loadsum[a:c],x[a:c],initial = 0)*1000
+##    plt.plot(x[a:c],y)
+##    plt.ylabel(r"Impulse [$Ns$]")
+##    plt.xlabel("Time [$s$]")
+##    plt.title("Impulse")
+##    plt.grid()
+##    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "//imp.png")
+##    plt.close()
+##    write_appendix(app,os.path.basename(file)[:-4] + "/imp.png")
+##     
+## plot laser
+#    y = sig.medfilt(array[startLoad:startLoad+2000,4])
+#    x = array[startLoad:startLoad+2000,0]
+#    plt.plot(x,y)
+#    bottom,top= plt.ylim()
+#    if bottom < -100 and top > -100:
+#        plt.ylim(bottom=-100)
+#    plt.xlabel(r"Time \([\text{kN}]\)", usetex=True)
+#    plt.ylabel(r"Displacement \([\text{mm}]\)", usetex=True)
+#    plt.grid()
+#    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "/displacement.png")
+#    plt.close()
+#    write_appendix(app,os.path.basename(file)[:-4] + "/displacement.png","Displacement")    
+
+
+# format numbers with thousand separator . and decimal separator ,
+def number_format(number):
+    if number == 0:
+        return ""
+    if type(number) == str:
+        return number
+    else:
+        return "{:n}".format(number)
+    
+    decimal = [number_format] * len(res.columns)
