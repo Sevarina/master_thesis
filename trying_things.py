@@ -129,14 +129,3 @@ plt.grid()
 #    plt.close()
 #    write_appendix(app,os.path.basename(file)[:-4] + "/displacement.png","Displacement")    
 
-
-# format numbers with thousand separator . and decimal separator ,
-def number_format(number):
-    if number == 0:
-        return ""
-    if type(number) == str:
-        return number
-    else:
-        return "{:n}".format(number)
-    
-    decimal = [number_format] * len(res.columns)
