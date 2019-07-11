@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+#! python
 """
 Created on Wed Mar 27 08:00:20 2019
 
@@ -15,12 +15,11 @@ while True:
         break
 
 for root, folders, files in os.walk(i):
-#    for folder in folders:
-#        if os.path.isdir(root + "\\" + folder + "\\tikz\\standalone"):
-#            os.remove(root + "\\" + folder + "\\tikz\\standalone")
-    if os.path.isdir(root[0] +"\\tikz\\standalone") == False:
-        os.makedirs(root[0] +"\\tikz\\standalone")
-        print(root[0] +"\\tikz\\standalone")
+    print(i +"\\tikz\\standalone")
+    
+    if os.path.isdir(i +"\\tikz\\standalone") == False:
+        os.makedirs(i +"\\tikz\\standalone")
+#        print(root[0] +"\\tikz\\standalone")
     for file in files:
 #        if file[-15:] == "_standalone.tex":
 #            os.remove(root + "\\" + file)

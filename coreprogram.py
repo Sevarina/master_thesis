@@ -42,105 +42,222 @@ mpl.rcParams['mathtext.default']='default'
 
 ###############################################################
 
+#contains everything you need from a dataset
+class Dataset:
+    def __init__(self, filename, type = "Round"):
+        self.name = os.path.basename(filename)[:-4]
+        self.array = np.load(filename)
+        self.type = type
+        
+        # 3  load cells
+        if type == "Round":
+            indizes = {
+                    "time":0,
+                    "load":(1,2,3),
+                    "laser":4,
+                    "accelerometer":5,
+                    "magnetventil":6,
+                    "telfer_reset":7,
+                    "distance_up":8,
+                    "distance_down":9}
+        
+        # 4 load cells
+        if type == "Square":
+            indizes = {
+                    "time":0,
+                    "load":(1,2,3,4),
+                    "laser":5,
+                    "accelerometer":6,
+                    "magnetventil":7,
+                    "telfer_reset":8,
+                    "distance_up":9,
+                    "distance_down":10}
+            
+        self.indizes = indizes
+        
+        start_accel, end_accel, start_load, end_load, start_laser, end_laser = calc_scope(self.array)
+        
+        #define datasets
+        self.load = self.array[start_load:end_load,self.indizes["load"]]
+        self.laser = self.array[start_laser:end_laser,self.indizes["laser"]]
+        self.accel = self.array[start_accel:end_accel,self.indizes["accelerometer"]]
+        #calculate loadcellsum from loadcells
+        loadcells = self.load
+        self.loadsum = np.sum(loadcells,axis=1)
+        
+        #define corresponding time
+        self.load_time = self.array[start_load:end_load,self.indizes["time"]]
+        self.laser_time = self.array[start_laser:end_laser,self.indizes["time"]]
+        self.accel_time = self.array[start_accel:end_accel,self.indizes["time"]]
+        
+
+    def peak_loads(self):
+        peak_list = []
+        for i in self.load.shape[1]:
+            peak_list.append(filtered_peak[self.load[:,i]])
+        return peak_list
+        
+    def peak_deformation(self):
+        return filtered_peak(self.laser)
+    
+    def peak_accel(self):
+        return filtered_peak(self.accel)
+        
+    def get_dropheight(self):
+        #m has a sampling rate of 10kHz, but the telfer of just 1 Hz
+        m = int(np.argmax(self.array[:,self.indizes["magnetventil"]])/10000)
+        u = np.nanargmax(self.array[m:,self.indizes["distance_up"]])
+        up = self.array[u+m,self.indizes["distance_up"]]
+        d = np.nanargmax(self.array[m:,self.indizes["distance_down"]])
+        down = self.array[d+m,self.indizes["distance_down"]]
+        return up - down           
+        
+    def make_graphs(self,res_path,appendix_bool):
+        if appendix_bool:
+            app_path = os.path.dirname(res_path) + "\\appendix.tex"
+            app = open(app_path, "a")
+        
+        # plot accel
+        plot(res_path,x = self.accel_time, y = self.accel ,xlabel= r"Time \([\text{s}]\)",ylabel= r"Acceleration \Big[\(\frac{\text{m}}{\text{s}^2}\)\Big]",name="Acceleration", limit = (-1000,-1),appendix = app)
+            
+    ##   plot calc velocity
+    #    velo_time = accel_time
+    #    velo = integrate.cumtrapz(accel,velo_time,initial = 0)
+    #    plot(res_path,x = velo_time, y = velo ,xlabel= r"Time \([\text{s}]\)",ylabel= r"Calculated Velocity \Big[\(\frac{\text{m}}{\text{s}}\)\Big]", name="Velocity")
+    #
+    ##   plot calc velocity
+    #    disp = integrate.cumtrapz(velo,velo_time,initial = 0) * 100
+    #    disp_time = accel_time
+    #    plot(res_path,x = disp_time, y = disp ,xlabel= r"Time \([\text{s}]\)",ylabel=r"Calculated Displacement \([\text{mm}]\)", name="Calc_Displacement")
+    
+            
+    #    plot individual load cells
+        for i in self.indizes["load"]:
+            plot(res_path,x = self.load_time, y = self.load ,xlabel= r"Time \([\text{s}]\)",ylabel=r"Load \([\text{kN}]\)", name="Loadcell" + str(i))
+            
+    #    plot sum of all loadcells
+        plot(res_path,x = self.load_time, y = self.loadsum ,xlabel= r"Time \([\text{s}]\)",ylabel=r"Load \([\text{kN}]\)", name="Loadcell_sum")
+    
+    # plot laser
+        plot(res_path,x = self.laser_time, y = self.laser ,xlabel= r"Time \([\text{s}]\)",ylabel=r"Displacement \([\text{mm}]\)", name="Laser_Displacement", limit=(-100,-1))
+
 #run all the things we really want on all files
-def doAllFiles(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data"):
+def calc(data=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\basic_array", results=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results" , extra_accel=False):
+    #go to the right directory - save time
+    os.chdir(data)
     
-    #go to the right directory - save time        
-    os.chdir(direct)        
-    os.chdir("..")
-    
+    #do you want to calculate with the normal sensor array or for the extra accelerometers
+    if extra_accel == False:
+        calc_basic_array(data, results)
+    else:
+        calc_extra_accel()
+
+    #calculate basic array
+def calc_basic_array(data,results):
+    res_file = make_result_file(results)
+    app_file = make_appendix_file(results)
+    df = open_df(data)
+    iterate_over(data,results,df,res_file,app_file)
+    draw_diagrams(results,df,data)
+
+def make_result_file(results):    
     #open results file
-    respath = r".\Results\result.csv"
-    res = open(respath,"w")
-    
-    #open appendix file
-    apppath = r".\Results\appendix.tex"
-    app = open(apppath,"w")
-    app.write("\includepdf[pages=-]{appendix/lacing.pdf}")
-    app.close()
-    
-    #write the seed for the appendix
+    res_path = results + r"\result.csv"
+    res = open(res_path,"w")
+
+    #write column titles
     res.write("Name;Number;Energy level;Thickness;Drop weight;Drop height;Age;Velocity;Force;Acceleration;Displacement;Broken/Cracked;Crack area;Opening angle\n")
     res.write(r" ; ;\([\text{kJ}]\);\([\text{mm}]\);\([\text{kg}]\);\([\text{mm}]\);\([\text{days}]\);\(\big[\frac{\text{m}}{\text{s}}\big]\);\([\text{kN}]\);\(\Big[\frac{\text{m}}{\text{s}^\text{2}}\Big]\);\([\text{mm}]\); ;\([\text{mm}^\text{2}]\);\([\text{\textdegree}]\)"+ "\n")
-    res.close()
-    k = 1
+    return res
+    
+def make_appendix_file(results):
+    #open appendix file
+    app_path = results + r"\appendix.tex"
+    app = open(app_path,"w")
+    
+    #write appendix
+    app.write("\includepdf[pages=-]{appendix/lacing.pdf}")
+    return app
+    
+def iterate_over(direct,results,df,res_file,app_file):    
+    #iterate over file 
     for root, folders, files in os.walk(direct):
         for file in files:
             if file[-3:].lower() == "npy":
                 path = root+"\\"+file
                 if os.path.isfile(path):
                     print(file)           
-                    Everything(path,direct,k)
-                    k += 1
-    #draw all the Graphs
-    allGraphics(respath)
+                    calc_single_file(path,results,df,res_file,app_file)
+    res_file.close()
+    app_file.close()
 
-    #help function, makes it easier to add to a list
-def add_list(lst,thing,rnd=0,sep=";"):
-    if isinstance(thing,str):
-        lst.append(thing + sep)
-    else:
-        lst.append(str(np.round(thing,rnd))+sep)
-#    .replace(".",",")
-       
-#alternate Everything for .npy files    
-def Everything(file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\cracked\2018-11-29_Rfrs_75_1,0.npy",direct="",k = 1):
-#change directory
-    if direct == "":    
-        os.chdir(os.path.dirname(file))        
-        os.chdir("..")
-        os.chdir("..")
-
-#open array
-    array = np.load(file)
-
-##correct values
-    startLoad = findStart(array,cushion=500)
-    startAccel = startLoad
-    lenAccel = 1500
-    lenLoad = 1500
+#try which format the cell has
+def table_format(c):
+    cell = str(c)
+    if cell == "":
+        return np.nan
+    if "," in cell:
+        return float(cell.replace(",","."))
+    if "." in cell:
+        return float(cell)
+    if cell.isdigit():
+        return int(cell)
+    return cell
     
-#####play values ###############
-#    startLoad, startAccel = 0,0 
-##    startLoad, startAccel = 1000 * 2585, 1000 * 2585
-##    lenAccel = 4000 
-##    lenLoad = 4000
-#    lenAccel = array.shape[0] - startLoad
-#    lenLoad = array.shape[0] - startLoad
-###    lasStart = las_start(array)
-###########################
-    
-#open meta data
-    ponder = panda_fun(filename=os.path.basename(file)[:-4])
 
-#make a folder for each file
-    if os.path.isdir(".\Results\\" +  os.path.basename(file[:-4])) == False:
-        os.mkdir(".\Results\\" +  os.path.basename(file[:-4]))
-        
-    respath = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\result.csv"   
-    result = open(respath,"a")
+def open_df(data):
+    excel_path = make_meta_path(data) + r"\test_data.xlsx"
+    table_dtype = {"Age" : table_format, "Drop weight" : table_format, "Thickness": table_format, "Cracked/broken" : table_format, "Crack area" : table_format, "Opening angle" : table_format}
+    table = pd.read_excel(excel_path, header = 0, index_col = "Name", converters  = table_dtype)
+    return table
+
+def make_meta_path(data):
+    path = data.split("\\")
+    meta_path = "\\".join(path[:-1]) + "\\metadata"
+    return meta_path
     
-#make and appendix file
-    apppath = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\appendix.tex"
-    app = open(apppath,"a")
-    app.write("\n\\chapter{" + os.path.basename(file)[:-4].replace("_","\_") + "}\n")
-      
+def calc_single_file(filename = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\basic_array\cracked\2018-11-29_Rfrs_75_1,0.npy",results="",df = "sanity_check",res_file ="", app_file = ""):
+    dataset = Dataset(filename)
+    
+    if results == "":
+        help_list = filename.split("\\")
+        res_path = "\\".join(help_list[:-4]) + "\\Results\\" + dataset.name
+    else: res_path = results + "\\" + dataset.name
+    
+    #make a folder for each file
+    if os.path.isdir(res_path) == False:
+        os.mkdir(res_path)
+    
+    # if there is no data frame and no results file, don't try to make entries into the appendix
+    if type(df) != str and results != "": 
+    #write everything to result files and appendix
+        write_result(dataset,df,res_file,app_file,filename)
+        dataset.make_graphs(res_path, appendix_bool = True)
+    else: 
+        dataset.make_graphs(res_path, appendix_bool = False)    
+    
+#write everything important to the result file        
+def write_result(dataset,df,res_file,app_file,filename):
+    
 #make a list to add each individual line
     text = []  
     
     #name
-    add_list(text,os.path.basename(file)[:-4].replace("_","\_"))
+    add_list(text,dataset.name.replace("_","\_"))
     
     #legend
-    add_list(text,k)
+    add_list(text,df.loc[dataset.name,"Number"])
         
     #energy level
-    weig = ponder.loc["Drop weight"]
-    heig = dropheight(array)
+
+    weig = df.loc[dataset.name,"Drop weight"]
+
+    heig = dataset.get_dropheight()
+
     add_list(text,energy(heig,weig),2) 
 
     #thickness
-    add_list(text,ponder.loc["thickness"])
+    add_list(text,df.loc[dataset.name,"Thickness"])
 #    text.append(str(ponder.loc["thickness"]) + ";") 
     
     #drop weight
@@ -150,7 +267,7 @@ def Everything(file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\cracked\
     add_list(text,heig,1)
 
     #age
-    add_list(text,ponder.loc["age"])  
+    add_list(text,df.loc[dataset.name,"Age"])  
 
     #velocity
     #theoretic, just needs drop height
@@ -160,128 +277,90 @@ def Everything(file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\cracked\
     #needs array and some reworking /take just a tiny snip of the accel array
 
     #load sum
-    loadsum = array[startLoad:startLoad+lenLoad,1]+array[startLoad:startLoad+lenLoad,2]+array[startLoad:startLoad+lenLoad,3]
-    add_list(text,peak(loadsum),2)
+    add_list(text,filtered_peak(dataset.loadsum),2)
 
     #peak accel
-    add_list(text,peak(array[startAccel:startAccel+lenAccel,5]),2)
+    add_list(text,filtered_peak(dataset.accel),2)
 
     #peak deformation
-    add_list(text,peak(sig.medfilt(-array[startLoad+800:startLoad+1200,4])),1)
+    deform = filtered_peak(dataset.laser)
+    add_list(text,deform,1)
 
-    #TO DO impulse
 
 #    broken or cracked?
-    panda = panda_fun(filename=os.path.basename(file)[:-4])
-    if panda.loc["cracked/broken"] == "broken":
+    if df.loc[dataset.name,"Broken/cracked"] == "broken":
         #if broken just add nan
         add_list(text,"broken",sep=";nan;\n")
     else:
         #if cracked add damage mapping
         add_list(text,"cracked")
-        add_list(text,panda.loc["crack area"])
-        add_list(text,panda.loc["opening angle"],1,sep="\n")
+        add_list(text,df.loc[dataset.name,"Crack area"])
+        add_list(text,df.loc[dataset.name,"Opening angle"],1,sep="\n")
     
-    for i in text:
-        #put everything into file    
-        result.write(i)
+    for i in text:   
+        res_file.write(i)
+    
+    new_chapter_appendix(app_file, filename, dataset)
 
-    result.close()
-    
-    # plot accel
-    x = array[startAccel:startAccel+lenAccel,0]
-    accel = sig.medfilt(array[startAccel:startAccel+lenAccel,5])
-    plt.plot(x,accel)
+def new_chapter_appendix(app_file,filename,dataset):
+    app_file.write("\n\\chapter{" + dataset.name.replace("_","\_") + "}\n")
+    # add Picture into appendix
+    pic_path = make_meta_path(filename) +  "\\pictures\\crack" + dataset.name + ".jpg"
+    if os.path.isfile(pic_path):
+        write_appendix(app_file,pic_path,"Picture of the sample after the test")
+
+    #calculate exra accelerometer    
+def calc_extra_accel():
+    return "zero"
+
+    #help function, makes it easier to add to a list
+def add_list(lst,thing,rnd=0,sep=";"):
+    if isinstance(thing,float):
+        lst.append(str(np.round(thing,rnd))+sep)        
+    else:
+        lst.append(str(thing) + sep)
+       
+#calculate Everything for .npy files    
+        
+def set_limit(limit):
     bottom,top = plt.ylim()
-    if bottom < - 1000:
-        plt.ylim(bottom=-1000)
-    plt.ylabel(r"Acceleration \Big[\(\frac{\text{m}}{\text{s}^2}\)\Big]", usetex=True)
-    plt.xlabel(r"Time \([\text{s}]\)", usetex=True)
-#    plt.title("Acceleration")
-    plt.grid()
-    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "//Acceleration.png")
-    plt.close()
-    write_appendix(app,os.path.basename(file)[:-4] + "/Acceleration.png","Acceleration")
-    
-##   plot calc velocity
-#    x = range(0,200)
-#    y = velo
-#    plt.plot(x,y)
-#    plt.ylabel(r"Calculated Velocity [$m/s$]")
-#    plt.xlabel("Time [$s$]")
-#    plt.title("Calculated Velocity")
-#    plt.grid()
-#    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "//Vel.png")
-#    plt.close()
-#   write_appendix(app,os.path.basename(file)[:-4] + "/Vel.png")
+    if bottom < limit[0] and limit[0] != -1:
+        plt.ylim(bottom = limit[0])
+    if top > limit[1]  and limit[1] != -1:
+        plt.ylim(top = limit[1])
         
-#    load cells
-    x = array[startLoad:startLoad+lenLoad,0]
-#    x = array[startLoad+950:startLoad+1020,0]
-    for i in range(1,4):
-        plt.xlabel(r"Time \([\text{s}]\)", usetex=True)
-        plt.ylabel(r"Load \([\text{kN}]\)", usetex=True)
-        y = sig.medfilt(array[startLoad:startLoad+lenLoad,i])
-#        y = f[:,i]
-        plt.plot(x,y)
-#        plt.title(os.path.basename(file)[:-4] + " Loadcell " + str(i))
-        plt.grid()
-        plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "//Loadcell" + str(i) + ".png")
-        plt.close()
-        write_appendix(app,os.path.basename(file)[:-4] + "/Loadcell" + str(i) + ".png", "Loadcell " + str(i))
-        
-#    plot sum of all loadcells    
-    y = sig.medfilt(loadsum)
-#    a,b = first_peak(loadsum)
-#    c,d = last_peak(loadsum,a)
-    plt.plot(x,y)
-#   TO DO, fix those fucks!
-#    plt.plot(a,array[b+startLoad][0],"r.")
-#    plt.plot(c,array[d+startLoad][0],"b.")
-#    plt.title("Sum of all Loadcells")
-    plt.xlabel(r"Time \([\text{s}]\)", usetex=True)
-    plt.ylabel(r"Load \([\text{kN}]\)", usetex=True)
+def plot(direct,x,y,limit=(-1,-1),xlabel="",ylabel="",name="", appendix = False):
+    plt.plot(x,sig.medfilt(y))
+    set_limit(limit)
     plt.grid()
-    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "//Loadcellsum.png")
+    plt.ylabel(ylabel, usetex= True)
+    plt.xlabel(xlabel, usetex= True)
+    fig_path = direct + "\\" + name + ".png"
+    plt.savefig(fig_path)
     plt.close()
-    write_appendix(app,os.path.basename(file)[:-4]+ "/Loadcellsum.png","Sum of all loadcells")
+    if appendix != False:
+        write_appendix(appendix, fig_path, name)
+
+def calc_scope(array):
+    start_load = find_start(array,cushion=500)
+    start_accel = start_load
+    start_laser = start_load
     
-##   plot impulse 
-#    print(loadsum.shape)
-#    print(x.shape)
-#    y = sp.integrate.cumtrapz(loadsum[a:c],x[a:c],initial = 0)*1000
-#    plt.plot(x[a:c],y)
-#    plt.ylabel(r"Impulse [$Ns$]")
-#    plt.xlabel("Time [$s$]")
-#    plt.title("Impulse")
-#    plt.grid()
-#    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "//imp.png")
-#    plt.close()
-#    write_appendix(app,os.path.basename(file)[:-4] + "/imp.png")
-#     
-# plot laser
-    y = sig.medfilt(array[startLoad:startLoad+2000,4])
-    x = array[startLoad:startLoad+2000,0]
-    plt.plot(x,y)
-    bottom,top= plt.ylim()
-    if bottom < -100 and top > -100:
-        plt.ylim(bottom=-100)
-    plt.xlabel(r"Time \([\text{kN}]\)", usetex=True)
-    plt.ylabel(r"Displacement \([\text{mm}]\)", usetex=True)
-    plt.grid()
-    plt.savefig(".\\Results\\" + os.path.basename(file)[:-4] + "/displacement.png")
-    plt.close()
-    write_appendix(app,os.path.basename(file)[:-4] + "/displacement.png","Displacement")
+    len_accel = 1500
+    len_load = 1500
+    len_laser = 2000
+    
+    end_accel = start_accel + len_accel
+    end_load = start_load + len_load
+    end_laser = start_laser + len_laser
+    
+    return start_accel, end_accel, start_load, end_load, start_laser, end_laser
         
-# add Picture into appendix
-    if os.path.isfile(".\\Data\\pics\\" + os.path.basename(file)[:-4] + ".jpg"):
-        write_appendix(app,os.path.basename(file)[:-4] + ".jpg","Picture of the sample after the test")      
-    
-def load_displacement_curve(file="C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Data\\cracked\\2019-05-06_Rfrs_75_0,8.npy"):
+def load_displacement_curve(file="C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Data\\cracked\\2018-12-04_Rfrs_50_0,3_2.npy"):
     pot=0.74
     array = np.load(file)
     load =  sig.medfilt(array[:,1] + array[:,2] + array[:,3])
-    star = findStart(array,cushion=20)
+    star = find_start(array,cushion=20)
     c,d = 0,(0,0)
     length = np.argmin(array[star:star+400,4])
     
@@ -328,9 +407,8 @@ def load_displacement_curve(file="C:\\Users\\kekaun\\OneDrive - LKAB\\roundSampl
 
     plt.savefig("C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Results\\" + os.path.basename(file)[:-4] + "_energy.png")
     plt.close()
-#    
 
-def findStart(array,cushion=500): 
+def find_start(array,cushion=500): 
     x = np.where(array[:,6]==1)
     a = np.argmax(array[x[0][0]:],axis=0)
     c=[]
@@ -340,25 +418,20 @@ def findStart(array,cushion=500):
 #        c.append(b[i])
     return(int(math.floor(stat.median(c)) - cushion + x[0][0]))
     
-    #get drop height            
-def dropheight(array):
-    #m has a sampling rate of 10kHz, but the telfer of just 1 Hz
-    m = int(np.argmax(array[:,7])/10000)
-    u = np.nanargmax(array[m:,8])
-    up = array[u+m,8]
-    d = np.nanargmax(array[m:,9])
-    down = array[d+m,9]
-    return up - down
+#get peak of anything, input: sliced array, uses a medium filter
+def filtered_peak(array):
+    index = np.argmax(sig.medfilt(array))
+    return (array[index])
 
-#get peak of anything, input: sliced array
-def peak(array):
+#get peak of anything, unfiltered
+def true_peak(array):
     index = np.argmax(array)
     return (array[index])
 
 # impact energy from dropheight and drop weight
 def energy(height,weight):
     g = 9.8
-    return height * weight * g / 10**6
+    return float(height) * int(weight) * g / 10**6
     
 # get thickness
 def thickness(filename):
@@ -389,22 +462,24 @@ def ex_in_clude(boolean):
     else:
         return "faulty"
 
-def allGraphics(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\result.csv"):
+def draw_diagrams(direct, df, data):
+    #open results_df
+    res_path = direct + r"\result.csv"
+    res = pd.read_csv(res_path, sep = ";", header = [0,1], index_col = 0)
+            
     #where to save stuff
-    path = os.path.dirname(direct) + "\\Diagram"
+    path = direct + "\\Diagram"
     if os.path.isdir(path) == False:
         os.makedirs(path)
-    #open csv
-    res = pd.read_csv(direct,sep=";",index_col = 0)
     
     #write a legend    
-    write_legend(direct,res.drop(res.index[0]))
+    write_legend(direct,df["Number"])
     
     #make a latex table
-    results(direct)
+    results(res,direct)
     
     #make a mask to filter out everything that is useless
-    mask = pd.read_csv(r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\exclude.csv", sep = ";", header = 0, index_col = 0)
+    mask = pd.read_csv(make_meta_path(data) + "\exclude.csv", sep = ";", header = 0, index_col = 0)
     mask = mask.astype(bool)
     excl = mask.rename(index = str, columns={"Force":"Loadcells","Acceleration":"Accelerometer","Displacement":"Laser sensor","Vertical acceleration of sample":"Additional accelerometer vertical","Horizontal acceleration of sample":"Additional accelerometer horizontal"})
     excl_accl = excl[["Additional accelerometer vertical","Additional accelerometer horizontal"]].loc["2019-02-20\_Rfrs\_75\_0,5":]
@@ -414,8 +489,17 @@ def allGraphics(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\re
     excl_accl_format = [ex_in_clude] * len(excl_accl.columns)
     excl.to_latex(os.path.dirname(direct) + "\\exclude.tex",formatters = excl_format, escape = False,na_rep=" ")
     excl_accl.to_latex(os.path.dirname(direct) + "\\exclude_accel.tex",formatters = excl_accl_format, escape = False,na_rep=" ")
+    
+    #make a table to be used for making the text
+    tex = res.drop(['Broken/Cracked',"Drop weight","Drop height","Velocity"],axis = 1)
+
+    tex = tex.drop(tex.index[0])
+    print(tex)
+    tex= tex.astype(float)
+
+
     #throw useless info away
-    res = res.drop(['Broken/Cracked'],axis = 1)
+    res = res.drop(['Broken/Cracked',"Drop weight","Drop height","Velocity","Number"],axis = 1)
 
     #keep the unit
     unit = res.iloc[0]
@@ -457,16 +541,20 @@ def allGraphics(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\re
             crack = res[submask][mask["Crack area"]]
             broke = res[submask][~mask["Crack area"]]
             
+            text = tex[submask]
+            
             mpl.rcParams["figure.figsize"] = (10,7)
             ax.plot(crack[i], crack[j], "b.",label="cracked")
             ax.plot(broke[i], broke[j], "r.", label = "broken")
-            ax.plot(exclude[i],exclude[j],"xk", label = "excluded")
+            ax.plot(exclude[i],exclude[j],"xk", label = "excluded")       
             
-            #make limits nice
+                        #make limits nice
             xlim = ax.get_xlim()
             ax.set_xlim((xlim[0] - 0.05 * xlim[0],xlim[1]+ 0.05 * xlim[1]))
             ylim = ax.get_ylim()
             ax.set_ylim((ylim[0] - 0.05 * ylim[0], ylim[1] + 0.05 * ylim[1]))
+            
+
             
             #labels
             print(i, unit[i])
@@ -482,8 +570,10 @@ def allGraphics(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\re
             sorty =[]
             for m in sortx:
                 sorty.append(m * slope + intercept)
-            ax.plot(sortx, sorty,"b--", label="R = %0.04f \nx = %0.04f \ny = %0.04f" %(r_value,slope,intercept))
-
+#            rc('text', usetex=True)
+            ax.plot(sortx, sorty,"b--", label="$R^2$ = %0.04f \nx = %0.04f \ny = %0.04f" %(r_value**2,slope,intercept))
+#            ax.plot(sortx, sorty,"b--")
+#            ax.legend(["\(\text{R}^2\) = %0.04f \nx = %0.04f \ny = %0.04f" %(r_value**2,slope,intercept)], usetex = True)
             #put R2 in the correct spot of the dataframe
             corr[i][j] = r_value**2
             corr[j][i] = r_value**2
@@ -496,7 +586,7 @@ def allGraphics(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\re
 #                sorty1.append(n * slope1 + intercept2)
 #            ax.plot(sortx1,sorty1,"r--")
             
-##            #text
+###            #text
             texts = [plt.text(res.iloc[k-1][i], res.iloc[k-1][j], k) for k in range(1, res.shape[0] + 1)]
             adjust_text(texts)
 
@@ -509,19 +599,75 @@ def allGraphics(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\re
             filename = path + "\\" + j.replace(" ","-") + "_" + i.replace(" ","-") + ".png"
             plt.savefig(filename,format="png")
             plt.close()
+
+##### DON'T PRINT EXCLUDED            
+#                        
+#            mpl.rcParams["figure.figsize"] = (10,7)
+#            ax.plot(crack[i], crack[j], "b.",label="cracked")
+#            ax.plot(broke[i], broke[j], "r.", label = "broken")
+##            ax.plot(exclude[i],exclude[j],"xk", label = "excluded")       
+#                        
+#            #labels
+#            ax.set_xlabel(i + " " + unit[i], usetex = True, fontsize = 14)
+#            ax.set_ylabel(j + " " + unit[j], usetex = True, fontsize = 14)
+#            
+#            #grid
+#            plt.grid()
+#            
+#            #linear interpolation
+#            slope, intercept, r_value, p_value, std_err = sp.stats.linregress(crack[i].astype(float),crack[j].astype(float))
+#            sortx = list(crack[i].astype(float).sort_values())
+#            sorty =[]
+#            for m in sortx:
+#                sorty.append(m * slope + intercept)
+##            rc('text', usetex=True)
+#            ax.plot(sortx, sorty,"b--", label="$R^2$ = %0.04f \nx = %0.04f \ny = %0.04f" %(r_value**2,slope,intercept))
+##            ax.plot(sortx, sorty,"b--")
+##            ax.legend(["\(\text{R}^2\) = %0.04f \nx = %0.04f \ny = %0.04f" %(r_value**2,slope,intercept)], usetex = True)
+#            #put R2 in the correct spot of the dataframe
+#            corr[i][j] = r_value**2
+#            corr[j][i] = r_value**2
+#            
+#                        #make limits nice
+#            xlim = ax.get_xlim()
+#            ax.set_xlim((xlim[0] - 0.05 * xlim[0],xlim[1]+ 0.05 * xlim[1]))
+#            ylim = ax.get_ylim()
+#            ax.set_ylim((ylim[0] - 0.05 * ylim[0], ylim[1] + 0.05 * ylim[1]))            
+#
+##            #broken line
+##            slope1, intercept2, r_value3, p_value4, std_err5 = sp.stats.linregress(broke[i].astype(float),broke[j].astype(float))
+##            sortx1 = list(broke[i].astype(float).sort_values())
+##            sorty1 =[]
+##            for n in sortx1:
+##                sorty1.append(n * slope1 + intercept2)
+##            ax.plot(sortx1,sorty1,"r--")
+#            
+####            #text
+##            for k in text.index:
+##                print(text[i][k])
+#            
+#            texts = [plt.text(text[i][k], text[j][k], int(text["Number"][k])) for k in text.index]
+#            adjust_text(texts)
+#
+#            #legend            
+#            chartBox = ax.get_position()            
+#            ax.set_position([chartBox.x0, chartBox.y0, chartBox.width*0.8, chartBox.height])
+#            ax.legend(loc='center left', bbox_to_anchor=(1.0, 0.75), ncol=1,fontsize = 14)
+#
+#            #save
+#            filename = path + "\\excluded\\" + j.replace(" ","-") + "_" + i.replace(" ","-") + ".png"
+#            plt.savefig(filename,format="png")
+#            plt.close()
             
     #draw a heatmap
     heatmap(corr, os.path.dirname(direct))
     
-    
-
 #make a latex table out of the .csv       
-def results(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\result.csv"):
+def results(df,direct):
     
     #result file
-    res = pd.read_csv(direct,sep=";",header=[0,1])
+    res = df
     
-
     ## format latex table
     form = column_format(len(res.columns))
     ## format numbers with thousand separator . and decimal separator ,
@@ -534,7 +680,7 @@ def results(direct=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\result
     test_values.to_latex(os.path.dirname(direct) + "\\test_values.tex",na_rep="", formatters = decimal, column_format = form, escape=False, index=False)
     
     #short_result
-    short_result = res[["Number","Name","Velocity", "Force", "Acceleration", "Displacement", "Broken/Cracked", "Crack area", "Opening angle"]]
+    short_result = res[["Number","Name", "Force", "Acceleration", "Displacement", "Crack area", "Opening angle"]]
     short_result.to_latex(os.path.dirname(direct) + "\\short_result.tex",na_rep="", formatters = decimal, column_format = form, escape=False, index=False)
     
     #just cracks
@@ -561,11 +707,13 @@ def number_format(number):
         return "{:n}".format(number)
         
 #write something in the appendix
-def write_appendix(appendix,filename,typ):
+def write_appendix(appendix,pic_path,caption):
     appendix.write("""\\begin{figure}
     \\centering
-    \\includegraphics[width=0.9\\linewidth]{./appendix/""" + filename + """}
-    \\caption{""" + typ.capitalize() + "}\n\\end{figure}\n\n")     
+    \\includegraphics[width=0.9\\linewidth]{""" + pic_path + """}
+    \\caption{""" + caption.capitalize() + """}
+    \\label{fig:""" + os.path.basename(pic_path)[:-4].replace("/","_") + """}
+    \\end{figure}\n\n""")     
 
 def fix_time(array):
     array[0][0]=0
@@ -573,9 +721,9 @@ def fix_time(array):
         array[i][0] = array[i-1][0] + 0.0001
     return array
 
-def panda_fun(excel=r'C:\Users\kekaun\OneDrive - LKAB\roundSamples\panda.xlsx',filename="2019-02-20_Rfs_100_0,5"):
+def xls_to_df(excel=r'C:\Users\kekaun\OneDrive - LKAB\roundSamples\test_data.xlsx',filename="2019-02-20_Rfs_100_0,5"):
     data = pd.ExcelFile(excel)
-    array = data.parse(skiprows=4, index_col ="Name")
+    array = data.parse(index_col ="Name")
     first = array.loc[filename]
     return(first)
     
@@ -588,8 +736,8 @@ def write_legend(direct,df):
     \\toprule
     Name & Symbol \\\\
     \\midrule \n""")
-    for l, m in enumerate(df.index):
-        leg.write(str(m) + "\t&\t" + str(l + 1)+"\t\\\\\n")
+    for l in df:
+        leg.write(str(df.loc[l].index) + "\t&\t" + str(l) +"\t\\\\\n")
     leg.write("""\\bottomrule
 \\end{tabular}
 \\caption{Legend for the symbols assigned to tests}
@@ -611,7 +759,7 @@ def fix_disp(file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\cracked\20
 #open array
     array = np.load(file)
 
-    start = findStart(array,cushion=500)
+    start = find_start(array,cushion=500)
     end = start + 2500
     y = array[:,4]
 #
@@ -760,24 +908,38 @@ def extra_accel(file="C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\extraAcc
     plt.close()
     
 def replace_(string):
-#    print(type(string))
     if type(string) == str:
         string = string.replace("_","\_")
     return string
 
-def minitables():
-    aray = pd.read_csv(r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\result.csv",sep=";",index_col = 0)
-    bray = pd.ExcelFile(r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\panda.xlsx").parse(skiprows=4, index_col ="Name")
-    
-    bray = bray["Drop weight"]
-    
-    helpy = {}
-    for i in bray.index:
-        helpy.update({i:replace_(i)})
-    
-    bray = bray.rename(index = helpy)
-    aray = aray[["Thickness","Drop height", "Broken/Cracked"]]
-    
-    aray.insert(1, column = "Drop weight",value = bray)
-    
-    aray.iloc[[0,1,2]].to_latex(r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\try.tex", escape = False, na_rep="", decimal = ".")
+def compare_vel_disp():
+    result = pd.read_csv(r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results\result.csv",sep=";",index_col = 0)
+    base = np.zeros((len(result.index),4))
+    vel_disp_compare = pd.DataFrame(data = base, index = result.index, columns = ["Calculated velocity", "Measured velocity", "Laser displacement", "Accelerometer displacement"])
+    for i in result.index:
+        path = "C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Data\cracked\\" + i.replace(r"\_","_") + ".npy"
+    print(path)
+    if os.path.isfile(path):        
+        array = np.load(path)
+        
+        start = find_start(array,cushion=500)
+        
+        lenAccel = 1500
+        
+        accel = sig.medfilt(array[start:start+lenAccel,5])
+        x = array[start:start+lenAccel,0]
+        
+        velo = integrate.cumtrapz(accel,x,initial = 0)
+        mes_vel = peak(velo)        
+        
+        disp = integrate.cumtrapz(velo,x,initial = 0)
+        mes_disp = peak(disp)
+        
+        vel_disp_compare["Measured velocity"].loc[i] = np.round(mes_vel,1)
+        vel_disp_compare["Calculated velocity"].loc[i] = result["Velocity"].loc[i]
+        vel_disp_compare["Laser displacement"].loc[i] = result["Displacement"].loc[i]
+        vel_disp_compare["Accelerometer displacement"].loc[i] = np.round(mes_disp*100,2)        
+        
+    else: vel_disp_compare.drop(index = i,inplace = True)
+
+    vel_disp_compare.to_latex("C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Results\\compare.tex", escape = False)

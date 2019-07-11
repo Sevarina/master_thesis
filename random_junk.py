@@ -936,10 +936,24 @@ def multiple_impacts():
     
     plt.xticks(np.arange(0, limit -1 , 2.0))
     plt.grid()
+    plt.savefig(r"C:\Users\kekaun\OneDrive - LKAB\Square Samples\cum_energy.png")
+    plt.close()
+
+    plt.plot(sheet["Hit"][:limit],sheet["Energy [kJ]"][:limit],"b.")
+    plt.xlabel("Impact number [$-$]")
+    #plt.xlabel("Impact number [$-$]")
+    plt.ylabel("Impact energy [$kJ$]")
+    #plt.ylabel("Impact energy [$kJ$]")
+    plt.ylim(bottom = 0)
+    plt.xlim(left = 0, right = limit)
+    
+#    plt.xticks(np.arange(0, limit -1 , 2.0))
+    plt.grid()
     plt.show()
+    plt.savefig(r"C:\Users\kekaun\OneDrive - LKAB\Square Samples\impact_energy.png")
+    plt.close()
 
-
-def heatmap()
+def heatmap():
     import pandas as pd
     import numpy as np
     import matplotlib.pyplot as plt
