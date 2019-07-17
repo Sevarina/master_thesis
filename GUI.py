@@ -4,6 +4,7 @@ import clean_file as clean
 import PySimpleGUI as sg
 import os
 import pandas as pd
+import datetime
 
 layout_initial = [
         [sg.Text("What do you want to do?")],
@@ -38,8 +39,8 @@ layout_plot_datasets = [ [sg.Text('Please navigate to test data', size=(30, 1))]
      ]
 
 layout_auto = [
-        [sg.Text('Please navigate to test data', size=(30, 1))],
-        [sg.InputText("C:/", key = "data"), sg.FolderBrowse()],
+        [sg.Text('Please choose to test data folder', size=(30, 1))],
+        [sg.InputText("C:/Users/kekaun/OneDrive - LKAB/Desktop/Try", key = "data"), sg.FolderBrowse()],
         [sg.Submit(), sg.Cancel()]
         ]
 
@@ -48,15 +49,14 @@ def make_add_test_layout(sample):
         [sg.Text("Please enter data for sample " + sample)],
         [sg.Text("Sample type"), sg.Radio('Round', "RADIO1", default=True, key = "Round"),
     sg.Radio('Square', "RADIO1", key = "Square") ],
-         [sg.InputText(), sg.CalendarButton("Casting date", key = "cast")],
-         [sg.InputText(), sg.CalendarButton("Testting date", key = "test_date")],
+         [sg.CalendarButton("Casting date", target = "cast"), sg.InputText(key = "cast")],
+         [sg.CalendarButton("Testing date", target = "test_date"), sg.InputText(key = "test_date")],
          [sg.Text("Drop weight"), sg.Combo(['50 kg', '100 kg', "200 kg", "500 kg", "1000 kg"], key = "weight")],
-         [sg.Text("Sample thickness [mm]"), sg.InputText(key = "thickness")]
-#         [sg.Text("Broken or cracked", tooltip = "If the sample was destroyed/failed during testing please select ""Broken""" ), sg.Radio('Broken', "RADIO2", default=True, key = "Broken"),
-#    sg.Radio('Cracked', "RADIO2", default = False, key = "Cracked") ]    
+         [sg.Text("Sample thickness [mm]"), sg.InputText(key = "thickness")],
+         [sg.Text("Broken or cracked"), sg.Radio('Broken', "RADIO2", default=True, key = "Broken"), sg.Radio('Cracked', "RADIO2", default = False, key = "Cracked") ]    
         ]
     for i in range(1,6):
-        layout.append([sg.Text("Crack " + str(i)), sg.Text("Length [mm]"), sg.Input(key = "crack_" + str(i) + "_len")])#, sg.Text("Width [mm]"), sg.Input(key = "crack_" + str(i) + "_width"]))
+        layout.append([sg.Text("Crack " + str(i)), sg.Text("Length [mm]"), sg.Input(key = "crack_" + str(i) + "_len"), sg.Text("Width [mm]"), sg.Input(key = "crack_" + str(i) + "_width")])
     layout.append([sg.Submit(), sg.Cancel()])
     return layout
 
@@ -111,18 +111,26 @@ def make_test_dir(direct):
         os.makedirs(results)
     return basic_array, metadata, results
 
+
+
 def make_test_data(metadata, file_list):
     data = pd.DataFrame()
     num = 1
+    print(file_list)
     for file in file_list:
         window_test_data = sg.Window("Drop test program").Layout(make_add_test_layout(os.path.basename(file[:-4])))
         event, values = window_test_data.Read()
         if event == None or event == "Cancel":
+            window_test_data.Close()
             break
         else:
             test_dict = {"Number": num, 
                          "Name" : os.path.basename(file)[:-4]}
-            age = values["test_date"] - values["cast"]
+            if values["test_date"] != "" and values["cast"] != "":
+                test = datetime.date(year = int(values["test_date"][:4]), month = int(values["test_date"][5:7]), day = int(values["test_date"][8:10]))
+                cast = datetime.date(year = int(values["cast"][:4]), month = int(values["cast"][5:7]), day = int(values["cast"][8:10]))
+                age = test - cast
+            else: age = ""
             if values["Round"]:
                 test_dict["Sample type"] = "Round"
             else:
@@ -131,7 +139,7 @@ def make_test_data(metadata, file_list):
                              "Testing date": values["test_date"],
                              "Age" : age,
                              "Drop weight": values["weight"],
-                             "Thickness" : values[""]
+                             "Thickness" : values["thickness"]
                              })
             if values["Broken"]:
                 test_dict["Broken/cracked"] = "broken"
@@ -139,12 +147,17 @@ def make_test_data(metadata, file_list):
                 test_dict["Sample type"] = "cracked"
             for i in range(1,6):
                 test_dict.update({
-                        "Length " + i : values["crack_" + i + "_len"],
-                        "Width " + i : values["crack_" + i + "_width"]
+                        "Length " + str(i) : values["crack_" + str(i) + "_len"],
+                        "Width " + str(i) : values["crack_" + str(i) + "_width"]
                         })
-            data.append(test_dict)
-            num + 1
+            data = data.append(test_dict, ignore_index=True)
+            num = num + 1
+            window_test_data.Close()
+            print(test_dict)
+    print(data)
+    data = data.set_index("Name")
     data.to_excel(metadata + "//test_data.xlsx")
+    sg.Popup("Data successfully entered!")
 
 def auto_process(direct):
     basic_array, metadata, results = make_test_dir(direct)
@@ -152,12 +165,11 @@ def auto_process(direct):
     #make test_data file
     file_list = []
     for root, folders, files in os.walk(direct):
-        for root, folders, files in os.walk(direct):
-            for file in files:
-                if file[-3:].lower() == "asc":
-                    path = root+"\\"+file
-                    if os.path.isfile(path):
-                        file_list.append(path)
+        for file in files:
+            if file[-3:].lower() == "asc":
+                path = root+"\\"+file
+                if os.path.isfile(path):
+                    file_list.append(path)
     make_test_data(metadata, file_list)
 
 
@@ -173,6 +185,7 @@ while True:
         if event == None or event == "Cancel":
             window_auto.Close()
         else: 
+            window_auto.Close()
             direct = values["data"]
             auto_process(direct)
 #        sg.Popup("Not yet implemented!")
