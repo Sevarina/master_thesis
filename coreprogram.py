@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """
 Created on Mon Mar  4 15:33:33 2019
@@ -10,13 +11,13 @@ import statistics as stat
 import matplotlib as mpl
 #make all plots look nice
 mpl.style.use('classic')
-from matplotlib import rc
+
 import matplotlib.pyplot as plt
 
 import scipy as sp
 import scipy.signal as sig
 import scipy.integrate as integrate
-from scipy.optimize import curve_fit
+
 import seaborn as sns
 import math
 
@@ -26,9 +27,9 @@ import pandas as pd
 from adjustText import adjust_text
 import locale
 locale.setlocale(locale.LC_ALL, 'deu_deu')
+import PySimpleGUI as sg
 
-
-
+import clean_file as clean
 #rc('text', usetex=True)
 
 #rc('text.latex', preamble=r'\usepackage{helvet}\renewcommand\familydefault{\sfdefault}')
@@ -112,10 +113,7 @@ class Dataset:
         down = self.array[d+m,self.indizes["distance_down"]]
         return up - down           
         
-    def make_graphs(self,res_path,app,df):
-#        app_path = os.path.dirname(res_path) + "\\appendix.tex"
-#        app = open(app_path, "a")
-        
+    def make_graphs(self,res_path,app):
         # plot accel
         plot(res_path,x = self.accel_time, y = self.accel ,xlabel= r"Time \([\text{s}]\)",ylabel= r"Acceleration \Big[\(\frac{\text{m}}{\text{s}^2}\)\Big]",name="Acceleration", limit = (-1000,-1),appendix = app, dataset_name = self.name)
             
@@ -180,13 +178,16 @@ def make_appendix_file(results):
     
 def iterate_over(direct,results,df,res_file,app_file):    
     #iterate over file 
+    file_list = []
     for root, folders, files in os.walk(direct):
         for file in files:
             if file[-3:].lower() == "npy":
                 path = root+"\\"+file
                 if os.path.isfile(path):
-                    print(file)           
-                    calc_single_file(path,results,df,res_file,app_file)
+                    file_list.append(path)
+    for i in file_list:
+        sg.OneLineProgressMeter('Progress', file_list.index(i) + 1, len(file_list), 'key','Progress of calculation')
+        calc_single_file(i,results,df,res_file,app_file, sample_type = df.at[os.path.basename(i)[:-4],"Sample type"])
     res_file.close()
     app_file.close()
 
@@ -208,24 +209,21 @@ def open_df(data):
     excel_path = make_meta_path(data) + r"\test_data.xlsx"
     table_dtype = {"Age" : table_format, "Drop weight" : table_format, "Thickness": table_format, "Cracked/broken" : table_format, "Crack area" : table_format, "Opening angle" : table_format, "Number" : int}
     table = pd.read_excel(excel_path, header = 0, index_col = "Name", converters  = table_dtype)
-    print(table.loc[:,"Number"])
     return table
 
 def make_meta_path(data):
-    path = data.split("\\")
+    path = data.split("/")
     meta_path = "\\".join(path[:-1]) + "\\metadata"
     return meta_path
     
-def calc_single_file(filename = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\basic_array\cracked\2018-11-29_Rfrs_75_1,0.npy",results="",df = "sanity_check",res_file ="", app_file = ""):
-    dataset = Dataset(filename)
+def calc_single_file(filename = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\basic_array\cracked\2018-11-29_Rfrs_75_1,0.npy",results="",df = "sanity_check", res_file ="", app_file = "", sample_type = "Round"):
+    dataset = Dataset(filename, sample_type)
     
     if results == "":
         help_list = filename.split("\\")
         res_path = "\\".join(help_list[:-4]) + "\\Results\\" + dataset.name
     else: res_path = results + "\\" + dataset.name
-    
-
-    
+        
     #make a folder for each file
     if os.path.isdir(res_path) == False:
         os.mkdir(res_path)
@@ -235,7 +233,7 @@ def calc_single_file(filename = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\D
     #write everything to result files and appendix
         new_chapter_appendix(dataset_name = dataset.name, df = df , app_file = app_file)
         write_result(dataset,df,res_file,filename)
-    dataset.make_graphs(res_path,  df = df, app = app_file)    
+    dataset.make_graphs(res_path, app = app_file)    
     
 #write everything important to the result file        
 def write_result(dataset,df,res_file,filename):
@@ -452,9 +450,6 @@ def broken(path):
     else: 
         return 0
 
-#create every graphic imaginable
-#make a legend to compare names with numbers
-        
 def ex_in_clude(boolean):
     if boolean == True:
         return ""
@@ -478,11 +473,9 @@ def draw_diagrams(direct= "C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Res
     path = direct + "\\diagram"
     if os.path.isdir(path) == False:
         os.makedirs(path)
-        
-    write_legend(direct,df.iloc[1:]["Number"])
-    
+
     make_tables(res,direct)
-    
+        
     mask = make_mask(data, direct)
     
     #throw useless info away
@@ -500,10 +493,12 @@ def draw_diagrams(direct= "C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Res
     #correlation dataframe
     corr = pd.DataFrame(index = res.columns, columns = res.columns, dtype = float)
     
+    counter = 1
     #draw all the silly graphics    
     for j in res.columns:
         for i in res.columns:
-            print(i,j)
+            sg.OneLineProgressMeter('Progress', counter, len(res.columns)**2, 'key','Drawing diagrams')
+            counter += 1
             plot_correlation(i, j, mask, res, unit, corr, df, path)
            
     #draw a heatmap
@@ -557,8 +552,8 @@ def plot_correlation(i, j, mask, res, unit, corr, df, path):
     corr[j][i] = r_value**2
     
     #write numbers next to points            
-    texts = [plt.text(res.at[k,i],res.at[k,j],df.at[k.replace("\\",""),"Number"]) for k in res.index]            
-    adjust_text(texts)
+#    texts = [plt.text(res.at[k,i],res.at[k,j],df.at[k.replace("\\",""),"Number"]) for k in res.index]            
+#    adjust_text(texts)
 
     #legend            
     chartBox = ax.get_position()            
@@ -603,6 +598,11 @@ def make_tables(df,direct):
     form = column_format(len(crack.columns))
     decimal = [number_format] * len(crack.columns)    
     cracks.to_latex(path + "\\crack.tex",na_rep="", formatters = decimal, column_format = form, escape=False, index=False)
+    
+    write_legend(direct,df.iloc[1:]["Number"])
+    
+    with pd.ExcelWriter(path + '\\result.xlsx') as writer:
+            res.to_excel(writer, sheet_name = "Results", na_rep="")
     
 def make_mask(data, direct):
         #make a mask to filter out everything that is useless
@@ -671,7 +671,7 @@ def xls_to_df(excel=r'C:\Users\kekaun\OneDrive - LKAB\roundSamples\test_data.xls
     
 #writes a legend
 def write_legend(direct,df):
-    leg = open(os.path.dirname(direct) + "\\legend.tex","w")
+    leg = open(direct + "\\tables\\legend.tex","w")
     leg.write("""\\begin{table}
     \\centering
     \\begin{tabular}{ll}""" + 
@@ -771,6 +771,7 @@ def heatmap(df,direct):
     plt.tight_layout()
     fig = sns_plot.get_figure()
     fig.savefig(direct + r"\heatmap.png")
+    plt.close()
     
 def helpline(start,end,offset,array):
     hline = np.ones((end-start,))
@@ -866,10 +867,10 @@ def compare_vel_disp():
         x = array[start:start+lenAccel,0]
         
         velo = integrate.cumtrapz(accel,x,initial = 0)
-        mes_vel = peak(velo)        
+        mes_vel = filtered_peak(velo)        
         
         disp = integrate.cumtrapz(velo,x,initial = 0)
-        mes_disp = peak(disp)
+        mes_disp = filtered_peak(disp)
         
         vel_disp_compare["Measured velocity"].loc[i] = np.round(mes_vel,1)
         vel_disp_compare["Calculated velocity"].loc[i] = result["Velocity"].loc[i]
@@ -879,3 +880,5 @@ def compare_vel_disp():
     else: vel_disp_compare.drop(index = i,inplace = True)
 
     vel_disp_compare.to_latex("C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Results\\compare.tex", escape = False)
+    
+        

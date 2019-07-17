@@ -1,26 +1,16 @@
-import numpy as np
-import statistics as stat
-import matplotlib as mpl
-#make all plots look nice
-mpl.style.use('classic')
-from matplotlib import rc
-import matplotlib.pyplot as plt
+import PySimpleGUI as sg      
 
-import scipy as sp
-import scipy.signal as sig
-import scipy.integrate as integrate
-from scipy.optimize import curve_fit
-import seaborn as sns
-import math
+# Very basic window.  Return values as a list      
 
-import os
-import re
-import pandas as pd
-from adjustText import adjust_text
-import locale
-locale.setlocale(locale.LC_ALL, 'deu_deu')
+layout = [      
+          [sg.Text('Please enter your Name, Address, Phone')],      
+          [sg.Text('Name', size=(15, 1)), sg.InputText()],      
+          [sg.Text('Address', size=(15, 1)), sg.InputText()],      
+          [sg.Text('Phone', size=(15, 1)), sg.InputText()],      
+          [sg.Submit(), sg.Cancel()]      
+         ]      
 
-import PySimpleGUI as sg
-
-sg.PopupGetFile("let's do this")
-
+window = sg.Window('Simple data entry window', layout)  
+event, values = window.Read()   
+window.Close()
+print(event, values[0], values[1], values[2])      
