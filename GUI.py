@@ -146,6 +146,7 @@ def calc_crack(values):
 def make_test_data(metadata, file_list):
     data = pd.DataFrame()
     num = 1
+    
     print(file_list)
     for file in file_list:
         window_test_data = sg.Window("Drop test program").Layout(make_add_test_layout(os.path.basename(file[:-4])))
@@ -185,7 +186,8 @@ def make_test_data(metadata, file_list):
                     test = datetime.date(year = int(values["test_date"][:4]), month = int(values["test_date"][5:7]), day = int(values["test_date"][8:10]))
                     cast = datetime.date(year = int(values["cast"][:4]), month = int(values["cast"][5:7]), day = int(values["cast"][8:10]))
                     age = test - cast
-                    test_dict.update({"Casting date": values["cast"], 
+                    test_dict.update({
+                    "Casting date": values["cast"], 
                      "Testing date": values["test_date"],
                      "Age" : age})
                 else: 
@@ -214,6 +216,11 @@ def make_test_data(metadata, file_list):
                 data = data.append(test_dict, ignore_index=True)
                 num = num + 1
                 break
+    column_list = ["Number", "Name", "Sample type", "Casting date", "Testing date", "Age", "Drop weight", "Thickness", "Broken/cracked"]
+    for i in range(1,6):
+        column_list.append("Length " + str(i), "Width " + str(i))
+    column_list.append("Crack area", "Amount of cracks", "Median crack width", "Opening angle")
+    data = data[column_list]
     data = data.set_index("Name")
     data.to_excel(metadata + "//test_data.xlsx")
     sg.Popup("Data successfully entered!")
