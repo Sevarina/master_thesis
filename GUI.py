@@ -53,7 +53,7 @@ def make_add_test_layout(sample):
         [sg.Text("Sample type"), sg.Radio('Round', "RADIO1", default=True, key = "Round"),
     sg.Radio('Square', "RADIO1", key = "Square") ],
          [sg.CalendarButton("Casting date", target = "cast", key = "cast_date"), sg.InputText("", key = "cast", disabled = True)], 
-         [sg.CalendarButton("Testing date", target = "test", key = "test_date"), sg.InputText("", key = "test", disabled = True)],
+         [sg.CalendarButton("Test date", target = "test", key = "test_date"), sg.InputText("", key = "test", disabled = True)],
          [sg.Text("Drop weight"), sg.Combo(['50 kg', '100 kg', "200 kg", "500 kg", "1000 kg"], key = "weight")],
          [sg.Text("Sample thickness [mm]"), sg.InputText(key = "thickness", do_not_clear = True)],
          [sg.Text("Broken or cracked"), sg.Radio('Broken', "RADIO2", default=True, key = "Broken", enable_events = True), sg.Radio('Cracked', "RADIO2", default = False, key = "Cracked", enable_events = True) ]    
@@ -65,7 +65,7 @@ def make_add_test_layout(sample):
                 sg.Input(key = "crack_" + str(i) + "_len", visible = False), 
                 sg.Text("Width [mm]",key = "crack_" + str(i) + "_width_txt", visible = False), 
                 sg.Input(key = "crack_" + str(i) + "_width", visible = False)])
-    layout.append([sg.Submit(), sg.Cancel()])
+    layout.append([sg.Submit(), sg.Button("Skip sample"), sg.Button("Quit")])
     return layout
 
 def new_Dataset():
@@ -146,14 +146,15 @@ def calc_crack(values):
 def make_test_data(metadata, file_list):
     data = pd.DataFrame()
     num = 1
-    
-    print(file_list)
     for file in file_list:
         window_test_data = sg.Window("Drop test program").Layout(make_add_test_layout(os.path.basename(file[:-4])))
         while True:
             event, values = window_test_data.Read()
             print(values)
-            if event == None or event == "Cancel":
+            if event == None or event == "Quit":
+                window_test_data.Close()
+                break
+            elif event == "Skip sample":
                 window_test_data.Close()
                 break
             elif event == "Cracked":
@@ -182,24 +183,35 @@ def make_test_data(metadata, file_list):
                     test_dict["Sample type"] = "Round"
                 else:
                     test_dict["Sample type"] = "Square"
-                if "test_date" in values.keys() and "cast" in values.keys():
-                    test = datetime.date(year = int(values["test_date"][:4]), month = int(values["test_date"][5:7]), day = int(values["test_date"][8:10]))
+                if "test" in values.keys() and "cast" in values.keys():
+                    test = datetime.date(year = int(values["test"][:4]), month = int(values["test"][5:7]), day = int(values["test"][8:10]))
                     cast = datetime.date(year = int(values["cast"][:4]), month = int(values["cast"][5:7]), day = int(values["cast"][8:10]))
                     age = test - cast
                     test_dict.update({
-                    "Casting date": values["cast"], 
-                     "Testing date": values["test_date"],
-                     "Age" : age})
+                    "Casting date": cast, 
+                     "Test date": test,
+                     "Age" : age.days})
                 else: 
                     test_dict.update({"Casting date": "", 
-                     "Testing date": "",
+                     "Test date": "",
                      "Age" : "",})
                 test_dict.update({
-                    "Drop weight": values["weight"][:-4],
+                    "Drop weight": values["weight"][:-3],
                     "Thickness" : values["thickness"]
                     })
                 if values["Broken"]:
                     test_dict["Broken/cracked"] = "broken"
+                    for i in range(1,5):
+                        test_dict.update({
+                            "Length " + str(i) : "",
+                            "Width " + str(i) : ""
+                            })
+                    test_dict.update({
+                        "Crack area" : "",
+                        "Amount of cracks" : "",
+                        "Average crack width" : "",
+                        "Opening angle" : ""
+                                })
                 else:
                     test_dict["Broken/cracked"] = "cracked"
                     for i in range(1,5):
@@ -210,20 +222,24 @@ def make_test_data(metadata, file_list):
                     test_dict.update({
                         "Crack area" : calc_crack(values)[0],
                         "Amount of cracks" : calc_crack(values)[1],
-                        "Median crack width" : calc_crack(values)[2],
+                        "Average crack width" : calc_crack(values)[2],
                         "Opening angle" : calc_crack(values)[3]
                                 })
+                    print(test_dict["Age"])
                 data = data.append(test_dict, ignore_index=True)
                 num = num + 1
                 break
-    column_list = ["Number", "Name", "Sample type", "Casting date", "Testing date", "Age", "Drop weight", "Thickness", "Broken/cracked"]
-    for i in range(1,6):
-        column_list.append("Length " + str(i), "Width " + str(i))
-    column_list.append("Crack area", "Amount of cracks", "Median crack width", "Opening angle")
-    data = data[column_list]
-    data = data.set_index("Name")
-    data.to_excel(metadata + "//test_data.xlsx")
-    sg.Popup("Data successfully entered!")
+    if len(data.index) != 0:
+        column_list = ["Number", "Name", "Sample type", "Casting date", "Test date", "Age", "Drop weight", "Thickness", "Broken/cracked"]
+        for i in range(1,5):
+            column_list.append("Length " + str(i))
+            column_list.append("Width " + str(i))
+        column_list = column_list + ["Crack area", "Amount of cracks", "Average crack width", "Opening angle"]
+        data = data[column_list]
+        data = data.set_index("Name")
+        data.to_excel(metadata + "//test_data.xlsx")
+        data.to_latex(metadata + "//test_data.tex")
+        sg.Popup("Data successfully entered!")
 
 
 
@@ -239,22 +255,27 @@ def make_index_list(index, columns):
        big_list.append(help_list)
     return(big_list)
 
-def make_exclusion_data(metadata, file_list):
-    print("yay!")
-    columns = ["Force",	"Acceleration",	"Displacement",	"Crack area",	 "Opening angle",	"High speed camera",	"Vertical acceleration of sample",	"Horizontal acceleration of sample"]
-    index = [os.path.basename(i) for i in file_list]
+def make_exclusion_data(metadata, file_list):        
+    columns = ["Loadcells","Accelerometer","Laser sensor",	"Crack area",	 "Opening angle",	"High speed camera", "Additional accelerometer vertical","Additional accelerometer horizontal"]
+    index = [os.path.basename(i)[:-4] for i in file_list]
     exclusion = pd.DataFrame(columns = columns, index = index)
     layout_exclusion = [
-    [sg.Text("Please tick what you want to be excluded from calculation!")]
+    [sg.Text("Please tick what you want to be excluded from analysis!")]
     ]
     layout_exclusion = layout_exclusion + make_index_list(index, columns)
+    layout_exclusion.append([sg.Submit(), sg.Cancel()])
     exclusion_window = sg.Window('Drop test program').Layout(layout_exclusion)
     event, values = exclusion_window.Read()
-
-def auto_process(direct):
-    basic_array, metadata, results = make_test_dir(direct)
-    
-    #make test_data file
+    if event == "Cancel" or event == None:
+        exclusion_window.Close()
+    else:
+        exclusion_window.Close()
+        for i in index:
+            for j in columns:
+                exclusion.loc[i,j] = int(values[i + "_" + j])
+        exclusion.to_excel(metadata + "//exclude.xlsx")
+        
+def make_file_list(direct):
     file_list = []
     for root, folders, files in os.walk(direct):
         for file in files:
@@ -262,9 +283,13 @@ def auto_process(direct):
                 path = root+"\\"+file
                 if os.path.isfile(path):
                     file_list.append(path)
+    return file_list
+                    
+def run_auto(file_list, direct):
+    basic_array, metadata, results = make_test_dir(direct)
     make_test_data(metadata, file_list)
     make_exclusion_data(metadata, file_list)
-
+#    core.calc(data = basic_array, results = results)
 
 while True:
     window_initial = sg.Window('Drop test program').Layout(layout_initial)
@@ -274,20 +299,22 @@ while True:
         break
     elif event == "Automatically process data":
         window_initial.Close()
+        window_auto = sg.Window("Drop test program").Layout(layout_auto)
         while True:
-            window_auto = sg.Window("Drop test program").Layout(layout_auto)
             event, values = window_auto.Read()
             if event == None or event == "Cancel":
                 window_auto.Close()
                 break
-            elif os.path.isdir(values["data"]):
-                window_auto.Close()
-                direct = values["data"]
-                auto_process(direct)
-                break
-            else: 
-                window_auto.Close()
+            elif os.path.isdir(values["data"]) == False:
+                
                 sg.PopupError("Please enter a valid path!")
+            elif make_file_list(values["data"]) == []:
+                sg.PopupError("No .asc files in folder to process!")
+            else:
+                file_list = make_file_list(values["data"])
+                run_auto(file_list, values["data"])
+                window_auto.Close()
+                break
     else:
         window_initial.Close()
         manual()

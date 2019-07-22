@@ -45,13 +45,13 @@ mpl.rcParams['mathtext.default']='default'
 
 #contains everything you need from a dataset
 class Dataset:
-    def __init__(self, filename, type = "Round"):
+    def __init__(self, filename, sample_type = "round"):
         self.name = os.path.basename(filename)[:-4]
         self.array = np.load(filename)
-        self.type = type
+        self.type = sample_type.lower()
         
         # 3  load cells
-        if type == "Round":
+        if self.type == "round":
             indizes = {
                     "time":0,
                     "load":(1,2,3),
@@ -63,7 +63,7 @@ class Dataset:
                     "distance_down":9}
         
         # 4 load cells
-        if type == "Square":
+        if self.type == "square":
             indizes = {
                     "time":0,
                     "load":(1,2,3,4),
@@ -73,6 +73,9 @@ class Dataset:
                     "telfer_reset":8,
                     "distance_up":9,
                     "distance_down":10}
+        
+        if self.type != "square" and self.type != "round":
+            raise ValueError ("Sample type unknown") 
             
         self.indizes = indizes
         
@@ -207,13 +210,21 @@ def table_format(c):
 
 def open_df(data):
     excel_path = make_meta_path(data) + r"\test_data.xlsx"
+    csv_path = make_meta_path(data) + r"\test_data.csv"
     table_dtype = {"Age" : table_format, "Drop weight" : table_format, "Thickness": table_format, "Cracked/broken" : table_format, "Crack area" : table_format, "Opening angle" : table_format, "Number" : int}
-    table = pd.read_excel(excel_path, header = 0, index_col = "Name", converters  = table_dtype)
+    if os.path.isfile(excel_path):
+        table = pd.read_excel(excel_path, header = 0, index_col = "Name", converters  = table_dtype)
+    elif os.path.isfile(csv_path):
+        table = pd.read_csv(csv_path, sep = ";", header = 0, index_col = "Name" , converters  = table_dtype)
+    else:
+        raise NameError("No test_data file available!")
     return table
 
 def make_meta_path(data):
-    path = data.split("/")
-    meta_path = "\\".join(path[:-1]) + "\\metadata"
+    path = os.path.split(data)
+    print(path[0])
+    meta_path = path[0] + "\\metadata"
+    print(meta_path)
     return meta_path
     
 def calc_single_file(filename = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\basic_array\cracked\2018-11-29_Rfrs_75_1,0.npy",results="",df = "sanity_check", res_file ="", app_file = "", sample_type = "Round"):
@@ -476,7 +487,7 @@ def draw_diagrams(direct= "C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Res
 
     make_tables(res,direct)
         
-    mask = make_mask(data, direct)
+    mask = make_mask(data, direct, index = df.index)
     
     #throw useless info away
     res = res.drop(['Broken/Cracked',"Drop weight","Drop height","Velocity","Number"],axis = 1)
@@ -552,8 +563,8 @@ def plot_correlation(i, j, mask, res, unit, corr, df, path):
     corr[j][i] = r_value**2
     
     #write numbers next to points            
-#    texts = [plt.text(res.at[k,i],res.at[k,j],df.at[k.replace("\\",""),"Number"]) for k in res.index]            
-#    adjust_text(texts)
+    texts = [plt.text(res.at[k,i],res.at[k,j],df.at[k.replace("\\",""),"Number"]) for k in res.index]            
+    adjust_text(texts)
 
     #legend            
     chartBox = ax.get_position()            
@@ -604,19 +615,31 @@ def make_tables(df,direct):
     with pd.ExcelWriter(path + '\\result.xlsx') as writer:
             res.to_excel(writer, sheet_name = "Results", na_rep="")
     
-def make_mask(data, direct):
+def make_mask(data, direct, index):
         #make a mask to filter out everything that is useless
-    mask = pd.read_csv(make_meta_path(data) + "\exclude.csv", sep = ";", header = 0, index_col = 0)
-    mask = mask.astype(bool)
-    excl = mask.rename(index = str, columns={"Force":"Loadcells","Acceleration":"Accelerometer","Displacement":"Laser sensor","Vertical acceleration of sample":"Additional accelerometer vertical","Horizontal acceleration of sample":"Additional accelerometer horizontal"})
-    excl_accl = excl[["Additional accelerometer vertical","Additional accelerometer horizontal"]].loc["2019-02-20\_Rfrs\_75\_0,5":]
-    excl = excl.drop(["Opening angle","Crack area","Additional accelerometer vertical","Additional accelerometer horizontal"], axis = 1)
+    csv_path = make_meta_path(data) + "\exclude.csv"
+    excel_path = make_meta_path(data) + "\exclude.xlsx"
+    if os.path.isfile(excel_path):
+        mask = pd.read_excel(excel_path, header = 0, index_col = 0)
+    elif os.path.isfile(csv_path):
+        mask = pd.read_csv(csv_path, sep = ";", header = 0, index_col = 0)
+    else:
+        shape = (len(index),8)
+        dummy_data = np.ones(shape = shape)
+        columns = ["Loadcells","Accelerometer","Laser sensor",	"Crack area",	 "Opening angle",	"High speed camera", "Additional accelerometer vertical","Additional accelerometer horizontal"]
+        mask = pd.DataFrame(data = dummy_data, index = index, columns = columns)
+        print("TO DO: write a data frame that is all true!")
     
+    mask = mask.astype(bool)
+
     #mask to latex
+    excl_accl = mask[["Additional accelerometer vertical","Additional accelerometer horizontal"]]
+    excl = mask.drop(["Opening angle","Crack area","Additional accelerometer vertical","Additional accelerometer horizontal"], axis = 1)
     excl_format = [ex_in_clude] * len(excl.columns)
     excl_accl_format = [ex_in_clude] * len(excl_accl.columns)
     excl.to_latex(direct + "\\tables\\exclude.tex",formatters = excl_format, escape = False,na_rep=" ")
     excl_accl.to_latex(direct + "\\tables\\exclude_accel.tex",formatters = excl_accl_format, escape = False,na_rep=" ")
+    
     return mask
     
 def make_submask(i, j, mask, index):
