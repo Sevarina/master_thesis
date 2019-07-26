@@ -199,19 +199,19 @@ def table_format(c):
     cell = str(c)
     if cell == "":
         return np.nan
-    if "," in cell:
-        return float(cell.replace(",","."))
-    if "." in cell:
-        return float(cell)
-    if cell.isdigit():
-        return int(cell)
+    try:
+        int(cell)
+    except:
+        if "," in cell:
+            return float(cell.replace(",","."))
+        if "." in cell:
+            return float(cell)
     return cell
     
-
 def open_df(data):
     excel_path = make_meta_path(data) + r"\test_data.xlsx"
     csv_path = make_meta_path(data) + r"\test_data.csv"
-    table_dtype = {"Age" : table_format, "Drop weight" : table_format, "Thickness": table_format, "Cracked/broken" : table_format, "Crack area" : table_format, "Opening angle" : table_format, "Number" : int}
+    table_dtype = {"Age" : table_format, "Drop weight" : table_format, "Thickness": table_format, "Cracked/broken" : table_format, "Crack area" : table_format, "Opening angle" : table_format, "Number" : table_format}
     if os.path.isfile(excel_path):
         table = pd.read_excel(excel_path, header = 0, index_col = "Name", converters  = table_dtype)
     elif os.path.isfile(csv_path):
@@ -240,10 +240,14 @@ def calc_single_file(filename = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\D
         os.mkdir(res_path)
     
     # if there is no data frame and no results file, don't try to make entries into the appendix
-    if type(df) != str and results != "": 
-    #write everything to result files and appendix
-        new_chapter_appendix(dataset_name = dataset.name, df = df , app_file = app_file)
-        write_result(dataset,df,res_file,filename)
+    if type(df) == pd.core.frame.DataFrame and results != "": 
+        try:
+            df[dataset.name]
+                #write everything to result files and appendix
+            new_chapter_appendix(dataset_name = dataset.name, df = df , app_file = app_file)
+            write_result(dataset,df,res_file,filename)
+        except:
+            print("filename not in test_data file")
     dataset.make_graphs(res_path, app = app_file)    
     
 #write everything important to the result file        
@@ -298,7 +302,7 @@ def write_result(dataset,df,res_file,filename):
 
 
 #    broken or cracked?
-    if df.loc[dataset.name,"Broken/cracked"] == "broken":
+    if df.loc[dataset.name,"Broken/cracked"].lower() == "broken":
         #if broken just add nan
         add_list(text,"broken",sep=";;\n")
     else:

@@ -18,7 +18,7 @@ layout_initial = [
 
 layout_manual = [
         [sg.Text("What do you want to do?")],
-        [sg.Button(button_text="Add a new data set")],
+        [sg.Button(button_text="Convert .asc data")],
         [sg.Button(button_text="Plot all datasets")],
         [sg.Button(button_text="Plot linear regression of parameters")],
         [sg.Button(button_text="Close program")]
@@ -42,7 +42,7 @@ layout_plot_datasets = [ [sg.Text('Please navigate to test data', size=(30, 1))]
      ]
 
 layout_auto = [
-        [sg.Text('Please choose to test data folder', size=(30, 1))],
+        [sg.Text('Please navigate to test data')],
         [sg.InputText("C:/Users/kekaun/OneDrive - LKAB/Desktop/Try", key = "data"), sg.FolderBrowse()],
         [sg.Submit(), sg.Cancel()]
         ]
@@ -68,6 +68,7 @@ def make_add_test_layout(sample):
     layout.append([sg.Submit(), sg.Button("Skip sample"), sg.Button("Quit")])
     return layout
 
+#################################
 def new_Dataset():
     window_new_dataset = sg.Window('Drop test program', default_element_size=(40, 1)).Layout(layout_new_dataset)
     event, values = window_new_dataset.Read()
@@ -96,13 +97,14 @@ def manual():
     window_manual = sg.Window('Drop test program', default_element_size=(40, 1)).Layout(layout_manual)
     event, values = window_manual.Read()
     print(event)
-    if event == "Add a new data set":
+    if event == "Convert .asc data":
         window_manual.Close()
         new_Dataset()
     if event == "Plot all datasets":
         window_manual.Close()
         plot_all()
     if event =="Plot linear regression of parameters":
+        window_manual.Close()
         sg.Popup("Not yet implemented!")
     elif event == None or event == "Cancel":
         window_manual.Close()
@@ -180,9 +182,9 @@ def make_test_data(metadata, file_list):
                 test_dict = {"Number": num, 
                              "Name" : os.path.basename(file)[:-4]}
                 if values["Round"]:
-                    test_dict["Sample type"] = "Round"
+                    test_dict["Sample type"] = "round"
                 else:
-                    test_dict["Sample type"] = "Square"
+                    test_dict["Sample type"] = "square"
                 if "test" in values.keys() and "cast" in values.keys():
                     test = datetime.date(year = int(values["test"][:4]), month = int(values["test"][5:7]), day = int(values["test"][8:10]))
                     cast = datetime.date(year = int(values["cast"][:4]), month = int(values["cast"][5:7]), day = int(values["cast"][8:10]))
@@ -204,7 +206,7 @@ def make_test_data(metadata, file_list):
                     for i in range(1,5):
                         test_dict.update({
                             "Length " + str(i) : "",
-                            "Width " + str(i) : ""
+                            "Width " + str(i) : "" 
                             })
                     test_dict.update({
                         "Crack area" : "",
@@ -288,7 +290,7 @@ def make_file_list(direct):
 def run_auto(file_list, direct):
     basic_array, metadata, results = make_test_dir(direct)
     make_test_data(metadata, file_list)
-    make_exclusion_data(metadata, file_list)
+#    make_exclusion_data(metadata, file_list)
 #    core.calc(data = basic_array, results = results)
 
 while True:
