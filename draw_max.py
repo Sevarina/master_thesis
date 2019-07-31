@@ -11,9 +11,9 @@ import matplotlib.ticker as mticker
 mpl.rcParams['font.serif'] = "Times New Roman"
 mpl.rcParams['font.family'] = "serif"
 
-array = pd.read_excel(r"C:\Users\kekaun\OneDrive - LKAB\Desktop\max_diagram.xlsx", index_col = "MRMR")
+array = pd.read_excel(r"C:\Users\kekaun\OneDrive - LKAB\Desktop\MAX\max_diagram.xlsx", index_col = "MRMR")
 plt.figure(num = 1, figsize=(7,5))
-plt.grid(color = (1,1,1), marker = "+")
+plt.grid(color = (1,1,1))
 
 plt.ylim(bottom = 0, top = 100)
 plt.xlim(left = 0, right = 80)
@@ -38,25 +38,28 @@ horizontal = np.linspace(0, 0, num = 1000)
 
 
 #fill
-plt.fill_between(x, vertical, stable_spline(x), facecolor = (0.4588, 0.6980, 1))
-plt.fill_between(x, stable_spline(x), transit_spline(x), facecolor = (0.3529, 0.7294, 0.6549))
-plt.fill_between(x, transit_spline(x), horizontal, facecolor = (0.4784, 0.7137, 0.2824))
+plt.fill_between(x, vertical, stable_spline(x), facecolor = (0.4588, 0.6980, 1),linewidth = 0.0)
+plt.fill_between(x, stable_spline(x), transit_spline(x), facecolor = (0.3529, 0.7294, 0.6549),linewidth = 0.0)
+plt.fill_between(x, transit_spline(x), horizontal, facecolor = (0.4784, 0.7137, 0.2824),linewidth = 0.0)
 
 #plt.plot(x, stable_spline(x), color = "xkcd:azure")
-plt.plot(x, transit_spline(x), label = "HR for \nrectangular \nore body", color = "#b7ff7bfd")
-plt.plot(x, cave_spline(x), label = "HR for an \nequidimensional \nore body without \nhoop  stress \ncorrection", color = "#7bffe4fd")
+plt.plot(x, transit_spline(x), label = "HR for \nrectangular \nore body", color = "#b7ff7bfd",linewidth = 1.5)
+plt.plot(x, cave_spline(x), label = "HR for an \nequidimensional \nore body without \nhoop  stress \ncorrection", color = "#7bffe4fd",linewidth = 1.5)
 
 
 plt.text(51.3,35.875, "Caving")
-plt.text(27,66.25, "Transitional")
+#plt.text(27,66.25, "Transitional")
+plt.text(60,90, "Transitional")
 plt.text(12,85, "Stable")
 
-plt.xlabel("Hydraulic radius = radius / perimeter")
+plt.xlabel("Hydraulic radius")
 plt.ylabel("MRMR")
-plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0., fontsize = 12)
 plt.gca().xaxis.set_major_formatter(mticker.FormatStrFormatter('%d m'))
 
 plt.tight_layout()
+
+plt.savefig(r"C:\Users\kekaun\OneDrive - LKAB\Desktop\MAX\diagram.svg", )
 
 #stable_x= np.linspace(array.index[2], array.index[-1], num = 1000)
 #stable_interpol = interpolate.interp1d(array.index[2:], array.loc[14:,"Stable"])

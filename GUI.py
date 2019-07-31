@@ -11,16 +11,23 @@ import clean_file as clean
 
 layout_initial = [
         [sg.Text("What do you want to do?")],
-        [sg.Button(button_text="Automatically process data", tooltip = "Datasets will be converted from .asc and analysed")],
+        [sg.Button(button_text="Process data using GUI", tooltip = "Datasets will be converted from .asc and analysed")],
         [sg.Button(button_text="Manually process data", tooltip = "The user can choose which datasets to analyse and what to do with them")],
         [sg.Button(button_text="Close program")]
+        ]
+
+layout_GUI = [
+        [sg.Text("What do you want to do?")],
+        [sg.Button(button_text="Start new project", tooltip = "All datasets will be converted from .asc and analysed")],
+        [sg.Button(button_text="Add sample to existing project", tooltip = "A single data set will be converted and added to an existing project")],
+        [sg.Button(button_text="Close program")]       
         ]
 
 layout_manual = [
         [sg.Text("What do you want to do?")],
         [sg.Button(button_text="Convert .asc data")],
-        [sg.Button(button_text="Plot all datasets")],
-        [sg.Button(button_text="Plot linear regression of parameters")],
+        [sg.Button(button_text="Plot sensor data")],
+        [sg.Button(button_text="Plot linear regression of results")],
         [sg.Button(button_text="Close program")]
         ]
     
@@ -41,11 +48,21 @@ layout_plot_datasets = [ [sg.Text('Please navigate to test data', size=(30, 1))]
     [sg.Submit(), sg.Cancel()]      
      ]
 
-layout_auto = [
-        [sg.Text('Please navigate to test data')],
-        [sg.InputText("C:/Users/kekaun/OneDrive - LKAB/Desktop/Try", key = "data"), sg.FolderBrowse()],
+def make_layout_nav_folder(target):
+    layout = [
+        [sg.Text('Please navigate to '+ target +"!")],
+        [sg.InputText("", key = "data"), sg.FolderBrowse(target = "data")],
         [sg.Submit(), sg.Cancel()]
         ]
+    return layout
+
+def make_layout_nav_file(target):
+    layout = [
+        [sg.Text('Please navigate to '+ target +"!")],
+        [sg.InputText("", key = "data"), sg.FileBrowse(target = "data")],
+        [sg.Submit(), sg.Cancel()]
+        ]
+    return layout
 
 def make_add_test_layout(sample):
     layout = [
@@ -68,22 +85,37 @@ def make_add_test_layout(sample):
     layout.append([sg.Submit(), sg.Button("Skip sample"), sg.Button("Quit")])
     return layout
 
-#################################
 def new_Dataset():
-    window_new_dataset = sg.Window('Drop test program', default_element_size=(40, 1)).Layout(layout_new_dataset)
+    window_new_dataset = sg.Window('Drop test program', default_element_size=(40, 1)).Layout(layout_nav_folder)
     event, values = window_new_dataset.Read()
-    if event == "Cancel" or event == None:
-        window_new_dataset.Close()
-    elif values["Browse"][-4:].lower() == ".asc" and os.path.isfile(values["Browse"]):
-        window_new_dataset.Close()
-        sg.Popup("This will take a minute, please wait", non_blocking=True, auto_close=True)
-        if values["Round"]:
-            clean.clean_array(file = values["Browse"], sample_type = "Round")
+    while True:
+        if event == "Cancel" or event == None:
+            window_new_dataset.Close()    
+        elif os.path.isdir(values["data"]) == False:            
+            sg.PopupError("Please enter a valid path!")
+        elif make_file_list(values["data"]) == []:
+            sg.PopupError("No .asc files in folder to process!")
         else:
-            clean.clean_array(file = values["Browse"], sample_type = "Square")
-        sg.Popup("Conversion completed!")
-    else: 
-        sg.Popup("Please choose an existing .asc file!")
+            file_list = make_file_list(values["data"])
+            sg.PopupError("NOT IMPLEMENTED YET!")
+            window_new_dataset.Close()
+            break
+##################################
+#def new_Dataset():
+#    window_new_dataset = sg.Window('Drop test program', default_element_size=(40, 1)).Layout(layout_new_dataset)
+#    event, values = window_new_dataset.Read()
+#    if event == "Cancel" or event == None:
+#        window_new_dataset.Close()
+#    elif values["Browse"][-4:].lower() == ".asc" and os.path.isfile(values["Browse"]):
+#        window_new_dataset.Close()
+#        sg.Popup("This will take a minute, please wait", non_blocking=True, auto_close=True)
+#        if values["Round"]:
+#            clean.clean_array(file = values["Browse"], sample_type = "Round")
+#        else:
+#            clean.clean_array(file = values["Browse"], sample_type = "Square")
+#        sg.Popup("Conversion completed!")
+#    else: 
+#        sg.Popup("Please choose an existing .asc file!")
 
 def plot_all():
     window_plot = sg.Window('Drop test program', default_element_size=(40, 1)).Layout(layout_plot_datasets)
@@ -243,8 +275,6 @@ def make_test_data(metadata, file_list):
         data.to_latex(metadata + "//test_data.tex")
         sg.Popup("Data successfully entered!")
 
-
-
 def make_columns_list(list):
     return [sg.Text(i) for i in list]
 
@@ -277,46 +307,105 @@ def make_exclusion_data(metadata, file_list):
                 exclusion.loc[i,j] = int(values[i + "_" + j])
         exclusion.to_excel(metadata + "//exclude.xlsx")
         
-def make_file_list(direct):
+def make_file_list(direct, extension = ""):
     file_list = []
     for root, folders, files in os.walk(direct):
         for file in files:
-            if file[-3:].lower() == "asc":
+            if extension != "" and file[-len(extension):].lower() == extension:
                 path = root+"\\"+file
-                if os.path.isfile(path):
+                if os.path.isfile(path): 
                     file_list.append(path)
     return file_list
-                    
+
+def convert_file(basic_array, file_list):
+    data = core.open_df(basic_array)
+    res_list = []
+    for i in file_list:        
+        save_path = basic_array + "\\" + data.loc[i,"Broken/cracked"] + i[:-3] + "npy"
+        clean.clean_array(initial_file= i, clean_file = save_path,  sample_type= data.loc[i,"Sample type"])
+        res_list.append(save_path)
+    return res_list
+
+#TODO add progress bar
 def run_auto(file_list, direct):
+    #make folders
     basic_array, metadata, results = make_test_dir(direct)
     make_test_data(metadata, file_list)
-#    make_exclusion_data(metadata, file_list)
-#    core.calc(data = basic_array, results = results)
+    make_exclusion_data(metadata, file_list)
+    convert_file(basic_array, file_list)
+    core.calc(data = basic_array, results = results)
 
+def nav_folder_check(target, extension):
+    window = sg.Window("Drop test program").Layout(make_layout_nav_folder(target))
+    while True:
+        event, values = window.Read()
+        if event == None or event == "Cancel":
+            window.Close()
+            return None, None
+        elif os.path.isdir(values["data"]) == False:
+            sg.PopupError("Please enter a valid path!")
+            continue
+        file_list = make_file_list(extension = extension, direct = values["data"])
+        if file_list == []:
+                sg.PopupError("No files in location!")
+        else:
+            return file_list, values["data"]
+
+def nav_file_check(target, extension):
+    window = sg.Window("Drop test program").Layout(make_layout_nav_file(target))
+    while True:
+        event, values = window.Read()
+        if event == None or event == "Cancel":
+            window.Close()
+            return None
+        elif os.path.isfile(values["data"]) == False or values["data"][-len(extension):].lower() != extension:
+            sg.PopupError("Please check the file path!")
+            continue
+        else:
+            return values["data"]
+
+layout_GUI = [
+        [sg.Text("What do you want to do?")],
+        [sg.Button(button_text="Start new project", tooltip = "All datasets will be converted from .asc and analysed")],
+        [sg.Button(button_text="Add sample to existing project", tooltip = "A single data set will be converted and added to an existing project")],
+        [sg.Button(button_text="Close program")]       
+        ]
+
+
+def use_GUI():
+    window = sg.Window.Layout(layout_GUI)
+    while True:
+        event, values = window.Read()
+        if event == None or event == "Close program":
+            window.Close()
+            break 
+        elif event == "Start new project":
+            window.Close()
+            file_list, direct = nav_folder_check(target = "test data", extension = "asc")
+            if file_list == None:
+                continue
+            run_auto(file_list, values["data"])
+        else:
+            window.Close()
+            file = nav_file_check(target = "new data set", extension = "asc")
+            if file == None:
+                continue
+            basic_array, metadata, results = make_test_dir(os.path.basename(file))
+            filename = convert_file(basic_array, [file])
+            res_file = pd.read_excel(result + r"\result.xlsx", header = 0, index_col = 0)
+            app_path = results + r"\appendix.tex"
+            app = open(app_path,"a")
+            core.calc_single_file(filename = filename, results = results, res_file = res_file, app_file = app_file, df = )
+                                 
 while True:
     window_initial = sg.Window('Drop test program').Layout(layout_initial)
     event, values = window_initial.Read()
     if event == None or event == "Close program":
         window_initial.Close()
         break
-    elif event == "Automatically process data":
+    elif event == "Process data using GUI":
         window_initial.Close()
-        window_auto = sg.Window("Drop test program").Layout(layout_auto)
-        while True:
-            event, values = window_auto.Read()
-            if event == None or event == "Cancel":
-                window_auto.Close()
-                break
-            elif os.path.isdir(values["data"]) == False:
-                
-                sg.PopupError("Please enter a valid path!")
-            elif make_file_list(values["data"]) == []:
-                sg.PopupError("No .asc files in folder to process!")
-            else:
-                file_list = make_file_list(values["data"])
-                run_auto(file_list, values["data"])
-                window_auto.Close()
-                break
+
     else:
         window_initial.Close()
         manual()

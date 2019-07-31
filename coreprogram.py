@@ -211,7 +211,7 @@ def table_format(c):
 def open_df(data):
     excel_path = make_meta_path(data) + r"\test_data.xlsx"
     csv_path = make_meta_path(data) + r"\test_data.csv"
-    table_dtype = {"Age" : table_format, "Drop weight" : table_format, "Thickness": table_format, "Cracked/broken" : table_format, "Crack area" : table_format, "Opening angle" : table_format, "Number" : table_format}
+    table_dtype = {"Age" : table_format, "Sample type" : table_format, "Drop weight" : table_format, "Thickness": table_format, "Cracked/broken" : table_format, "Crack area" : table_format, "Opening angle" : table_format, "Number" : table_format}
     if os.path.isfile(excel_path):
         table = pd.read_excel(excel_path, header = 0, index_col = "Name", converters  = table_dtype)
     elif os.path.isfile(csv_path):
@@ -222,9 +222,7 @@ def open_df(data):
 
 def make_meta_path(data):
     path = os.path.split(data)
-    print(path[0])
     meta_path = path[0] + "\\metadata"
-    print(meta_path)
     return meta_path
     
 def calc_single_file(filename = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\basic_array\cracked\2018-11-29_Rfrs_75_1,0.npy",results="",df = "sanity_check", res_file ="", app_file = "", sample_type = "Round"):
