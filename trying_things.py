@@ -1,47 +1,22 @@
-import tkinter
+def make_mask(data, direct, index):
+        #make a mask to filter out everything that is useless
+    try:
+        mask = open_df(direct,"exclude")
+    except:
+        shape = (len(index),8)
+        dummy_data = np.ones(shape = shape)
+        columns = ["Loadcells","Accelerometer","Laser sensor",	"Crack area",	 "Opening angle",	"High speed camera", "Additional accelerometer vertical","Additional accelerometer horizontal"]
+        mask = pd.DataFrame(data = dummy_data, index = index, columns = columns)
+        
+    mask = mask.astype(bool)
 
-from matplotlib.backends.backend_tkagg import (
-    FigureCanvasTkAgg, NavigationToolbar2Tk)
-# Implement the default Matplotlib key bindings.
-from matplotlib.backend_bases import key_press_handler
-from matplotlib.figure import Figure
-
-import numpy as np
-
-
-root = tkinter.Tk()
-root.wm_title("Embedding in Tk")
-
-fig = Figure(figsize=(5, 4), dpi=100)
-t = np.arange(0, 3, .01)
-fig.add_subplot(111).plot(t, 2 * np.sin(2 * np.pi * t))
-
-canvas = FigureCanvasTkAgg(fig, master=root)  # A tk.DrawingArea.
-canvas.draw()
-canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
-
-toolbar = NavigationToolbar2Tk(canvas, root)
-toolbar.update()
-canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
-
-
-def on_key_press(event):
-    print("you pressed {}".format(event.key))
-    key_press_handler(event, canvas, toolbar)
-
-
-canvas.mpl_connect("key_press_event", on_key_press)
-
-
-def _quit():
-    root.quit()     # stops mainloop
-    root.destroy()  # this is necessary on Windows to prevent
-                    # Fatal Python Error: PyEval_RestoreThread: NULL tstate
-
-
-button = tkinter.Button(master=root, text="Quit", command=_quit)
-button.pack(side=tkinter.BOTTOM)
-
-tkinter.mainloop()
-# If you put root.destroy() here, it will cause an error if the window is
-# closed with the window manager.
+    #mask to latex
+    excl_accl = mask[["Additional accelerometer vertical","Additional accelerometer horizontal"]]
+    excl = mask.drop(["Opening angle","Crack area","Additional accelerometer vertical","Additional accelerometer horizontal"], axis = 1)
+    excl_format = [ex_in_clude] * len(excl.columns)
+    excl_accl_format = [ex_in_clude] * len(excl_accl.columns)
+    
+    excl.to_latex(direct + "\\tables\\exclude.tex",formatters = excl_format, escape = False,na_rep=" ")
+    excl_accl.to_latex(direct + "\\tables\\exclude_accel.tex",formatters = excl_accl_format, escape = False,na_rep=" ")
+    
+    return mask

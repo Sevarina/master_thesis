@@ -142,9 +142,6 @@ class Dataset:
 
 #run all the things we really want on all files
 def calc(data=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\basic_array", results=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results" , extra_accel=False):
-    #go to the right directory - save time
-    os.chdir(data)
-    
     #do you want to calculate with the normal sensor array or for the extra accelerometers
     if extra_accel == False:
         calc_basic_array(data, results)
@@ -180,14 +177,7 @@ def make_appendix_file(results):
     return app
     
 def iterate_over(direct,results,df,res_file,app_file):    
-    #iterate over file 
-    file_list = []
-    for root, folders, files in os.walk(direct):
-        for file in files:
-            if file[-3:].lower() == "npy":
-                path = root+"\\"+file
-                if os.path.isfile(path):
-                    file_list.append(path)
+    file_list = make_file_list(direct, "npy")
     for i in file_list:
         sg.OneLineProgressMeter('Progress', file_list.index(i) + 1, len(file_list), 'key','Progress of calculation')
         calc_single_file(i,results,df,res_file,app_file, sample_type = df.at[os.path.basename(i)[:-4],"Sample type"])
@@ -217,28 +207,33 @@ def make_file_list(direct, extension = ""):
                 file_list.append(path)
     return file_list
 
-def open_df(data):
+def open_df(data, filename = "test_data"):
     #using dynamic recasting to confuse the reader
     excel_path, csv_path = False, False
     xlsx_list = make_file_list(data, extension = "xlsx")
     for i in xlsx_list:
-        if os.path.basename(i).lower() == "test_data.xlsx":
+        if os.path.basename(i).lower() == filename + ".xlsx":
             excel_path = i
             break
     csv_list = make_file_list(data, extension = "csv")
     for j in csv_list:
-        if os.path.basename(i).lower() == "test_data.csv":
+        if os.path.basename(i).lower() == filename + ".csv":
             csv_path = j
             break
-    print(xlsx_list)
-    print(csv_list)
-    table_dtype = {"Age" : table_format, "Sample type" : table_format, "Drop weight" : table_format, "Thickness": table_format, "Cracked/broken" : table_format, "Crack area" : table_format, "Opening angle" : table_format, "Number" : table_format}
     if excel_path:
-        table = pd.read_excel(excel_path, header = 0, index_col = "Name", converters  = table_dtype)
+        help_table = pd.read_excel(excel_path, header = 0, index_col = "Name")
+        table_dtype = {}
+        for i in help_table.columns:
+            table_dtype[i] = table_format
+        table = pd.read_excel(excel_path, header = 0, index_col = "Name", converters = table_dtype)
     elif csv_path:
-        table = pd.read_csv(csv_path, sep = ";", header = 0, index_col = "Name" , converters  = table_dtype)
+        help_table = pd.read_csv(csv_path, sep = ";", header = 0, index_col = "Name")
+        table_dtype = {}
+        for i in help_table.columns:
+            table_dtype[i] = table_format
+        table = pd.read_csv(excel_path, sep = ";", header = 0, index_col = "Name", converters = table_dtype)
     else:
-        raise NameError("No test_data file available!")
+        raise NameError("No " + filename + " file available!")
     return table
 
 def make_meta_path(data):
@@ -490,19 +485,13 @@ def ex_in_clude(boolean):
     else:
         return "faulty"
 
-def open_res_df(direct):
-    res_path = direct + r"\result.csv"
-    res = pd.read_csv(res_path, sep = ";", header = [0])
-    res.set_index("Name", inplace = True)
-    return res
-    
-
+ 
 def draw_diagrams(direct= "C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Results", df = "place_holder", data = "C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Data\\basic_array"):
     #if df is not open yet, open it
     if isinstance(df, str):
-        df = open_df(data)
+        df = open_df(direct)
     
-    res = open_res_df(direct)
+    res = open_df(direct, "result")
     
     #make dir to save stuff
     path = direct + "\\diagram"
