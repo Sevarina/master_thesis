@@ -79,7 +79,7 @@ class Dataset:
             
         self.indizes = indizes
         
-        start_accel, end_accel, start_load, end_load, start_laser, end_laser = calc_scope(self.array)
+        start_accel, end_accel, start_load, end_load, start_laser, end_laser = calc_scope(self.array, self.indizes["magnetventil"])
         
         #define datasets
         self.load = self.array[start_load:end_load,self.indizes["load"]]
@@ -208,13 +208,34 @@ def table_format(c):
             return float(cell)
     return cell
     
+def make_file_list(direct, extension = ""):
+    file_list = []
+    for root, folders, files in os.walk(direct):
+        for file in files:
+            path = root + "\\" + file
+            if os.path.isfile(path) and (extension == "" or file[-len(extension):].lower() == extension):
+                file_list.append(path)
+    return file_list
+
 def open_df(data):
-    excel_path = make_meta_path(data) + r"\test_data.xlsx"
-    csv_path = make_meta_path(data) + r"\test_data.csv"
+    #using dynamic recasting to confuse the reader
+    excel_path, csv_path = False, False
+    xlsx_list = make_file_list(data, extension = "xlsx")
+    for i in xlsx_list:
+        if os.path.basename(i).lower() == "test_data.xlsx":
+            excel_path = i
+            break
+    csv_list = make_file_list(data, extension = "csv")
+    for j in csv_list:
+        if os.path.basename(i).lower() == "test_data.csv":
+            csv_path = j
+            break
+    print(xlsx_list)
+    print(csv_list)
     table_dtype = {"Age" : table_format, "Sample type" : table_format, "Drop weight" : table_format, "Thickness": table_format, "Cracked/broken" : table_format, "Crack area" : table_format, "Opening angle" : table_format, "Number" : table_format}
-    if os.path.isfile(excel_path):
+    if excel_path:
         table = pd.read_excel(excel_path, header = 0, index_col = "Name", converters  = table_dtype)
-    elif os.path.isfile(csv_path):
+    elif csv_path:
         table = pd.read_csv(csv_path, sep = ";", header = 0, index_col = "Name" , converters  = table_dtype)
     else:
         raise NameError("No test_data file available!")
@@ -240,7 +261,7 @@ def calc_single_file(filename = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\D
     # if there is no data frame and no results file, don't try to make entries into the appendix
     if type(df) == pd.core.frame.DataFrame and results != "": 
         try:
-            df[dataset.name]
+            df.loc[dataset.name]
                 #write everything to result files and appendix
             new_chapter_appendix(dataset_name = dataset.name, df = df , app_file = app_file)
             write_result(dataset,df,res_file,filename)
@@ -351,8 +372,8 @@ def plot(direct,x,y,limit=(-1,-1),xlabel="",ylabel="",name="", appendix = False,
     if appendix != False:
         write_appendix(appendix, ".\\appendix\\" + dataset_name + "\\" + name + ".png", name)
 
-def calc_scope(array):
-    start_load = find_start(array,cushion=500)
+def calc_scope(array,index):
+    start_load = find_start(array, index, cushion=500)
     start_accel = start_load
     start_laser = start_load
     
@@ -418,8 +439,8 @@ def load_displacement_curve(file="C:\\Users\\kekaun\\OneDrive - LKAB\\roundSampl
     plt.savefig("C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Results\\" + os.path.basename(file)[:-4] + "_energy.png")
     plt.close()
 
-def find_start(array,cushion=500): 
-    x = np.where(array[:,6]==1)
+def find_start(array, index = 6, cushion=500): 
+    x = np.where(array[:,index]==1)
     a = np.argmax(array[x[0][0]:],axis=0)
     c=[]
     for i in range(1,4):
@@ -474,6 +495,7 @@ def open_res_df(direct):
     res = pd.read_csv(res_path, sep = ";", header = [0])
     res.set_index("Name", inplace = True)
     return res
+    
 
 def draw_diagrams(direct= "C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Results", df = "place_holder", data = "C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Data\\basic_array"):
     #if df is not open yet, open it
@@ -613,9 +635,21 @@ def make_tables(df,direct):
     cracks.to_latex(path + "\\crack.tex",na_rep="", formatters = decimal, column_format = form, escape=False, index=False)
     
     write_legend(direct,df.iloc[1:]["Number"])
-    
-    with pd.ExcelWriter(path + '\\result.xlsx') as writer:
-            res.to_excel(writer, sheet_name = "Results", na_rep="")
+    res_xlsx = res.copy()    
+    new_index = [i.replace("\_", "_") for i in res.index]
+#    res_xlsx.index = new_index
+    res_xlsx = res.reset_index()
+    res_xlsx = res_xlsx.assign(Name = new_index)
+    print(res_xlsx.loc[:,"Name"])
+    res_xlsx.set_index("Name", inplace = True)
+#    res.set_index("new_index")
+#    res.reset_index(drop = True, inplace = True)
+#    new_unit = 
+    new_unit = pd.Series(["", "[kJ]", "[mm]", "[kg]", "[mm]", "[days]", "[m/s]", "[kN]", "[m/s2]", "[mm]", "", "[mm2]", "[degrees]"], res_xlsx.columns)
+    res_xlsx.iloc[0] = new_unit
+    ############################################################# findme
+    with pd.ExcelWriter(direct + '\\result.xlsx') as writer:
+            res_xlsx.to_excel(writer, sheet_name = "Results", na_rep="")
     
 def make_mask(data, direct, index):
         #make a mask to filter out everything that is useless

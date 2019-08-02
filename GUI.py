@@ -48,6 +48,13 @@ layout_plot_datasets = [ [sg.Text('Please navigate to test data', size=(30, 1))]
     [sg.Submit(), sg.Cancel()]      
      ]
 
+layout_GUI = [
+        [sg.Text("What do you want to do?")],
+        [sg.Button(button_text="Start new project", tooltip = "All datasets will be converted from .asc and analysed")],
+        [sg.Button(button_text="Add sample to existing project", tooltip = "A single data set will be converted and added to an existing project")],
+        [sg.Button(button_text="Close program")],
+        ]
+
 def make_layout_nav_folder(target):
     layout = [
         [sg.Text('Please navigate to '+ target +"!")],
@@ -85,6 +92,13 @@ def make_add_test_layout(sample):
     layout.append([sg.Submit(), sg.Button("Skip sample"), sg.Button("Quit")])
     return layout
 
+def make_choose_test_layout(file_list, verb):
+    layout = [[sg.Text("Please tick which files you want to "+ verb +" !")]]
+    for i in file_list:
+        layout.append([sg.Checkbox(os.path.basename(i),default = True, key = i)])
+    layout  = layout + [[sg.Submit(), sg.Cancel()]]
+    return layout
+
 def new_Dataset():
     window_new_dataset = sg.Window('Drop test program', default_element_size=(40, 1)).Layout(layout_nav_folder)
     event, values = window_new_dataset.Read()
@@ -93,10 +107,10 @@ def new_Dataset():
             window_new_dataset.Close()    
         elif os.path.isdir(values["data"]) == False:            
             sg.PopupError("Please enter a valid path!")
-        elif make_file_list(values["data"]) == []:
+        elif core.make_file_list(values["data"]) == []:
             sg.PopupError("No .asc files in folder to process!")
         else:
-            file_list = make_file_list(values["data"])
+            file_list = core.make_file_list(values["data"])
             sg.PopupError("NOT IMPLEMENTED YET!")
             window_new_dataset.Close()
             break
@@ -125,32 +139,91 @@ def plot_all():
         window_plot.Close()
     else: window_plot.Close()
 
+########################### FIXME
+
+layout_man = [
+        [sg.Text("What do you want to do?")],
+        [sg.Button("Convert a single data set", tooltip = "Convert one data set from .asc to .npy")],
+        [sg.Button("Convert several data sets at once", tooltip = "Convert all data sets in a folder from .asc to .npy")],
+        [sg.Button("Run analysis for all data sets in a folder", tooltip = "Analyse all .npy in the chosen folder")],
+#        [sg.Button("Edit data set", tooltip = "Remove outliers from a data set")],
+        [sg.Submit(), sg.Cancel()]   
+        ]
+
+def choose_file(file_list, verb):
+    choose_window = sg.Window('Drop test program').Layout(make_choose_test_layout(file_list, verb))
+    event, values = choose_window.Read()
+    choose_window.Close()
+    if event == None or event == "Cancel":
+        return []
+    chosen_list = [j for j in file_list if values[j]]
+    return chosen_list
+
 def manual():
-    window_manual = sg.Window('Drop test program', default_element_size=(40, 1)).Layout(layout_manual)
-    event, values = window_manual.Read()
-    print(event)
-    if event == "Convert .asc data":
-        window_manual.Close()
-        new_Dataset()
-    if event == "Plot all datasets":
-        window_manual.Close()
-        plot_all()
-    if event =="Plot linear regression of parameters":
-        window_manual.Close()
-        sg.Popup("Not yet implemented!")
-    elif event == None or event == "Cancel":
-        window_manual.Close()
+    while True:
+        window = sg.Window('Drop test program').Layout(layout_man)    
+        event, values = window.Read()
+        if event == None or event == "Cancel":
+            window.Close()
+        elif event == "Convert a single data set":
+            window.Close()
+            file = nav_file_check(target = "test data", extension = "asc")
+            _, basic_array = nav_folder_check(target = "where you want the converted data to be saved")
+            convert_single_file(basic_array, [file])
+        elif event == "Convert several data sets at once":
+            window.Close()
+            file_list, direct = nav_folder_check(target = "test data", extension = "asc")
+            _, basic_array = nav_folder_check(target = "where you want the converted data to be saved", extension = "")
+            convert_list = choose_file(file_list, "convert")
+            if convert_list != []:
+                convert_file(basic_array, convert_list)
+        else:
+            window.Close()
+            file_list, basic_array = nav_folder_check(target = "data you want to analyse", extension = "npy")
+            _, result = nav_folder_check(target = "where you the results to be saved")
+            core.calc(basic_array, result)
+#        else:
+#            file = nav_file_check(target = "test data", extension = "npy")
+            
+
+#    window_manual = sg.Window('Drop test program', default_element_size=(40, 1)).Layout(layout_manual)
+#    event, values = window_manual.Read()
+#    print(event)
+#    if event == "Convert .asc data":
+#        window_manual.Close()
+#        new_Dataset()
+#    if event == "Plot all datasets":
+#        window_manual.Close()
+#        plot_all()
+#    if event =="Plot linear regression of parameters":
+#        window_manual.Close()
+#        sg.Popup("Not yet implemented!")
+
+def convert_single_file(basic_array):
+    file = nav_file_check(target = "new data set", extension = "asc")
+    if file == None:
+        return
+    #convert
+    filename = convert_file(basic_array, [file])
+    return filename
 
 def make_test_dir(direct):
     basic_array = (direct + "//test_analysis//Data//basic_array")
     if os.path.isdir(basic_array) == False:
         os.makedirs(basic_array)
+    broken = direct + "//test_analysis//Data//basic_array//broken"
+    if os.path.isdir(broken) == False:
+        os.makedirs(broken)
+    cracked = direct + "//test_analysis//Data//basic_array//cracked"
+    if os.path.isdir(cracked) == False:
+        os.makedirs(cracked)
     metadata = direct + "//test_analysis//Data//metadata"
     if os.path.isdir(metadata) == False:
         os.makedirs(metadata)
     results = direct + "//test_analysis//Results"
     if os.path.isdir(results) == False:
         os.makedirs(results)
+
     return basic_array, metadata, results
 
 def check_crack(values):
@@ -217,7 +290,8 @@ def make_test_data(metadata, file_list):
                     test_dict["Sample type"] = "round"
                 else:
                     test_dict["Sample type"] = "square"
-                if "test" in values.keys() and "cast" in values.keys():
+                if values["test"] != "" and values["cast"] != "":
+                    print(values)
                     test = datetime.date(year = int(values["test"][:4]), month = int(values["test"][5:7]), day = int(values["test"][8:10]))
                     cast = datetime.date(year = int(values["cast"][:4]), month = int(values["cast"][5:7]), day = int(values["cast"][8:10]))
                     age = test - cast
@@ -307,22 +381,14 @@ def make_exclusion_data(metadata, file_list):
                 exclusion.loc[i,j] = int(values[i + "_" + j])
         exclusion.to_excel(metadata + "//exclude.xlsx")
         
-def make_file_list(direct, extension = ""):
-    file_list = []
-    for root, folders, files in os.walk(direct):
-        for file in files:
-            if extension != "" and file[-len(extension):].lower() == extension:
-                path = root+"\\"+file
-                if os.path.isfile(path): 
-                    file_list.append(path)
-    return file_list
-
 def convert_file(basic_array, file_list):
     data = core.open_df(basic_array)
     res_list = []
-    for i in file_list:        
-        save_path = basic_array + "\\" + data.loc[i,"Broken/cracked"] + i[:-3] + "npy"
-        clean.clean_array(initial_file= i, clean_file = save_path,  sample_type= data.loc[i,"Sample type"])
+    for i in file_list:
+        filename = os.path.basename(i)[:-4]
+        save_path = basic_array + "\\" + data.loc[filename,"Broken/cracked"] + "\\" + filename + ".npy"
+        print(data.loc[filename,"Sample type"].lower())
+        clean.clean_array(initial_file= i, clean_file = save_path,  sample_type= data.loc[filename,"Sample type"].lower())
         res_list.append(save_path)
     return res_list
 
@@ -332,48 +398,44 @@ def run_auto(file_list, direct):
     basic_array, metadata, results = make_test_dir(direct)
     make_test_data(metadata, file_list)
     make_exclusion_data(metadata, file_list)
+    sg.Popup("The conversion process takes some time, please be patient!", non_blocking=True)
     convert_file(basic_array, file_list)
     core.calc(data = basic_array, results = results)
 
-def nav_folder_check(target, extension):
-    window = sg.Window("Drop test program").Layout(make_layout_nav_folder(target))
+def nav_folder_check(target, extension = ""):
     while True:
+        window = sg.Window("Drop test program").Layout(make_layout_nav_folder(target))
         event, values = window.Read()
         if event == None or event == "Cancel":
             window.Close()
             return None, None
         elif os.path.isdir(values["data"]) == False:
+            window.Close()
             sg.PopupError("Please enter a valid path!")
-            continue
-        file_list = make_file_list(extension = extension, direct = values["data"])
-        if file_list == []:
-                sg.PopupError("No files in location!")
         else:
-            return file_list, values["data"]
+            file_list = core.make_file_list(extension = extension, direct = values["data"])
+            if file_list == [] and extension != "":
+                sg.PopupError("No files in location!")
+                window.Close()  
+            else:
+                window.Close()
+                return file_list, values["data"]
 
 def nav_file_check(target, extension):
-    window = sg.Window("Drop test program").Layout(make_layout_nav_file(target))
     while True:
+        window = sg.Window("Drop test program").Layout(make_layout_nav_file(target))
         event, values = window.Read()
         if event == None or event == "Cancel":
             window.Close()
             return None
         elif os.path.isfile(values["data"]) == False or values["data"][-len(extension):].lower() != extension:
+            window.Close()
             sg.PopupError("Please check the file path!")
-            continue
         else:
             return values["data"]
 
-layout_GUI = [
-        [sg.Text("What do you want to do?")],
-        [sg.Button(button_text="Start new project", tooltip = "All datasets will be converted from .asc and analysed")],
-        [sg.Button(button_text="Add sample to existing project", tooltip = "A single data set will be converted and added to an existing project")],
-        [sg.Button(button_text="Close program")]       
-        ]
-
-
 def use_GUI():
-    window = sg.Window.Layout(layout_GUI)
+    window = sg.Window("Drop test program").Layout(layout_GUI)
     while True:
         event, values = window.Read()
         if event == None or event == "Close program":
@@ -384,28 +446,30 @@ def use_GUI():
             file_list, direct = nav_folder_check(target = "test data", extension = "asc")
             if file_list == None:
                 continue
-            run_auto(file_list, values["data"])
+            run_auto(file_list, direct)
         else:
             window.Close()
-            file = nav_file_check(target = "new data set", extension = "asc")
-            if file == None:
-                continue
+            file = nav_file_check(target = "test data", extension = "asc")
             basic_array, metadata, results = make_test_dir(os.path.basename(file))
-            filename = convert_file(basic_array, [file])
-            res_file = pd.read_excel(result + r"\result.xlsx", header = 0, index_col = 0)
+            sg.Popup("The conversion process takes some time, please be patient!", non_blocking=True)
+            filename = convert_single_file(basic_array)
+            #open everything you need to calc
+            res_file = pd.read_excel(results + r"\result.xlsx", header = 0, index_col = 0)
             app_path = results + r"\appendix.tex"
-            app = open(app_path,"a")
-            core.calc_single_file(filename = filename, results = results, res_file = res_file, app_file = app_file, df = )
-                                 
-while True:
-    window_initial = sg.Window('Drop test program').Layout(layout_initial)
+            app_file = open(app_path,"a")
+            df = core.open_df(basic_array)
+            #calc
+            core.calc_single_file(filename = filename, results = results, res_file = res_file, app_file = app_file, df = df)
+
+window_initial = sg.Window('Drop test program').Layout(layout_initial)                                
+while True:    
     event, values = window_initial.Read()
     if event == None or event == "Close program":
         window_initial.Close()
         break
     elif event == "Process data using GUI":
         window_initial.Close()
-
+        use_GUI()
     else:
         window_initial.Close()
         manual()

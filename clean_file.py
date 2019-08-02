@@ -4,16 +4,16 @@ import numpy as np
 
 
 #the important code
-def clean_array(initial_file=".\\Data\\cracked\\2019-05-06_Rfrs_75_0,8.asc", clean_file = ".\\Data\\cracked\\2019-05-06_Rfrs_75_0,8.npy",  sample_type= "Round"):
+def clean_array(initial_file=".\\Data\\cracked\\2019-05-06_Rfrs_75_0,8.asc", clean_file = ".\\Data\\cracked\\2019-05-06_Rfrs_75_0,8.npy",  sample_type= "round"):
     array = readData(filename = initial_file)
     #throw away all the rows you don´t need
-    if sample_type == "Round":
+    if sample_type == "round":
+        print("ROUND!")
         newarray = np.delete(array,[5,6,8,10,11,13,14,15,16,17,18,19,20,21,22],1)
     else: newarray = np.delete(array,[6,8,10,11,13,14,15,16,17,18,19,20,21,22],1)
     newarray = fix_time(newarray)
     for i in range(newarray.shape[0]):
         newarray[i][5] = newarray[i][5] * 9.8
-
     np.save(clean_file,newarray)
 
 def fix_time(array):
