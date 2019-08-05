@@ -154,7 +154,7 @@ def calc_basic_array(data,results):
     app_file = make_appendix_file(results)
     df = open_df(data)
     iterate_over(data,results,df,res_file,app_file)
-    draw_diagrams(results,df,data)
+    draw_diagrams(data, results, df)
 
 def make_result_file(results):    
     #open results file
@@ -183,6 +183,14 @@ def iterate_over(direct,results,df,res_file,app_file):
         calc_single_file(i,results,df,res_file,app_file, sample_type = df.at[os.path.basename(i)[:-4],"Sample type"])
     res_file.close()
     app_file.close()
+
+def find_folder(path, folder_name):
+    #crawl a folder and return the path of the folder you are looking for:
+    for root, folders, files in os.walk(path):
+        for folder in folders:
+            if folder.lower() == folder_name.lower():
+                return os.path.join(root,folder)
+    return None
 
 #try which format the cell has
 def table_format(c):
@@ -217,7 +225,7 @@ def open_df(data, filename = "test_data"):
             break
     csv_list = make_file_list(data, extension = "csv")
     for j in csv_list:
-        if os.path.basename(i).lower() == filename + ".csv":
+        if os.path.basename(j).lower() == filename + ".csv":
             csv_path = j
             break
     if excel_path:
@@ -231,7 +239,28 @@ def open_df(data, filename = "test_data"):
         table_dtype = {}
         for i in help_table.columns:
             table_dtype[i] = table_format
-        table = pd.read_csv(excel_path, sep = ";", header = 0, index_col = "Name", converters = table_dtype)
+        table = pd.read_csv(csv_path, sep = ";", header = 0, index_col = "Name", converters = table_dtype)
+    else:
+        raise NameError("No " + filename + " file available!")
+    return table
+
+def close_df(data, filename, df):
+    #using dynamic recasting to confuse the reader
+    excel_path, csv_path = False, False
+    xlsx_list = make_file_list(data, extension = "xlsx")
+    for i in xlsx_list:
+        if os.path.basename(i).lower() == filename + ".xlsx":
+            excel_path = i
+            break
+    csv_list = make_file_list(data, extension = "csv")
+    for j in csv_list:
+        if os.path.basename(j).lower() == filename + ".csv":
+            csv_path = j
+            break
+    if excel_path:
+        df.to_excel(excel_path)
+    elif csv_path:
+        df.to_csv(csv_path)
     else:
         raise NameError("No " + filename + " file available!")
     return table
@@ -486,47 +515,52 @@ def ex_in_clude(boolean):
         return "faulty"
 
  
-def draw_diagrams(direct= "C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Results", df = "place_holder", data = "C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Data\\basic_array"):
+def draw_diagrams(metadata = r"C:\Users\kekaun\OneDrive - LKAB\Desktop\try\test_analysis\Data\metadata", results = r"C:\Users\kekaun\OneDrive - LKAB\Desktop\try\test_analysis\Results", df = "place_holder"):
     #if df is not open yet, open it
     if isinstance(df, str):
-        df = open_df(direct)
+        df = open_df(metadata, "test_data")
     
-    res = open_df(direct, "result")
+    res_df = open_df(results, "result")
     
     #make dir to save stuff
-    path = direct + "\\diagram"
+    path = results + "\\diagram"
     if os.path.isdir(path) == False:
         os.makedirs(path)
 
-    make_tables(res,direct)
+    #make dir to save stuff
+    tables_path = results + "\\tables"
+    if os.path.isdir(tables_path) == False:
+        os.makedirs(tables_path)
+
+    make_tables(res_df, tables_path)
         
-    mask = make_mask(data, direct, index = df.index)
+    mask = make_mask(metadata, index = df.index, tables = tables_path)
     
     #throw useless info away
-    res = res.drop(['Broken/Cracked',"Drop weight","Drop height","Velocity","Number"],axis = 1)
+    res_df = res_df.drop(['Broken/Cracked',"Drop weight","Drop height","Velocity","Number"],axis = 1)
 
     #keep the unit
-    unit = res.iloc[0]
+    unit = res_df.iloc[0]
     
     #don't need the unit in the data anymore
-    res = res.drop(res.index[0])
+    res_df = res_df.drop(res_df.index[0])
     
     #make data usable
-    res = res.astype(float)
+    res_df = res_df.astype(float)
     
     #correlation dataframe
-    corr = pd.DataFrame(index = res.columns, columns = res.columns, dtype = float)
+    corr = pd.DataFrame(index = res_df.columns, columns = res_df.columns, dtype = float)
     
     counter = 1
     #draw all the silly graphics    
-    for j in res.columns:
-        for i in res.columns:
-            sg.OneLineProgressMeter('Progress', counter, len(res.columns)**2, 'key','Drawing diagrams')
+    for j in res_df.columns:
+        for i in res_df.columns:
+            sg.OneLineProgressMeter('Progress', counter, len(res_df.columns)**2, 'key','Drawing diagrams')
             counter += 1
-            plot_correlation(i, j, mask, res, unit, corr, df, path)
+            plot_correlation(i, j, mask, res_df, unit, corr, df, path)
            
     #draw a heatmap
-    heatmap(corr, direct)
+    heatmap(corr, results)
     
     
 def plot_correlation(i, j, mask, res, unit, corr, df, path):
@@ -538,6 +572,10 @@ def plot_correlation(i, j, mask, res, unit, corr, df, path):
 
     #exclude the data
     exclude = res[~submask]
+    
+    print(res)
+    print(submask)
+    print(exclude)
     
     crack = res[submask][mask["Crack area"]]
     broke = res[submask][~mask["Crack area"]]
@@ -590,9 +628,9 @@ def plot_correlation(i, j, mask, res, unit, corr, df, path):
     plt.close()
     
 #make a latex table out of the .csv       
-def make_tables(df,direct):
+def make_tables(df,res_path):
         #make dir to save stuff
-    path = direct + "\\tables"
+    path = res_path + "\\tables"
     if os.path.isdir(path) == False:
         os.makedirs(path)
     
@@ -623,7 +661,7 @@ def make_tables(df,direct):
     decimal = [number_format] * len(crack.columns)    
     cracks.to_latex(path + "\\crack.tex",na_rep="", formatters = decimal, column_format = form, escape=False, index=False)
     
-    write_legend(direct,df.iloc[1:]["Number"])
+    write_legend(res_path,df.iloc[1:]["Number"])
     res_xlsx = res.copy()    
     new_index = [i.replace("\_", "_") for i in res.index]
 #    res_xlsx.index = new_index
@@ -637,24 +675,19 @@ def make_tables(df,direct):
     new_unit = pd.Series(["", "[kJ]", "[mm]", "[kg]", "[mm]", "[days]", "[m/s]", "[kN]", "[m/s2]", "[mm]", "", "[mm2]", "[degrees]"], res_xlsx.columns)
     res_xlsx.iloc[0] = new_unit
     ############################################################# findme
-    with pd.ExcelWriter(direct + '\\result.xlsx') as writer:
+    with pd.ExcelWriter(res_path + '\\result.xlsx') as writer:
             res_xlsx.to_excel(writer, sheet_name = "Results", na_rep="")
     
-def make_mask(data, direct, index):
+def make_mask(direct, index, tables):
         #make a mask to filter out everything that is useless
-    csv_path = make_meta_path(data) + "\exclude.csv"
-    excel_path = make_meta_path(data) + "\exclude.xlsx"
-    if os.path.isfile(excel_path):
-        mask = pd.read_excel(excel_path, header = 0, index_col = 0)
-    elif os.path.isfile(csv_path):
-        mask = pd.read_csv(csv_path, sep = ";", header = 0, index_col = 0)
-    else:
+    try:
+        mask = open_df(direct,"exclude")
+    except:
         shape = (len(index),8)
         dummy_data = np.ones(shape = shape)
         columns = ["Loadcells","Accelerometer","Laser sensor",	"Crack area",	 "Opening angle",	"High speed camera", "Additional accelerometer vertical","Additional accelerometer horizontal"]
         mask = pd.DataFrame(data = dummy_data, index = index, columns = columns)
-        print("TO DO: write a data frame that is all true!")
-    
+        
     mask = mask.astype(bool)
 
     #mask to latex
@@ -662,8 +695,9 @@ def make_mask(data, direct, index):
     excl = mask.drop(["Opening angle","Crack area","Additional accelerometer vertical","Additional accelerometer horizontal"], axis = 1)
     excl_format = [ex_in_clude] * len(excl.columns)
     excl_accl_format = [ex_in_clude] * len(excl_accl.columns)
-    excl.to_latex(direct + "\\tables\\exclude.tex",formatters = excl_format, escape = False,na_rep=" ")
-    excl_accl.to_latex(direct + "\\tables\\exclude_accel.tex",formatters = excl_accl_format, escape = False,na_rep=" ")
+    
+    excl.to_latex(os.path.join(tables, "exclude.tex"),formatters = excl_format, escape = False,na_rep=" ")
+    excl_accl.to_latex(os.path.join(tables, "exclude.tex"),formatters = excl_accl_format, escape = False,na_rep=" ")
     
     return mask
     
