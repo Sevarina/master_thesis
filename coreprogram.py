@@ -198,7 +198,7 @@ def table_format(c):
     if cell == "":
         return np.nan
     try:
-        int(cell)
+        return int(cell)
     except:
         if "," in cell:
             return float(cell.replace(",","."))
@@ -244,7 +244,7 @@ def open_df(data, filename = "test_data"):
         raise NameError("No " + filename + " file available!")
     return table
 
-def close_df(data, filename, df):
+def save_df(data, filename, df):
     #using dynamic recasting to confuse the reader
     excel_path, csv_path = False, False
     xlsx_list = make_file_list(data, extension = "xlsx")
@@ -258,12 +258,12 @@ def close_df(data, filename, df):
             csv_path = j
             break
     if excel_path:
-        df.to_excel(excel_path)
+        df.to_excel(excel_path, index_label = "Name")
     elif csv_path:
         df.to_csv(csv_path)
     else:
         raise NameError("No " + filename + " file available!")
-    return table
+    return
 
 def make_meta_path(data):
     path = os.path.split(data)
@@ -572,11 +572,6 @@ def plot_correlation(i, j, mask, res, unit, corr, df, path):
 
     #exclude the data
     exclude = res[~submask]
-    
-    print(res)
-    print(submask)
-    print(exclude)
-    
     crack = res[submask][mask["Crack area"]]
     broke = res[submask][~mask["Crack area"]]
     
@@ -599,19 +594,18 @@ def plot_correlation(i, j, mask, res, unit, corr, df, path):
     #grid
     plt.grid()
     
-    #linear interpolation
-    slope, intercept, r_value, p_value, std_err = sp.stats.linregress(crack[i].astype(float),crack[j].astype(float))
-    sortx = list(crack[i].astype(float).sort_values())
-    sorty =[]
-    for m in sortx:
-        sorty.append(m * slope + intercept)
-
-    ax.plot(sortx, sorty,"b--", label="$R^2$ = %0.04f \nx = %0.04f \ny = %0.04f" %(r_value**2,slope,intercept))
-#            ax.plot(sortx, sorty,"b--")
-
-    #put R2 in the correct spot of the dataframe
-    corr[i][j] = r_value**2
-    corr[j][i] = r_value**2
+    #linear interpolation (if there are values for it)
+    if not crack.empty:
+        slope, intercept, r_value, p_value, std_err = sp.stats.linregress(crack[i].astype(float),crack[j].astype(float))
+        sortx = list(crack[i].astype(float).sort_values())
+        sorty =[]
+        for m in sortx:
+            sorty.append(m * slope + intercept)
+        ax.plot(sortx, sorty,"b--", label="$R^2$ = %0.04f \nx = %0.04f \ny = %0.04f" %(r_value**2,slope,intercept))
+    #            ax.plot(sortx, sorty,"b--")
+        #put R2 in the correct spot of the dataframe
+        corr[i][j] = r_value**2
+        corr[j][i] = r_value**2
     
     #write numbers next to points            
     texts = [plt.text(res.at[k,i],res.at[k,j],df.at[k.replace("\\",""),"Number"]) for k in res.index]            
