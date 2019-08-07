@@ -156,14 +156,14 @@ def calc_basic_array(data,results):
     iterate_over(data,results,df,res_file,app_file)
     draw_diagrams(data, results, df)
 
-def make_result_file(results):    
-    #open results file
-    res_path = results + r"\result.csv"
-    res = open(res_path,"w")
-
-    #write column titles
-    res.write("Name;Number;Energy level;Thickness;Drop weight;Drop height;Age;Velocity;Force;Acceleration;Displacement;Broken/Cracked;Crack area;Opening angle\n")
-    res.write(r" ; ;\([\text{kJ}]\);\([\text{mm}]\);\([\text{kg}]\);\([\text{mm}]\);\([\text{days}]\);\(\big[\frac{\text{m}}{\text{s}}\big]\);\([\text{kN}]\);\(\Big[\frac{\text{m}}{\text{s}^\text{2}}\Big]\);\([\text{mm}]\); ;\([\text{mm}^\text{2}]\);\([\text{\textdegree}]\)"+ "\n")
+def make_result_file(results):
+    index = ["Name", "Number", "Energy level", "Thickness", "Drop weight", "Drop height", "Age", "Velocity", "Force", "Acceleration", "Displacement", "Broken/Cracked", "Crack area", "Opening angle"]    
+    data =  ["", "",r"\([\text{kJ}]\)", r"\([\text{mm}]\)", r"\([\text{kg}]\)", r"\([\text{mm}]\)", r"\([\text{days}]\)", r"\(\big[\frac{\text{m}}{\text{s}}\big]\)", r"\([\text{kN}]\)", r"\(\Big[\frac{\text{m}}{\text{s}^\text{2}}\Big]\)", r"\([\text{mm}]\)", " ", r"\([\text{mm}^\text{2}]\)", r"\([\text{\textdegree}]\)"]
+    res = pd.DataFrame(index = index, data = data)
+    res = res.transpose()
+    res = res.set_index("Name")
+    res_path = results + r"\result.xlsx"
+    res.to_excel(res_path)
     return res
     
 def make_appendix_file(results):
@@ -181,7 +181,6 @@ def iterate_over(direct,results,df,res_file,app_file):
     for i in file_list:
         sg.OneLineProgressMeter('Progress', file_list.index(i) + 1, len(file_list), 'key','Progress of calculation')
         calc_single_file(i,results,df,res_file,app_file, sample_type = df.at[os.path.basename(i)[:-4],"Sample type"])
-    res_file.close()
     app_file.close()
 
 def find_folder(path, folder_name):
@@ -210,7 +209,7 @@ def make_file_list(direct, extension = ""):
     file_list = []
     for root, folders, files in os.walk(direct):
         for file in files:
-            path = root + "\\" + file
+            path = os.path.join(root, file)
             if os.path.isfile(path) and (extension == "" or file[-len(extension):].lower() == extension):
                 file_list.append(path)
     return file_list
@@ -260,7 +259,7 @@ def save_df(data, filename, df):
     if excel_path:
         df.to_excel(excel_path, index_label = "Name")
     elif csv_path:
-        df.to_csv(csv_path)
+        df.to_csv(csv_path, sep = ";")
     else:
         raise NameError("No " + filename + " file available!")
     return
@@ -281,26 +280,27 @@ def calc_single_file(filename = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\D
     #make a folder for each file
     if os.path.isdir(res_path) == False:
         os.mkdir(res_path)
-    
+    ######################PUT THE STUFF BACK
     # if there is no data frame and no results file, don't try to make entries into the appendix
-    if type(df) == pd.core.frame.DataFrame and results != "": 
-        try:
-            df.loc[dataset.name]
+#    if type(df) == pd.core.frame.DataFrame and results != "":
+#        try:
+    df.loc[dataset.name]
                 #write everything to result files and appendix
-            new_chapter_appendix(dataset_name = dataset.name, df = df , app_file = app_file)
-            write_result(dataset,df,res_file,filename)
-        except:
-            print("filename not in test_data file")
+    new_chapter_appendix(dataset_name = dataset.name, df = df , app_file = app_file)
+    res_file = write_result(dataset,df,res_file,filename)
+    save_df(os.path.dirname(res_path),"result",res_file)
+#        except:
+#            print("filename not in test_data file")
     dataset.make_graphs(res_path, app = app_file)    
     
 #write everything important to the result file        
 def write_result(dataset,df,res_file,filename):
-    
 #make a list to add each individual line
+    
     text = []  
     
     #name
-    add_list(text,dataset.name.replace("_","\_"))
+#    add_list(text,dataset.name.replace("_","\_"))
     
     #legend
     add_list(text,df.loc[dataset.name,"Number"])
@@ -343,19 +343,23 @@ def write_result(dataset,df,res_file,filename):
     deform = filtered_peak(dataset.laser)
     add_list(text,deform,1)
 
-
 #    broken or cracked?
     if df.loc[dataset.name,"Broken/cracked"].lower() == "broken":
         #if broken just add nan
-        add_list(text,"broken",sep=";;\n")
+        add_list(text,"broken")
+        text.append("")
+        text.append("")
     else:
         #if cracked add damage mapping
         add_list(text,"cracked")
         add_list(text,df.loc[dataset.name,"Crack area"])
-        add_list(text,df.loc[dataset.name,"Opening angle"],1,sep="\n")
-    
-    for i in text:   
-        res_file.write(i)
+        add_list(text,df.loc[dataset.name,"Opening angle"],1)
+    print(text)
+#    text.append("HELP!")
+    series =pd.Series(data = text, name = dataset.name, index = res_file.columns)
+    res_file = res_file.append(series)
+    print(res_file)
+    return res_file
     
 def new_chapter_appendix(app_file,df,dataset_name):
     app_file.write("\\chapter{" + dataset_name.replace("_","\_") + "}\n\n")
@@ -369,12 +373,18 @@ def calc_extra_accel():
     return "zero"
 
     #help function, makes it easier to add to a list
-def add_list(lst,thing,rnd=0,sep=";"):
+#def add_list(lst,thing,rnd=0,sep=";"):
+#    if isinstance(thing,float):
+#        lst.append(str(np.round(thing,rnd))+sep)        
+#    else:
+#        lst.append(str(thing) + sep)
+        
+    #help function, makes it easier to add to a list
+def add_list(lst,thing,rnd=0):
     if isinstance(thing,float):
-        lst.append(str(np.round(thing,rnd))+sep)        
+        lst.append(str(np.round(thing,rnd)))        
     else:
-        lst.append(str(thing) + sep)
-       
+        lst.append(str(thing))
 #calculate Everything for .npy files    
         
 def set_limit(limit):
@@ -527,15 +537,8 @@ def draw_diagrams(metadata = r"C:\Users\kekaun\OneDrive - LKAB\Desktop\try\test_
     if os.path.isdir(path) == False:
         os.makedirs(path)
 
-    #make dir to save stuff
-    tables_path = results + "\\tables"
-    if os.path.isdir(tables_path) == False:
-        os.makedirs(tables_path)
-
-    make_tables(res_df, tables_path)
-        
-    mask = make_mask(metadata, index = df.index, tables = tables_path)
-    
+    make_tables(res_df, results)
+            
     #throw useless info away
     res_df = res_df.drop(['Broken/Cracked',"Drop weight","Drop height","Velocity","Number"],axis = 1)
 
@@ -543,15 +546,24 @@ def draw_diagrams(metadata = r"C:\Users\kekaun\OneDrive - LKAB\Desktop\try\test_
     unit = res_df.iloc[0]
     
     #don't need the unit in the data anymore
-    res_df = res_df.drop(res_df.index[0])
+    print(res_df.index)
+    res_df = res_df.drop(" ")
     
     #make data usable
     res_df = res_df.astype(float)
     
+    print(res_df.index)
+    print(df.index)
+    
+    res_df.index = df.index
+    
     #correlation dataframe
     corr = pd.DataFrame(index = res_df.columns, columns = res_df.columns, dtype = float)
     
+    mask = make_mask(metadata, index = df.index, tables = tables_path)
+    
     counter = 1
+    
     #draw all the silly graphics    
     for j in res_df.columns:
         for i in res_df.columns:
@@ -568,9 +580,14 @@ def plot_correlation(i, j, mask, res, unit, corr, df, path):
     ax = plt.subplot(111)
     
     #make submask
-    submask = make_submask(i, j, mask, index = res.index)
+    submask = make_submask(i, j, mask, index = df.index)
+    mask.to_excel(os.path.join(path, "mask_works.xlsx"))
+#    submask.to_excel(os.path.join(path, "submask_works.xlsx"))
 
     #exclude the data
+#    print(submask.index)
+#    print(mask.index)
+#    print(res.index)
     exclude = res[~submask]
     crack = res[submask][mask["Crack area"]]
     broke = res[submask][~mask["Crack area"]]
@@ -587,7 +604,6 @@ def plot_correlation(i, j, mask, res, unit, corr, df, path):
     ax.set_ylim((ylim[0] - 0.05 * ylim[0], ylim[1] + 0.05 * ylim[1]))
                 
     #labels
-    print(i, unit[i])
     ax.set_xlabel(i + " " + unit[i], usetex = True, fontsize = 14)
     ax.set_ylabel(j + " " + unit[j], usetex = True, fontsize = 14)
     
@@ -626,8 +642,7 @@ def make_tables(df,res_path):
         #make dir to save stuff
     path = res_path + "\\tables"
     if os.path.isdir(path) == False:
-        os.makedirs(path)
-    
+        os.makedirs(path)    
     #result file
     res = df
     
@@ -661,7 +676,6 @@ def make_tables(df,res_path):
 #    res_xlsx.index = new_index
     res_xlsx = res.reset_index()
     res_xlsx = res_xlsx.assign(Name = new_index)
-    print(res_xlsx.loc[:,"Name"])
     res_xlsx.set_index("Name", inplace = True)
 #    res.set_index("new_index")
 #    res.reset_index(drop = True, inplace = True)
@@ -679,19 +693,18 @@ def make_mask(direct, index, tables):
     except:
         shape = (len(index),8)
         dummy_data = np.ones(shape = shape)
-        columns = ["Loadcells","Accelerometer","Laser sensor",	"Crack area",	 "Opening angle",	"High speed camera", "Additional accelerometer vertical","Additional accelerometer horizontal"]
+        columns = ["Loadcells","Accelerometer","Laser sensor",	"Crack area",	 "Opening angle",	"High speed camera"]#, "Additional accelerometer vertical","Additional accelerometer horizontal"]
         mask = pd.DataFrame(data = dummy_data, index = index, columns = columns)
-        
     mask = mask.astype(bool)
 
-    #mask to latex
-    excl_accl = mask[["Additional accelerometer vertical","Additional accelerometer horizontal"]]
-    excl = mask.drop(["Opening angle","Crack area","Additional accelerometer vertical","Additional accelerometer horizontal"], axis = 1)
-    excl_format = [ex_in_clude] * len(excl.columns)
-    excl_accl_format = [ex_in_clude] * len(excl_accl.columns)
-    
-    excl.to_latex(os.path.join(tables, "exclude.tex"),formatters = excl_format, escape = False,na_rep=" ")
-    excl_accl.to_latex(os.path.join(tables, "exclude.tex"),formatters = excl_accl_format, escape = False,na_rep=" ")
+##    mask to latex
+#    excl_accl = mask[["Additional accelerometer vertical","Additional accelerometer horizontal"]]
+#    excl = mask.drop(["Opening angle","Crack area"], axis = 1) #make_test_data
+#    excl_format = [ex_in_clude] * len(excl.columns)
+#    excl_accl_format = [ex_in_clude] * len(excl_accl.columns)
+#    
+#    excl.to_latex(os.path.join(tables, "exclude.tex"),formatters = excl_format, escape = False,na_rep=" ")
+#    excl_accl.to_latex(os.path.join(tables, "exclude.tex"),formatters = excl_accl_format, escape = False,na_rep=" ")
     
     return mask
     

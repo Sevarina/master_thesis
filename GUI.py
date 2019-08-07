@@ -352,7 +352,8 @@ def input_test_data(file, num):
                     "Average crack width" : calc_crack(values)[2],
                     "Opening angle" : calc_crack(values)[3]
                             })
-            return test_dict
+            test_series = pd.Series(data=test_dict)
+            return test_series
         else: #close window if everything fails
             window_test_data.Close()
             return
@@ -362,9 +363,9 @@ def make_test_data(metadata, file_list):
     num = 1
     for num, file in enumerate(file_list):
         test_data = input_test_data(file, num + 1)
-        if test_data != None:
+        if test_data is not None:
             data = data.append(test_data, ignore_index = True)
-    if len(data.index) != 0:
+    if len(data.index) > 0:
         column_list = ["Number", "Name", "Sample type", "Casting date", "Test date", "Age", "Drop weight", "Thickness", "Broken/cracked"]
         for i in range(1,5):
             column_list.append("Length " + str(i))
@@ -374,6 +375,8 @@ def make_test_data(metadata, file_list):
         data = data.set_index("Name")
         data.to_excel(metadata + "//test_data.xlsx")
         data.to_latex(metadata + "//test_data.tex")
+        data = core.open_df(metadata, "test_data")
+        return data
         sg.Popup("Data successfully entered!")
 
 def make_columns_list(list):
@@ -388,8 +391,9 @@ def make_index_list(index, columns):
        big_list.append(help_list)
     return(big_list)
 
-def input_exclusion(file_list):
-    columns = ["Loadcells","Accelerometer","Laser sensor",	"Crack area",	 "Opening angle",	"High speed camera", "Additional accelerometer vertical","Additional accelerometer horizontal"]
+#TODO broken samples exclude the broken stuff right away
+def input_exclusion(file_list, df):
+    columns = ["Loadcells","Accelerometer","Laser sensor",	"Crack area",	 "Opening angle",	"High speed camera"]#, "Additional accelerometer vertical","Additional accelerometer horizontal"]
     index = [os.path.basename(i)[:-4] for i in file_list]
     data = np.zeros((len(index),len(columns)))
     exclusion = pd.DataFrame(data, columns = columns, index = index)
@@ -408,6 +412,10 @@ def input_exclusion(file_list):
         for i in index:
             for j in columns:
                 exclusion.loc[i,j] = int(values[i + "_" + j])
+            if df.loc[i,"Broken/cracked"] == "broken":
+                exclusion.loc[i,"Crack area"] == 0
+                exclusion.loc[i,"Opening angle"] == 0
+    
     return exclusion
 
 def UI_open_df(data, filename = "test_data"):
@@ -418,8 +426,8 @@ def UI_open_df(data, filename = "test_data"):
         sg.PopupError("No " + filename + " in the chosen folder!")
         return
 
-def make_exclusion_data(metadata, file_list):        
-    exclusion_df = input_exclusion(file_list)
+def make_exclusion_data(metadata, file_list, df):        
+    exclusion_df = input_exclusion(file_list, df)
     exclusion_df.to_excel(metadata + "\\exclude.xlsx")
 
 def convert_file(basic_array, file_list):
@@ -442,8 +450,8 @@ def convert_file(basic_array, file_list):
 def run_auto(file_list, direct):
     #make folders
     data, basic_array, metadata, results = make_test_dir(direct)
-    make_test_data(metadata, file_list)
-    make_exclusion_data(metadata, file_list)
+    df = make_test_data(metadata, file_list)
+    make_exclusion_data(metadata, file_list, df)
     sg.Popup("The conversion process takes some time, please be patient!", non_blocking=True)
     convert_file(basic_array, file_list)
     core.calc(data = data, results = results)
@@ -483,8 +491,9 @@ def nav_file_check(target, extension):
             return values["data"]
 
 def append_df(df, series):
-    series = series.rename(series.loc["Name"])
-    series = series.drop("Name")
+    if series.name is None:
+        series = series.rename(series.loc["Name"])
+        series = series.drop("Name")
     df = df.append(series)
     return df
 
@@ -512,22 +521,28 @@ def use_GUI():
             if df is None:
                 return
             if os.path.basename(file)[:-4] in df.index:
-                sg.PopupError("File with this name already exists in test_data")
-            num = df.loc[:,"Number"].iloc[-1,] + 1
-            test_df = pd.Series(input_test_data(file, num))
-            df = append_df(df, test_df)
-            core.save_df(data = project, filename = "test_data", df = df)
+                sg.PopupError("File with this name is already in the test_data file")
+            else:
+                num = df.loc[:,"Number"].iloc[-1,] + 1
+                test_df = input_test_data(file, num)
+                df = append_df(df, test_df)
+                core.save_df(data = project, filename = "test_data", df = df)
             
             ### append new exclusion data to old exclude
             exclude = UI_open_df(project, "exclude")
             if exclude is None:
                 return
-            test_exclude = input_exclusion([file])
-            print(test_exclude)
-            exclude = append_df(exclude, test_exclude)
-            core.save_df(data = project, filename = "exclude", df = exclude)
+            if os.path.basename(file)[:-4] in exclude.index:
+                sg.PopupError("File with this name is already in the exclude file")
+            else:
+                test_exclude = input_exclusion([file], df)
+                exclude = exclude.append(test_exclude)
+                core.save_df(data = project, filename = "exclude", df = exclude)
+            
             ##filename
-            filename, basic_array, _ = convert_single_file(data = project, file = file)            
+            filename, basic_array, _ = convert_single_file(data = project, file = file)
+            if type(filename) is list:
+                filename = core.make_file_list(project, extension = os.path.basename(file)[:-4] + ".npy")[0]
 
             ## results
             results = core.find_folder(project, "Results")
@@ -543,14 +558,16 @@ def use_GUI():
             app_path = core.make_file_list(project, "appendix.tex")[0]
             app_file = open(app_path,"a")
 
+
             #calc
             core.calc_single_file(filename = filename, results = results, res_file = res_file, app_file = app_file, df = df)
+            core.draw_diagrams(metadata = project, results = results, df = df)
         else:
             window.Close()
             return
-
+#
 while True: 
-    sg.Popup("FIX input test data / make it into a series")
+    sg.Popup("keep working on write results!")
     window_initial = sg.Window('Drop test program').Layout(layout_initial)                                   
     event, values = window_initial.Read()
     if event is None or event == "Close program":
