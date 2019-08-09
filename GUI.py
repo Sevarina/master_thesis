@@ -176,10 +176,10 @@ def manual():
         event, values = window.Read()
         if event == "Convert a single data set":
             window.Close()
-            convert_single_file(target_file = "test data", target_folder = "where you want the converted data to be saved")
+            convert_single_file(target_file = "data you want to convert", target_folder = "where you want the converted data to be saved")
         elif event == "Convert several data sets at once":
             window.Close()
-            file_list, direct = nav_folder_check(target = "test data", extension = "asc")
+            file_list, direct = nav_folder_check(target = "data you want to convert", extension = "asc")
             _, basic_array = nav_folder_check(target = "where you want the converted data to be saved", extension = "")
             convert_list = choose_file(file_list, "convert")
             if convert_list != []:
@@ -387,19 +387,19 @@ def make_index_list(index, columns):
     for i in index:
        help_list = [sg.Text(i)]
        for j in columns:
-           help_list.append(sg.Checkbox(j, key = i +"_" + j))
+           help_list.append(sg.Checkbox(j, key = i +"_" + j, default = True))
        big_list.append(help_list)
     return(big_list)
 
 #TODO broken samples exclude the broken stuff right away
 def input_exclusion(file_list, df):
-    columns = ["Loadcells","Accelerometer","Laser sensor",	"Crack area",	 "Opening angle",	"High speed camera"]#, "Additional accelerometer vertical","Additional accelerometer horizontal"]
+    columns = ["Loadcells","Accelerometer","Laser sensor", "Cracks", "High speed camera"]#, "Additional accelerometer vertical","Additional accelerometer horizontal"]
     index = [os.path.basename(i)[:-4] for i in file_list]
     data = np.zeros((len(index),len(columns)))
     exclusion = pd.DataFrame(data, columns = columns, index = index)
     exclusion.index.name = "Name"
     layout_exclusion = [
-    [sg.Text("Please tick what you want to be excluded from analysis!")]
+    [sg.Text("Per default all measurements are included in analysis. Please untick what should be excluded.")]
     ]
     layout_exclusion = layout_exclusion + make_index_list(index, columns)
     layout_exclusion.append([sg.Submit(), sg.Cancel()])
@@ -411,11 +411,9 @@ def input_exclusion(file_list, df):
         exclusion_window.Close()
         for i in index:
             for j in columns:
-                exclusion.loc[i,j] = int(values[i + "_" + j])
+                exclusion.loc[i,j] = values[i + "_" + j]
             if df.loc[i,"Broken/cracked"] == "broken":
-                exclusion.loc[i,"Crack area"] == 0
-                exclusion.loc[i,"Opening angle"] == 0
-    
+                exclusion.loc[i,"Cracks"] == True
     return exclusion
 
 def UI_open_df(data, filename = "test_data"):
@@ -437,6 +435,7 @@ def convert_file(basic_array, file_list):
         return
     res_list = []
     for i in file_list:
+        print(data.index)
         filename = os.path.basename(i)[:-4]
         save_path = basic_array + "\\" + data.loc[filename,"Broken/cracked"] + "\\" + filename + ".npy"
         #if file is already converted skip it
@@ -566,16 +565,20 @@ def use_GUI():
             window.Close()
             return
 #
-while True: 
-    sg.Popup("keep working on write results!")
-    window_initial = sg.Window('Drop test program').Layout(layout_initial)                                   
-    event, values = window_initial.Read()
-    if event is None or event == "Close program":
-        window_initial.Close()
-        break
-    elif event == "Process data using GUI":
-        window_initial.Close()
-        use_GUI()
-    else:
-        window_initial.Close()
-        manual()
+ 
+def initial():
+    while True:
+        window_initial = sg.Window('Drop test program').Layout(layout_initial)                                   
+        event, values = window_initial.Read()
+        if event is None or event == "Close program":
+            window_initial.Close()
+            break
+        elif event == "Process data using GUI":
+            window_initial.Close()
+            use_GUI()
+        else:
+            window_initial.Close()
+            manual()
+        
+            
+initial()
