@@ -99,7 +99,7 @@ def make_add_test_layout(sample):
                 sg.Input(key = "crack_" + str(i) + "_len", visible = False), 
                 sg.Text("Width [mm]",key = "crack_" + str(i) + "_width_txt", visible = False), 
                 sg.Input(key = "crack_" + str(i) + "_width", visible = False)])
-    layout.append([sg.Submit(), sg.Button("Skip sample"), sg.Button("Quit")])
+    layout.append([sg.Submit(), sg.Button("Skip sample"), sg.Button("Quit", tooltip= 'quit analysis and return to main menu')])
     return layout
 
 def make_choose_test_layout(file_list, verb):
@@ -354,6 +354,9 @@ def input_test_data(file, num):
                             })
             test_series = pd.Series(data=test_dict)
             return test_series
+        elif event == "Quit":
+            window_test_data.Close()
+            return "Quit"
         else: #close window if everything fails
             window_test_data.Close()
             return
@@ -363,6 +366,8 @@ def make_test_data(metadata, file_list):
     num = 1
     for num, file in enumerate(file_list):
         test_data = input_test_data(file, num + 1)
+        if test_data is "Quit":
+            return "Quit"
         if test_data is not None:
             data = data.append(test_data, ignore_index = True)
     if len(data.index) > 0:
@@ -371,7 +376,19 @@ def make_test_data(metadata, file_list):
             column_list.append("Length " + str(i))
             column_list.append("Width " + str(i))
         column_list = column_list + ["Crack area", "Amount of cracks", "Average crack width", "Opening angle"]
+        #sorts dataframe columns
         data = data[column_list]
+        #insert a column with units
+        unit = []
+        for i in data.columns:
+            if i not in core.short_unit:
+                unit.append("")
+            else:
+                unit.append(core.short_unit[i])
+        data.loc[-1] = unit
+        data.index = data.index + 1
+        data = data.sort_index()
+        #set index correctly
         data = data.set_index("Name")
         data.to_excel(metadata + "//test_data.xlsx")
         data.to_latex(metadata + "//test_data.tex")
@@ -402,19 +419,25 @@ def input_exclusion(file_list, df):
     [sg.Text("Per default all measurements are included in analysis. Please untick what should be excluded.")]
     ]
     layout_exclusion = layout_exclusion + make_index_list(index, columns)
-    layout_exclusion.append([sg.Submit(), sg.Cancel()])
+    layout_exclusion.append([sg.Submit(), sg.Cancel(), sg.Button("Quit", tooltip= 'quit analysis and return to main menu')])
     exclusion_window = sg.Window('Drop test program').Layout(layout_exclusion)
     event, values = exclusion_window.Read()
-    if event == "Cancel" or event is None:
-        exclusion_window.Close()
-    else:
+    if event == 'Submit':
         exclusion_window.Close()
         for i in index:
             for j in columns:
                 exclusion.loc[i,j] = values[i + "_" + j]
             if df.loc[i,"Broken/cracked"] == "broken":
                 exclusion.loc[i,"Cracks"] == True
-    return exclusion
+        return exclusion
+    elif event == "Quit":
+        exclusion_window.Close()
+        return "Quit"
+    else:
+#        event == "Cancel" or event is None:
+        exclusion_window.Close()
+    
+
 
 def UI_open_df(data, filename = "test_data"):
     try:
@@ -426,6 +449,8 @@ def UI_open_df(data, filename = "test_data"):
 
 def make_exclusion_data(metadata, file_list, df):        
     exclusion_df = input_exclusion(file_list, df)
+    if exclusion_df is 'Quit':
+        return 'Quit'
     exclusion_df.to_excel(metadata + "\\exclude.xlsx")
 
 def convert_file(basic_array, file_list):
@@ -435,7 +460,6 @@ def convert_file(basic_array, file_list):
         return
     res_list = []
     for i in file_list:
-        print(data.index)
         filename = os.path.basename(i)[:-4]
         save_path = basic_array + "\\" + data.loc[filename,"Broken/cracked"] + "\\" + filename + ".npy"
         #if file is already converted skip it
@@ -450,7 +474,11 @@ def run_auto(file_list, direct):
     #make folders
     data, basic_array, metadata, results = make_test_dir(direct)
     df = make_test_data(metadata, file_list)
-    make_exclusion_data(metadata, file_list, df)
+    if df is "Quit":
+        return "Quit"
+    check = make_exclusion_data(metadata, file_list, df)
+    if check is "Quit":
+        return "Quit"
     sg.Popup("The conversion process takes some time, please be patient!", non_blocking=True)
     convert_file(basic_array, file_list)
     core.calc(data = data, results = results)
@@ -505,7 +533,9 @@ def use_GUI():
             file_list, direct = nav_folder_check(target = "test data", extension = "asc")
             if file_list is None:
                 continue
-            run_auto(file_list, direct)
+            check = run_auto(file_list, direct)
+            if check == "Quit":
+                return
         elif event == "Add sample to existing project":
             window.Close()
             #open everything you need to calc
@@ -524,6 +554,8 @@ def use_GUI():
             else:
                 num = df.loc[:,"Number"].iloc[-1,] + 1
                 test_df = input_test_data(file, num)
+                if test_df == "Quit":
+                    return 'Quit'
                 df = append_df(df, test_df)
                 core.save_df(data = project, filename = "test_data", df = df)
             
@@ -535,6 +567,8 @@ def use_GUI():
                 sg.PopupError("File with this name is already in the exclude file")
             else:
                 test_exclude = input_exclusion([file], df)
+                if test_exclude == 'Quit':
+                    return 'Quit'
                 exclude = exclude.append(test_exclude)
                 core.save_df(data = project, filename = "exclude", df = exclude)
             

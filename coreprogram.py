@@ -44,6 +44,69 @@ mpl.rcParams['mathtext.default']='default'
 
 ###############################################################
 
+    #keep the unit
+latex_unit = {
+        "Acceleration" : r"\(\Big[\frac{\text{m}}{\text{s}^\text{2}}\Big]\)",
+        "Age" : r"\([\text{days}]\)",
+        "Average crack width" : r"\([\text{mm}]\)",
+        "Broken/Cracked" : "",
+        "Crack area" : r"\([\text{mm}^\text{2}]\)",
+        "Displacement" : r"\([\text{mm}]\)",
+        "Drop height" :  r"\([\text{mm}]\)",
+        "Drop weight" :  r"\([\text{kg}]\)",
+        "Energy level" : r"\([\text{kJ}]\)",
+        "Force" : r"\([\text{kN}]\)",
+        "High speed camera deflection" : r"\([\text{mm}]\)",
+        "Length 1" : r"\([\text{mm}]\)",
+        "Length 2" : r"\([\text{mm}]\)",
+        "Length 3" : r"\([\text{mm}]\)",
+        "Length 4" : r"\([\text{mm}]\)",
+        "Length 5" : r"\([\text{mm}]\)",
+        "Length 6" : r"\([\text{mm}]\)",
+        "Name" : "",
+        "Number" : "",
+        "Opening angle": r"\([\text{\textdegree}]\)",
+        "Thickness" : r"\([\text{mm}]\)",
+        "Velocity" : r"\(\big[\frac{\text{m}}{\text{s}}\big]\)",
+        "Width 1" : r"\([\text{mm}]\)",
+        "Width 2" : r"\([\text{mm}]\)",
+        "Width 3" : r"\([\text{mm}]\)",
+        "Width 4" : r"\([\text{mm}]\)",
+        "Width 5" : r"\([\text{mm}]\)",
+        "Width 6" : r"\([\text{mm}]\)",
+        }
+
+short_unit = {       
+        "Acceleration" : r"[m/s2]",
+        "Age" : r"[days]",
+        "Average crack width" : r"[mm]",
+        "Broken/Cracked" : "",
+        "Crack area" : r"[mm2]",
+        "Displacement" : r"[mm]",
+        "Drop height" :  r"[mm]",
+        "Drop weight" :  r"[kg]",
+        "Energy level" : r"[kJ]",
+        "Force" : r"[kN]",
+        "High speed camera deflection" : r"[mm]",
+        "Length 1" : r"[mm]",
+        "Length 2" : r"[mm]",
+        "Length 3" : r"[mm]",
+        "Length 4" : r"[mm]",
+        "Length 5" : r"[mm]",
+        "Length 6" : r"[mm]",
+        "Name" : "",
+        "Number" : "",
+        "Opening angle": r"[degrees]",
+        "Thickness" : r"[mm]",
+        "Velocity" : r"[m/s]",
+        "Width 1" : r"[mm]",
+        "Width 2" : r"[mm]",
+        "Width 3" : r"[mm]",
+        "Width 4" : r"[mm]",
+        "Width 5" : r"[mm]",
+        "Width 6" : r"[mm]",
+        }
+
 #contains everything you need from a dataset
 class Dataset:
     def __init__(self, filename, sample_type = "round"):
@@ -142,7 +205,7 @@ class Dataset:
         plot(res_path,x = self.laser_time, y = self.laser ,xlabel= r"Time \([\text{s}]\)",ylabel=r"Displacement \([\text{mm}]\)", name="Laser_Displacement", limit=(-100,-1),appendix = app, dataset_name = self.name)
 
 #run all the things we really want on all files
-def calc(data=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\basic_array", results=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results" , extra_accel=False):
+def calc(data=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data", results=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results" , extra_accel=False):
     #do you want to calculate with the normal sensor array or for the extra accelerometers
     if extra_accel == False:
         calc_basic_array(data, results)
@@ -159,7 +222,7 @@ def calc_basic_array(data,results):
 
 def make_result_file(results):
     index = ["Name", "Number", "Energy level", "Thickness", "Drop weight", "Drop height", "Age", "Velocity", "Force", "Acceleration", "Displacement", "Broken/Cracked", "Crack area", "Opening angle"]    
-    data =  ["", "",r"\([\text{kJ}]\)", r"\([\text{mm}]\)", r"\([\text{kg}]\)", r"\([\text{mm}]\)", r"\([\text{days}]\)", r"\(\big[\frac{\text{m}}{\text{s}}\big]\)", r"\([\text{kN}]\)", r"\(\Big[\frac{\text{m}}{\text{s}^\text{2}}\Big]\)", r"\([\text{mm}]\)", " ", r"\([\text{mm}^\text{2}]\)", r"\([\text{\textdegree}]\)"]
+    data =  [short_unit[i] for i in index]
     res = pd.DataFrame(index = index, data = data)
     res = res.transpose()
     res = res.set_index("Name")
@@ -179,9 +242,10 @@ def make_appendix_file(results):
 def iterate_over(direct,results,df,app_file):    
     file_list = make_file_list(direct, "npy")
     for i in file_list:
-        res_file = open_df(results, "result")
-        sg.OneLineProgressMeter('Progress', file_list.index(i), len(file_list) - 1, 'key','Progress of calculation')
-        calc_single_file(i,results,df,res_file,app_file, sample_type = df.at[os.path.basename(i)[:-4],"Sample type"])
+        if os.path.basename(i)[:-4] in df.index: 
+            res_file = open_df(results, "result")
+            sg.OneLineProgressMeter('Progress', file_list.index(i), len(file_list) - 1, 'key','Progress of calculation')
+            calc_single_file(i,results,df,res_file,app_file, sample_type = df.at[os.path.basename(i)[:-4],"Sample type"])
     app_file.close()
 
 def find_folder(path, folder_name):
@@ -242,6 +306,9 @@ def open_df(data, filename = "test_data"):
         table = pd.read_csv(csv_path, sep = ";", header = 0, index_col = "Name", converters = table_dtype)
     else:
         raise NameError("No " + filename + " file available!")
+    for i in table.index:
+        if i is np.NaN or i is "" or i is " ":
+            table = table.drop(i, axis = 0)
     return table
 
 def save_df(data, filename, df):
@@ -359,7 +426,6 @@ def write_result(dataset,df,res_file):
 #    text.append("HELP!")
     series =pd.Series(data = text, name = dataset.name, index = res_file.columns)
     res_file = res_file.append(series)
-    print(res_file)
     return res_file
     
 def new_chapter_appendix(app_file,df,dataset_name):
@@ -526,7 +592,7 @@ def ex_in_clude(boolean):
         return "faulty"
 
  
-def draw_diagrams(metadata = r"C:\Users\kekaun\OneDrive - LKAB\Desktop\try\test_analysis\Data\metadata", results = r"C:\Users\kekaun\OneDrive - LKAB\Desktop\try\test_analysis\Results", df = "place_holder"):
+def draw_diagrams(metadata = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data", results = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results", df = ""):
     #if df is not open yet, open it
     if isinstance(df, str):
         df = open_df(metadata, "test_data")
@@ -543,32 +609,8 @@ def draw_diagrams(metadata = r"C:\Users\kekaun\OneDrive - LKAB\Desktop\try\test_
     #throw useless info away
     res_df = res_df.drop(['Broken/Cracked',"Drop weight","Drop height","Velocity","Number"],axis = 1)
     
-    #keep the unit
-    unit = {
-            "Name" : "",
-            "Number" : "",
-             "Energy level" : r"\([\text{kJ}]\)",
-             "Thickness" : r"\([\text{mm}]\)",
-             "Drop weight" :  r"\([\text{kg}]\)",
-             "Drop height" :  r"\([\text{mm}]\)",
-             "Age" : r"\([\text{days}]\)",
-             "Velocity" : r"\(\big[\frac{\text{m}}{\text{s}}\big]\)",
-             "Force" : r"\([\text{kN}]\)",
-             "Acceleration" : r"\(\Big[\frac{\text{m}}{\text{s}^\text{2}}\Big]\)",
-             "Displacement" : r"\([\text{mm}]\)",
-             "Broken/Cracked" : "",
-             "Crack area" : r"\([\text{mm}^\text{2}]\)",
-             "Opening angle": r"\([\text{\textdegree}]\)"
-            }
-    #    unit = res_df.iloc[0]
-    
-    #don't need the unit in the data anymore
-    res_df = res_df.drop(res_df.index[0])
-    
     #make data usable
-    res_df = res_df.astype(float)
-        
-    res_df.index = df.index
+#    res_df = res_df.astype(float)
     
     #correlation dataframe
     corr = pd.DataFrame(index = res_df.columns, columns = res_df.columns, dtype = float)
@@ -581,23 +623,32 @@ def draw_diagrams(metadata = r"C:\Users\kekaun\OneDrive - LKAB\Desktop\try\test_
         for i in res_df.columns:
             sg.OneLineProgressMeter('Progress', counter, len(res_df.columns)**2, 'key','Drawing diagrams')
             counter += 1
-            plot_correlation(i, j, mask, res_df, unit, corr, df, path)
+            plot_correlation(i, j, mask, res_df, corr, df, path)
         
     #draw a heatmap
     heatmap(corr, results)
     
-    
-def plot_correlation(i, j, mask, res, unit, corr, df, path):
+def remove_slash(df):
+    new_index = [i.replace('\\', '') for i in df.index]
+    df.index = new_index
+    return df
+
+def add_slash(df):
+    new_index = [i.replace('_', '\_') for i in df.index]
+    df.index = new_index
+    return df
+
+def plot_correlation(i, j, mask, res, corr, df, path):
      #begin plot
     ax = plt.subplot(111)
     
     #make submask
-    exclude, broken, cracked = make_submask(i, j, mask, index = df.index, df= df)
-
+    exclude, broken, cracked = make_submask(i, j, mask, index = res.index ,df = df)
+    exclude = remove_slash(exclude)
     exclude = res[exclude]
     crack = res[cracked]
     broke = res[broken]
-    
+
     mpl.rcParams["figure.figsize"] = (10,7)
     ax.plot(crack[i], crack[j], "b.",label="cracked")
     ax.plot(broke[i], broke[j], "r.", label = "broken")
@@ -610,8 +661,8 @@ def plot_correlation(i, j, mask, res, unit, corr, df, path):
     ax.set_ylim((ylim[0] - 0.05 * ylim[0], ylim[1] + 0.05 * ylim[1]))
                 
     #labels
-    ax.set_xlabel(i + " " + unit[i], usetex = True, fontsize = 14)
-    ax.set_ylabel(j + " " + unit[j], usetex = True, fontsize = 14)
+    ax.set_xlabel(i + " " + latex_unit[i], usetex = True, fontsize = 14)
+    ax.set_ylabel(j + " " + latex_unit[j], usetex = True, fontsize = 14)
     
     #grid
     plt.grid()
@@ -684,26 +735,26 @@ def make_tables(df,res_path):
     
     write_legend(res_path,df.iloc[1:]["Number"])
     res_xlsx = res.copy()
-    print(res.index)
     new_index = []
     for i in res.index:
         try:
             new_index.append(i.replace("\_", "_"))
         except:
             new_index.append(i)
-#    new_index = [i.replace("\_", "_") for i in res.index]
-#    res_xlsx.index = new_index
     res_xlsx = res.reset_index()
-    res_xlsx = res_xlsx.assign(Name = new_index)
-    res_xlsx.set_index("Name", inplace = True)
-#    res.set_index("new_index")
-#    res.reset_index(drop = True, inplace = True)
-#    new_unit = 
-    new_unit = pd.Series(["", "[kJ]", "[mm]", "[kg]", "[mm]", "[days]", "[m/s]", "[kN]", "[m/s2]", "[mm]", "", "[mm2]", "[degrees]"], res_xlsx.columns)
-    res_xlsx.iloc[0] = new_unit
-    ############################################################# findme
+
+
+    new_unit = [short_unit[i] for i in res_xlsx.columns]
+        
+    res_w_unit = pd.DataFrame(data = new_unit, index = res_xlsx.columns)
+    res_w_unit = res_w_unit.transpose()
+    res_w_unit = res_w_unit.append(res_xlsx)
+    
+#    res_w_unit = res_w_unit.assign(Name = new_index)
+    res_w_unit.set_index("Name", inplace = True)    
+
     with pd.ExcelWriter(res_path + '\\result.xlsx') as writer:
-            res_xlsx.to_excel(writer, sheet_name = "Results", na_rep="")
+            res_w_unit.to_excel(writer, sheet_name = "Results", na_rep="")
     
 def make_mask(direct, results, index, res_df):
    #make a mask to filter out everything that is useless
@@ -727,7 +778,7 @@ def make_mask(direct, results, index, res_df):
 #    excl_accl.to_latex(os.path.join(path, "exclude.tex"),formatters = excl_accl_format, escape = False,na_rep=" ")
 
     excl_format = [ex_in_clude] * len(mask.columns)
-    mask.to_latex(os.path.join(path, "exclude.tex"),formatters = excl_format, escape = False,na_rep=" ")
+    mask.to_latex(os.path.join(path, "exclude.tex"),formatters = excl_format, escape = False,na_rep="")
 
 #make a pretty mask#
     #rename columns
@@ -750,20 +801,19 @@ def make_mask(direct, results, index, res_df):
         
     return mask    
     
-def make_submask(i, j, mask, index, df):
+def make_submask(i, j, mask,index, df):
     if i not in mask.columns and j not in mask.columns:
         #if the data is not in the exlusion table just make a totally true mask
         #otherwise check if only one value is in there
         #lastly if both values are on the list, make a mixed list
         data = [True] * len(index)
-        submask = pd.Series(data, index = index, dtype = bool)
+        submask = pd.Series(data, index = index, dtype = bool, name = 'Name')
     elif i in mask.columns and j not in mask.columns:
         submask = mask[i]
     elif i not in mask.columns and j in mask.columns:
         submask = mask[j]
     else:
         submask = mask[i] & mask[j]
-        
     exclude = ~submask
     broken_data = []
     for i in index:
@@ -771,8 +821,8 @@ def make_submask(i, j, mask, index, df):
             broken_data.append(True)
         else:
             broken_data.append(False)
-            
-    broken = pd.Series(broken_data, index = index, dtype = bool)
+        
+    broken = pd.Series(broken_data, index = index, dtype = bool, name = 'Name')
     cracked = ~broken
     broken = broken & submask
     cracked = cracked & submask
@@ -999,7 +1049,6 @@ def compare_vel_disp():
     vel_disp_compare = pd.DataFrame(data = base, index = result.index, columns = ["Calculated velocity", "Measured velocity", "Laser displacement", "Accelerometer displacement"])
     for i in result.index:
         path = "C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Data\cracked\\" + i.replace(r"\_","_") + ".npy"
-    print(path)
     if os.path.isfile(path):        
         array = np.load(path)
         
