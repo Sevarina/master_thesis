@@ -221,7 +221,7 @@ def calc_basic_array(data,results):
     draw_diagrams(data, results, df)
 
 def make_result_file(results):
-    index = ["Name", "Number", "Energy level", "Thickness", "Drop weight", "Drop height", "Age", "Velocity", "Force", "Acceleration", "Displacement", "Broken/Cracked", "Crack area", "Opening angle"]    
+    index = ["Name", "Number", "Energy level", "Thickness", "Drop weight", "Drop height", "Age", "Velocity", "Force", "Acceleration", "Displacement", "High speed camera", "Broken/Cracked", "Crack area", "Opening angle"]    
     data =  [short_unit[i] for i in index]
     res = pd.DataFrame(index = index, data = data)
     res = res.transpose()
@@ -261,11 +261,10 @@ def table_format(c):
     cell = str(c)
     if cell == "":
         return np.nan
+    cell = cell.replace(",",".")
     try:
         return int(cell)
     except:
-        if "," in cell:
-            return float(cell.replace(",","."))
         if "." in cell:
             return float(cell)
     return cell
@@ -410,6 +409,9 @@ def write_result(dataset,df,res_file):
     #peak deformation
     deform = filtered_peak(dataset.laser)
     add_list(text,deform,1)
+    
+    #highspeed
+    add_list(text, df[dataset.name, "High speed camera"])
 
 #    broken or cracked?
     if df.loc[dataset.name,"Broken/cracked"].lower() == "broken":
@@ -452,7 +454,6 @@ def add_list(lst,thing,rnd=0):
         lst.append(str(np.round(thing,rnd)))        
     else:
         lst.append(str(thing))
-#calculate Everything for .npy files    
         
 def set_limit(limit):
     bottom,top = plt.ylim()
@@ -644,7 +645,6 @@ def plot_correlation(i, j, mask, res, corr, df, path):
     
     #make submask
     exclude, broken, cracked = make_submask(i, j, mask, index = res.index ,df = df)
-    exclude = remove_slash(exclude)
     exclude = res[exclude]
     crack = res[cracked]
     broke = res[broken]
@@ -685,9 +685,14 @@ def plot_correlation(i, j, mask, res, corr, df, path):
         corr[j][i] = r_value**2
 #    except:
 #        print("no crack data!")
-    
-    #write numbers next to points            
-    texts = [plt.text(res.at[k,i],res.at[k,j],df.at[k.replace("\\",""),"Number"]) for k in res.index]            
+        
+    Number = df['Number']
+    try:
+        Number = Number.astype(int)
+    except:
+        Number = Number.astype(str)    
+    #write numbers next to points             
+    texts = [plt.text(res.at[k,i],res.at[k,j],Number.loc[k]) for k in res.index]  
     adjust_text(texts)
 
     #legend            
@@ -798,7 +803,7 @@ def make_mask(direct, results, index, res_df):
     for j in res_df.columns:
         if j not in mask.columns:
             mask.insert(loc = 0, column = j, value = new_data)
-        
+    mask = remove_slash(mask)
     return mask    
     
 def make_submask(i, j, mask,index, df):

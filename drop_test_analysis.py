@@ -73,9 +73,17 @@ def make_layout_nav_folder(target):
         ]
     return layout
 
+def make_layout_nav_filelist(target= 'files you want to test'):
+    layout = [
+        [sg.Text('Please use CTRL and SHIFT to choose '+ target +"!")],
+        [sg.InputText("", key = "data"), sg.FilesBrowse(target = "data")],
+        [sg.Submit(), sg.Cancel()]
+        ]
+    return layout
+
 def make_layout_nav_file(target):
     layout = [
-        [sg.Text('Please navigate to '+ target +"!")],
+        [sg.Text('Please  '+ target +"!")],
         [sg.InputText("", key = "data"), sg.FileBrowse(target = "data")],
         [sg.Submit(), sg.Cancel()]
         ]
@@ -86,13 +94,14 @@ def make_add_test_layout(sample):
         [sg.Text("Please enter data for sample: " + sample)],
         [sg.Text("Sample type"), sg.Radio('Round', "RADIO1", default=True, key = "Round"),
     sg.Radio('Square', "RADIO1", key = "Square") ],
-         [sg.CalendarButton("Casting date", target = "cast", key = "cast_date"), sg.InputText("", key = "cast", disabled = True)], 
-         [sg.CalendarButton("Test date", target = "test", key = "test_date"), sg.InputText("", key = "test", disabled = True)],
+         [sg.CalendarButton("Casting date", target = "cast", key = "cast_date"), sg.Text('                    ',key = "cast", relief = sg.RELIEF_FLAT)], 
+         [sg.CalendarButton("Test date", target = "test", key = "test_date"), sg.Text('                    ', key = "test", relief = sg.RELIEF_FLAT)],
          [sg.Text("Drop weight"), sg.Combo(['50 kg', '100 kg', "200 kg", "500 kg", "1000 kg"], key = "weight", readonly = True)],
          [sg.Text("Sample thickness [mm]"), sg.InputText(key = "thickness", do_not_clear = True)],
-         [sg.Text("Broken or cracked"), sg.Radio('Broken', "RADIO2", default=True, key = "Broken", enable_events = True), sg.Radio('Cracked', "RADIO2", default = False, key = "Cracked", enable_events = True) ]    
+         [sg.Text("Broken or cracked"), sg.Radio('Broken', "RADIO2", default=True, key = "Broken", enable_events = True), sg.Radio('Cracked', "RADIO2", default = False, key = "Cracked", enable_events = True)],  
+         [sg.Text("Deformation measured by high speed camera [mm]", visible = False, key = "camera"), sg.InputText(key = "camera_input", do_not_clear = True , visible = False)],
         ]
-    for i in range(1,5):
+    for i in range(1,4):
         layout.append([
                 sg.Text("Crack " + str(i), visible = False, key = "crack_" + str(i)), 
                 sg.Text("Length [mm]", visible = False, key = "crack_" + str(i) + "_len_txt"), 
@@ -159,6 +168,8 @@ def choose_file(file_list, verb):
         return []
     chosen_list = [j for j in file_list if values[j]]
     return chosen_list
+
+
 
 layout_man = [
         [sg.Text("What do you want to do?")],
@@ -252,7 +263,7 @@ def make_test_dir(direct):
     return data, basic_array, metadata, results
 
 def check_crack(values):
-    for i in range(1,5):
+    for i in range(1,4):
         if re.search("\D", values["crack_" + str(i) + "_len"]) != None or re.search("\D", values["crack_" + str(i) + "_width"]) != None:
             return (True, i)
         else: return (False, 0)
@@ -264,7 +275,7 @@ def calc_crack(values):
     sum_area = 0
     med_width = ""
     angle = ""
-    for i in range(1,5):
+    for i in range(1,4):
          if values["crack_" + str(i) + "_len"] != "" and values["crack_" + str(i) + "_width"] != "":
             area = area + int(values["crack_" + str(i) + "_len"]) * int(values["crack_" + str(i) + "_width"])
             num += 1
@@ -281,24 +292,36 @@ def input_test_data(file, num):
     window_test_data = sg.Window("Drop test program").Layout(make_add_test_layout(os.path.basename(file[:-4])))
     while True:
         event, values = window_test_data.Read()
+#        print(values)
+
         if event == "Skip sample":
             window_test_data.Close()
             return
+        elif event == "Quit":
+            window_test_data.Close()
+            return "Quit"
+        elif event is 'Cancel' or event is None:
+            window_test_data.Close()
+            return
         elif event == "Cracked":
-            for i in range(1,5):
+            window_test_data.Element("camera").Update(visible = True)
+            window_test_data.Element("camera_input").Update(visible = True)
+            for i in range(1,4):
                 window_test_data.Element("crack_" + str(i)).Update(visible = True)
                 window_test_data.Element("crack_" + str(i) + "_len_txt").Update(visible = True)
                 window_test_data.Element("crack_" + str(i) + "_len").Update(visible = True)
                 window_test_data.Element("crack_" + str(i) + "_width_txt").Update(visible = True)
                 window_test_data.Element("crack_" + str(i) + "_width").Update(visible = True)
         elif event == "Broken":
-            for i in range(1,5):
+            window_test_data.Element("camera_input").Update(visible = False)
+            window_test_data.Element("camera").Update(visible = False)
+            for i in range(1,4):
                 window_test_data.Element("crack_" + str(i)).Update(visible = False)
                 window_test_data.Element("crack_" + str(i) + "_len_txt").Update(visible = False)
                 window_test_data.Element("crack_" + str(i) + "_len").Update(visible = False)
                 window_test_data.Element("crack_" + str(i) + "_width_txt").Update(visible = False)
                 window_test_data.Element("crack_" + str(i) + "_width").Update(visible = False)
-        elif re.search("\D", values["thickness"]) != None:
+        elif values["thickness"] is not "" and re.search("\D", values["thickness"]) is not None:
             sg.PopupError("Please enter a valid thickness!")
         elif check_crack(values)[0]:
             sg.PopupError("Please check crack " + str(check_crack(values)[1]))
@@ -310,9 +333,11 @@ def input_test_data(file, num):
                 test_dict["Sample type"] = "round"
             else:
                 test_dict["Sample type"] = "square"
-            if values["test"] != "" and values["cast"] != "":
-                test = datetime.date(year = int(values["test"][:4]), month = int(values["test"][5:7]), day = int(values["test"][8:10]))
-                cast = datetime.date(year = int(values["cast"][:4]), month = int(values["cast"][5:7]), day = int(values["cast"][8:10]))
+            if not window_test_data.Element("test").DisplayText.isspace() and not window_test_data.Element("cast").DisplayText.isspace():
+                test_date = window_test_data.Element("test").DisplayText
+                cast_date = window_test_data.Element("cast").DisplayText
+                test = datetime.date(year = int(test_date[:4]), month = int(test_date[5:7]), day = int(test_date[8:10]))
+                cast = datetime.date(year = int(cast_date[:4]), month = int(cast_date[5:7]), day = int(cast_date[8:10]))
                 age = test - cast
                 test_dict.update({
                 "Casting date": cast, 
@@ -328,7 +353,7 @@ def input_test_data(file, num):
                 })
             if values["Broken"]:
                 test_dict["Broken/cracked"] = "broken"
-                for i in range(1,5):
+                for i in range(1,4):
                     test_dict.update({
                         "Length " + str(i) : "",
                         "Width " + str(i) : "" 
@@ -337,11 +362,12 @@ def input_test_data(file, num):
                     "Crack area" : "",
                     "Amount of cracks" : "",
                     "Average crack width" : "",
-                    "Opening angle" : ""
+                    "Opening angle" : "",
+                    "High speed camera" : "",
                             })
             else:
                 test_dict["Broken/cracked"] = "cracked"
-                for i in range(1,5):
+                for i in range(1,4):
                     test_dict.update({
                         "Length " + str(i) : values["crack_" + str(i) + "_len"],
                         "Width " + str(i) : values["crack_" + str(i) + "_width"]
@@ -350,13 +376,11 @@ def input_test_data(file, num):
                     "Crack area" : calc_crack(values)[0],
                     "Amount of cracks" : calc_crack(values)[1],
                     "Average crack width" : calc_crack(values)[2],
-                    "Opening angle" : calc_crack(values)[3]
+                    "Opening angle" : calc_crack(values)[3],
+                    "High speed camera" : values['camera_input']
                             })
             test_series = pd.Series(data=test_dict)
             return test_series
-        elif event == "Quit":
-            window_test_data.Close()
-            return "Quit"
         else: #close window if everything fails
             window_test_data.Close()
             return
@@ -372,10 +396,10 @@ def make_test_data(metadata, file_list):
             data = data.append(test_data, ignore_index = True)
     if len(data.index) > 0:
         column_list = ["Number", "Name", "Sample type", "Casting date", "Test date", "Age", "Drop weight", "Thickness", "Broken/cracked"]
-        for i in range(1,5):
+        for i in range(1,4):
             column_list.append("Length " + str(i))
             column_list.append("Width " + str(i))
-        column_list = column_list + ["Crack area", "Amount of cracks", "Average crack width", "Opening angle"]
+        column_list = column_list + ["Crack area", "Amount of cracks", "Average crack width", "Opening angle", "High speed camera"]
         #sorts dataframe columns
         data = data[column_list]
         #insert a column with units
@@ -530,7 +554,7 @@ def use_GUI():
         event, values = window.Read()
         if event == "Start new project":
             window.Close()
-            file_list, direct = nav_folder_check(target = "test data", extension = "asc")
+            file_list, direct = nav_folder_check(target = "folder that contains test data", extension = "asc")
             if file_list is None:
                 continue
             check = run_auto(file_list, direct)
