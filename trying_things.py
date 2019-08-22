@@ -19,15 +19,5 @@ mpl.rcParams['mathtext.default']='default'
 import matplotlib.pyplot as plt
 import coreprogram as core
 
-def make_layout_nav_filelist(target= 'files you want to test'):
-    layout = [
-        [sg.Text('Please use CTRL and SHIFT to choose '+ target +"!")],
-        [sg.InputText("", key = "data"), sg.FilesBrowse(target = "data")],
-        [sg.Submit(), sg.Cancel()]
-        ]
-    return layout
 
-window_initial = sg.Window('Drop test program').Layout(make_layout_nav_filelist())
-event, values = window_initial.Read()
-file_list = values['data'].split(';')
-print(file_list)
+

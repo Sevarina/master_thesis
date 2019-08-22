@@ -56,7 +56,7 @@ latex_unit = {
         "Drop weight" :  r"\([\text{kg}]\)",
         "Energy level" : r"\([\text{kJ}]\)",
         "Force" : r"\([\text{kN}]\)",
-        "High speed camera deflection" : r"\([\text{mm}]\)",
+        "High speed camera" : r"\([\text{mm}]\)",
         "Length 1" : r"\([\text{mm}]\)",
         "Length 2" : r"\([\text{mm}]\)",
         "Length 3" : r"\([\text{mm}]\)",
@@ -87,7 +87,7 @@ short_unit = {
         "Drop weight" :  r"[kg]",
         "Energy level" : r"[kJ]",
         "Force" : r"[kN]",
-        "High speed camera deflection" : r"[mm]",
+        "High speed camera" : r"[mm]",
         "Length 1" : r"[mm]",
         "Length 2" : r"[mm]",
         "Length 3" : r"[mm]",
@@ -350,14 +350,15 @@ def calc_single_file(filename = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\D
     ######################PUT THE STUFF BACK
     # if there is no data frame and no results file, don't try to make entries into the appendix
 #    if type(df) == pd.core.frame.DataFrame and results != "":
-    try:
-        df.loc[dataset.name]
-                #write everything to result files and appendix
-        new_chapter_appendix(dataset_name = dataset.name, df = df , app_file = app_file)
-        res_file = write_result(dataset,df,res_file)
-        save_df(os.path.dirname(res_path),"result",res_file)
-    except:
-            print("filename not in test_data file")
+    
+#    try:
+    df.loc[dataset.name]
+            #write everything to result files and appendix
+    new_chapter_appendix(dataset_name = dataset.name, df = df , app_file = app_file)
+    res_file = write_result(dataset,df,res_file)
+    save_df(os.path.dirname(res_path),"result",res_file)
+#    except:
+#            print("filename not in test_data file")
     dataset.make_graphs(res_path, app = app_file)    
     
 #write everything important to the result file        
@@ -410,22 +411,22 @@ def write_result(dataset,df,res_file):
     deform = filtered_peak(dataset.laser)
     add_list(text,deform,1)
     
-    #highspeed
-    add_list(text, df[dataset.name, "High speed camera"])
-
+    #highspeed camera
+    text.append(df.loc[dataset.name, "High speed camera"])
+    
 #    broken or cracked?
     if df.loc[dataset.name,"Broken/cracked"].lower() == "broken":
+
         #if broken just add nan
         add_list(text,"broken")
         text.append("")
         text.append("")
     else:
+
         #if cracked add damage mapping
         add_list(text,"cracked")
         add_list(text,df.loc[dataset.name,"Crack area"])
         add_list(text,df.loc[dataset.name,"Opening angle"],1)
-    print(text)
-#    text.append("HELP!")
     series =pd.Series(data = text, name = dataset.name, index = res_file.columns)
     res_file = res_file.append(series)
     return res_file
@@ -610,13 +611,14 @@ def draw_diagrams(metadata = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data
     #throw useless info away
     res_df = res_df.drop(['Broken/Cracked',"Drop weight","Drop height","Velocity","Number"],axis = 1)
     
-    #make data usable
-#    res_df = res_df.astype(float)
-    
     #correlation dataframe
     corr = pd.DataFrame(index = res_df.columns, columns = res_df.columns, dtype = float)
     
+    
     mask = make_mask(metadata, results, index = df.index, res_df=res_df)
+    
+    #compare impact force to force at the load cells
+    compare_force(metadata, results, df, res_df, mask)
     
     counter = 1    
     #draw all the silly graphics    
@@ -628,6 +630,87 @@ def draw_diagrams(metadata = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data
         
     #draw a heatmap
     heatmap(corr, results)
+    
+def compare_force(metadata = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data", results = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results", df = None, res_df = None, mask = None):
+    i = 'Acceleration'
+    j = 'Force'
+    if df is None:
+        df = open_df(metadata, "test_data")
+    if res_df is None:
+        res_df = open_df(results, "result")
+    if mask is None:
+        mask = make_mask(direct = metadata, results = results, index = df.index, res_df = res_df)
+    
+    ax = plt.subplot(111)
+    impact = res_df[i] * df['Drop weight'] *0.001
+    loadcell = res_df[j]
+    ##make submask
+    exclude, broken, cracked = make_submask(i, j, mask, index = res_df.index ,df = df)
+    ex_impact = impact[exclude]
+    cr_impact = impact[cracked]
+    br_impact = impact[broken] 
+    
+    ex_loadcell = loadcell[exclude]
+    cr_loadcell = loadcell[cracked]
+    br_loadcell = loadcell[broken]
+    
+    mpl.rcParams["figure.figsize"] = (10,7)
+    ax.plot(cr_impact, cr_loadcell, "b.",label="cracked")
+    ax.plot(br_impact, br_loadcell, "r.", label = "broken")
+    ax.plot(ex_impact, ex_loadcell,"xk", label = "excluded")       
+    #
+    #make limits nice
+    xlim = ax.get_xlim()
+    ax.set_xlim((xlim[0] - 0.05 * xlim[0],xlim[1]+ 0.05 * xlim[1]))
+    ylim = ax.get_ylim()
+    ax.set_ylim((ylim[0] - 0.05 * ylim[0], ylim[1] + 0.05 * ylim[1]))
+    #            
+    #labels
+    ax.set_xlabel(r"Impact force \([\text{kN}]\)", usetex = True, fontsize = 14)
+    ax.set_ylabel(r"Loadcell force \([\text{kN}]\)", usetex = True, fontsize = 14)
+    #
+    #grid
+    plt.grid()
+    #
+    ##linear interpolation
+    slope, intercept, r_value, p_value, std_err = sp.stats.linregress(cr_impact.astype(float),cr_loadcell.astype(float))
+    sortx = list(cr_impact.astype(float).sort_values())
+    sorty =[]
+    for m in sortx:
+        sorty.append(m * slope + intercept)
+    ax.plot(sortx, sorty, 'b--', label="Linear \ncorrelation \n$R^2$ = %0.04f \n x = %0.04f \n y = %0.04f" %(r_value**2,slope,intercept))
+    
+    ##draw the idealized line
+    max_value1 = impact.max()
+    max_value2 = loadcell.max()
+    if max_value1 > max_value2:
+        max_value = max_value1
+    else:
+        max_value = max_value2
+        
+    linear = [0,max_value]
+    ax.plot(linear, linear,  linestyle = ":", color = "b", linewidth = "0.5" ,label = 'Theoretical \ncorrelation')
+    
+    Number = df['Number']
+    try:
+        Number = Number.astype(int)
+    except:
+        Number = Number.astype(str)    
+    
+    #write numbers next to points             
+    texts = [plt.text(impact.loc[k],loadcell.loc[k],Number.loc[k]) for k in res_df.index]  
+    adjust_text(texts)
+    
+    #
+    #legend            
+    chartBox = ax.get_position()            
+    ax.set_position([chartBox.x0, chartBox.y0, chartBox.width*0.8, chartBox.height])
+    ax.legend(loc='center left', bbox_to_anchor=(1.0, 0.75), ncol=1,fontsize = 14)
+    #
+    ##save
+    filename = results + r"\compare_impact_loadcell_force.png"
+    plt.savefig(filename)
+    plt.close()
     
 def remove_slash(df):
     new_index = [i.replace('\\', '') for i in df.index]
@@ -648,7 +731,7 @@ def plot_correlation(i, j, mask, res, corr, df, path):
     exclude = res[exclude]
     crack = res[cracked]
     broke = res[broken]
-
+    print(i,j)
     mpl.rcParams["figure.figsize"] = (10,7)
     ax.plot(crack[i], crack[j], "b.",label="cracked")
     ax.plot(broke[i], broke[j], "r.", label = "broken")
@@ -712,7 +795,7 @@ def make_tables(df,res_path):
     if os.path.isdir(path) == False:
         os.makedirs(path)    
     #result file
-    res = df
+    res = df.sort_values(by = 'Number', axis = 'index')
     
     ## format latex table
     form = column_format(len(res.columns))
