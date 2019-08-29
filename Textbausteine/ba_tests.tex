@@ -1,0 +1,148 @@
+\chapter{Tests}
+\label{cha:test}
+
+ In order to be able to tell specimen apart quickly, the following naming convention was followed.
+
+\section{Naming Convention}
+
+A specimen name is assembled as follows:
+
+
+\centering
+\textbf{date\_description\_thickness[mm]\_energy level [kJ](\_repetition number)}
+\flushleft
+
+\subsection*{Date}
+
+The international standard date notation is used. Year-Month-Day.
+
+\subsection*{Description}
+
+\begin{table}
+\centering
+\begin{tabular}{lr}
+\toprule
+Description & Shorthand \\
+\midrule
+plain shotcrete & s\\
+fibre reinforced shotcrete & frs \\
+welded mesh reinforced shotcrete & mrs \\
+chain-link mesh reinforced shotcrete & crs \\
+textile mesh reinforced shotcrete & crs \\
+\hline
+welded mesh underneath & + w \\
+chain-link underneath & + c \\
+textile mesh & + t\\
+fjällband underneath & + j\\
+lacing underneath & + l\\
+TSL underneath & + s\\
+\bottomrule
+\end{tabular}
+\caption{Sample description}
+\label{tab:samdes}
+\end{table}
+%As of yet only round frs samples have been tested. So this section of the name starts with R to mark round samples and continues with frs to denote the composition. All current samples therefore have the same notation: Rfrs.
+
+The description of the specimen is slightly more complicated, it was developed to be able to be used in future tests as well and is over complete. The first part is the test method:
+
+\begin{itemize}
+    \item dynamic tests are not marked (standard)
+    \item \textbf{Q} marks quasi-static tests
+    \item \textbf{C} marks samples that were tested quasi static after a dynamic test (combination)
+\end{itemize}
+
+The next part is the sample shape.
+
+\begin{itemize}
+    \item square samples are not marked (standard)
+    \item \textbf{W} marks square samples without adhesion to the concrete slab
+    \item \textbf{R} marks round samples
+\end{itemize}
+
+Lastly the composition of the panel, as described in \autoref{tab:samdes}. Please note that the composition is named starting from top to bottom. 
+
+
+\subsection*{Energy Level}
+
+The energy levels are given in kJ and are rounded to one decimal place and calculated using \(E_{pot} = m * g *h \), with \(g =9,8~\frac{\text{m}}{\text{s}^2}\). %Of course some of this calculated energy is dissipated, for example through vibrations of the rig and bouncing of the impact weight. The exact amount of energy absorbed by the specimen is therefore unknown.
+
+This naming scheme fails for test that have been subjected to multiple impacts. for the tests both the total energy input and the impact are required. This can be achieved by writing XmY, with X denoting the energy of the impact and Y the total energy input into the panel.
+
+\subsection*{Number of Repetitions}
+
+The number of repetition is only used for the second and following repetitions. Therefore the first sample of a given composition is not marked especially. This makes it easier to spot tests with several repetitions.
+
+\subsection*{Examples}
+
+\centering
+\textbf{19-06-21\_Qs+m+j+j\_150\_0\_3}
+\flushleft
+
+Would be a quasi-static test run on 2019-06-21 on a square specimen, made of plain shotcrete that has external mesh and two layers of Fjällband and is plain shotcrete. The specimen has a thickness of 150 mm, as the test is quasi-static the energy level is zero, and it is the third test run in this setup on that day.
+
+\medskip
+\centering
+\textbf{18-12-04\_Rfrs\_50\_0,3}
+\flushleft
+
+Would be a test run on 2018-12-04 on a round specimen made from fibre reinforced concrete with a thickness of 50 mm, an energy level of 0,3 kJ and it would be the first test in this setup.
+
+
+The tests were spaced out over a long time span and the sensor array changed several times during testing. In \autoref{tab:con} an overview of the different testing conditions is given. 
+
+
+\begin{table}
+    \centering
+\input{tables/test_values.tex}
+\caption{Overview of the testing conditions of all tests}
+\label{tab:con}
+\end{table}
+
+ 
+\section{2017-12: Testing the Test Rig}
+ 
+ %The first campaign was run on round samples and used mostly to understand and learn the rig. It includes tests run between \DTMdate{2017-12-20} and \DTMdate{2018-12-10} by various operators.
+ 
+The first two samples were tested on \DTMdisplaydate{2017}{12}{20}{-1}. These tests were intended to test rig itself and not the samples. The initial sensor array is displayed in \autoref{fig:sencam1}. These tests have very little usable information and the documentations is very sparse. As both samples broke they do not affect the findings of this thesis a lot but they are included for completeness. These are the only round samples that were tested with the 200 kg drop weight. 
+
+\section{2018-02: First Tests}
+
+These two were the first serious tests using the test rig. The displacement measurements have  a staircase shape.
+
+\section{2018-11 until 2018-12: First Test Matrix}
+
+3 samples with 50 mm, 75mm and 100 mm thickness were tested in order to ascertain the influence of concrete thickness on the energy absorption capabilities. These tests were also used learn the test rig, optimise the work flow and the testing methodology.
+
+\section{2019-02 until 2019-05: Additional Accelerometer and Other Changes Implemented}
+
+\begin{figure}[ht]
+    \centering
+    \input{tikz/tikz18.tex}
+    \caption{Local orientation of positive acceleration of accelerometer}
+    \label{fig:posaccel}
+\end{figure}
+
+ \begin{figure}
+     \centering
+     \input{tikz/tikz12.tex}
+     \caption{Side view of the initial sensor array}
+     \label{fig:sencam1}
+ \end{figure}
+ \begin{figure}
+     \centering
+     \input{tikz/tikz13.tex}
+     \caption{Side view of the updated sensor array}
+     \label{fig:senside}
+\end{figure}
+
+Some changes on the test rig were implemented for these tests. To fix the problems with the laser sensor, reflective tape was applied to the samples. Additional accelerometers were fixed directly on the sample. An overview of the new sensor array is given in \autoref{fig:senside}. Things which were already present in the initial sensor array are coloured blue and the changes are highlighted in red. 
+
+The additional accelerometers were screwed into steel plates that were glued on the sample. One on the underside, about 10 cm from the center and in line with a load cell and one on the side of the sample and close to the point of maximum deflection. For the first 2 samples Kistler accelerometers were used. The postive direction for each accelerometer was chosen locally according to placement. A global system was considered. But the accelerometers are uniaxial and their orientation changes unpredictably during the experiment. Pretending that they measure in the same plane seemed too idealized. The positive direction of acceleration is pointing away from the sample. See  \autoref{fig:posaccel}.
+
+\section{2019-08 and 2019-09: TSL and Various Mesh Types}
+
+A few more test were run in an internal investigation, see ADD CITATION.
+The results of these tests are included in this analysis.
+
+After conducting the experiments the results had to be processed and interpreted.
+

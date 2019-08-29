@@ -1,0 +1,17 @@
+\begin{tikzpicture}
+%diamond spacing
+\path (0,0) -| (7,7);
+
+\foreach \x in {1,2,...,6}{
+\foreach \y in {2,4,6}{
+\draw[fill = black] 
+(0+\x,0+\y) circle [radius=0.1]
+;}}
+
+\foreach \x in {1,2,...,6}{
+\foreach \y in {1,3,5}{
+\draw[fill = black] 
+(0.5+\x,\y) circle [radius=0.1]
+;}}
+
+\end{tikzpicture}

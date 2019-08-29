@@ -603,33 +603,33 @@ def draw_diagrams(metadata = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data
     
     make_tables(res_df, results)
     
-    #make dir to save stuff
-    path = results + "\\diagram"
-    if os.path.isdir(path) == False:
-        os.makedirs(path)
-            
-    #throw useless info away
-    res_df = res_df.drop(['Broken/Cracked',"Drop weight","Drop height","Velocity","Number"],axis = 1)
-    
-    #correlation dataframe
-    corr = pd.DataFrame(index = res_df.columns, columns = res_df.columns, dtype = float)
-    
-    
-    mask = make_mask(metadata, results, index = df.index, res_df=res_df)
-    
-    #compare impact force to force at the load cells
-    compare_force(metadata, results, df, res_df, mask)
-    
-    counter = 1    
-    #draw all the silly graphics    
-    for j in res_df.columns:
-        for i in res_df.columns:
-            sg.OneLineProgressMeter('Progress', counter, len(res_df.columns)**2, 'key','Drawing diagrams')
-            counter += 1
-            plot_correlation(i, j, mask, res_df, corr, df, path)
-        
-    #draw a heatmap
-    heatmap(corr, results)
+#    #make dir to save stuff
+#    path = results + "\\diagram"
+#    if os.path.isdir(path) == False:
+#        os.makedirs(path)
+#            
+#    #throw useless info away
+#    res_df = res_df.drop(['Broken/Cracked',"Drop weight","Drop height","Velocity","Number"],axis = 1)
+#    
+#    #correlation dataframe
+#    corr = pd.DataFrame(index = res_df.columns, columns = res_df.columns, dtype = float)
+#    
+#    
+#    mask = make_mask(metadata, results, index = df.index, res_df=res_df)
+#    
+#    #compare impact force to force at the load cells
+#    compare_force(metadata, results, df, res_df, mask)
+#    
+#    counter = 1    
+#    #draw all the silly graphics    
+#    for j in res_df.columns:
+#        for i in res_df.columns:
+#            sg.OneLineProgressMeter('Progress', counter, len(res_df.columns)**2, 'key','Drawing diagrams')
+#            counter += 1
+#            plot_correlation(i, j, mask, res_df, corr, df, path)
+#        
+#    #draw a heatmap
+#    heatmap(corr, results)
     
 def compare_force(metadata = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data", results = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results", df = None, res_df = None, mask = None):
     i = 'Acceleration'
@@ -673,12 +673,13 @@ def compare_force(metadata = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data
     plt.grid()
     #
     ##linear interpolation
-    slope, intercept, r_value, p_value, std_err = sp.stats.linregress(cr_impact.astype(float),cr_loadcell.astype(float))
-    sortx = list(cr_impact.astype(float).sort_values())
-    sorty =[]
-    for m in sortx:
-        sorty.append(m * slope + intercept)
-    ax.plot(sortx, sorty, 'b--', label="Linear \ncorrelation \n$R^2$ = %0.04f \n x = %0.04f \n y = %0.04f" %(r_value**2,slope,intercept))
+    if not cr_impact.empty or not cr_loadcell.empty:
+        slope, intercept, r_value, p_value, std_err = sp.stats.linregress(cr_impact.astype(float),cr_loadcell.astype(float))
+        sortx = list(cr_impact.astype(float).sort_values())
+        sorty =[]
+        for m in sortx:
+            sorty.append(m * slope + intercept)
+        ax.plot(sortx, sorty, 'b--', label="Linear \ncorrelation \n$R^2$ = %0.04f \n x = %0.04f \n y = %0.04f" %(r_value**2,slope,intercept))
     
     ##draw the idealized line
     max_value1 = impact.max()
@@ -718,7 +719,18 @@ def remove_slash(df):
     return df
 
 def add_slash(df):
-    new_index = [i.replace('_', '\_') for i in df.index]
+    #check if there is \_ and leave those alone
+    #check if there is _ and change to \_
+    new_index = []
+    for i in df.index:
+        if type(i) is str:
+            if '\\_' in i:
+                new_index.append(i)
+            elif '_' in i:
+                i.replace('_', '\\_')
+                new_index.append(i)
+        else:
+            new_index.append(i)
     df.index = new_index
     return df
 
@@ -788,6 +800,14 @@ def plot_correlation(i, j, mask, res, corr, df, path):
     plt.savefig(filename)
     plt.close()
     
+def make_latex_table(df, path):
+    ## format latex table
+    form = column_format(len(df.columns))
+    ## format numbers with thousand separator . and decimal separator ,
+    decimal = [number_format] * len(df.columns)
+#    df  = add_slash(df)
+    df.to_latex(path, na_rep="", formatters = decimal, column_format = form, escape=True)
+    
 #make a latex table out of the .csv       
 def make_tables(df,res_path):
         #make dir to save stuff
@@ -795,51 +815,32 @@ def make_tables(df,res_path):
     if os.path.isdir(path) == False:
         os.makedirs(path)    
     #result file
-    res = df.sort_values(by = 'Number', axis = 'index')
-    
-    ## format latex table
-    form = column_format(len(res.columns))
-    ## format numbers with thousand separator . and decimal separator ,
-    decimal = [number_format] * len(res.columns)
-    res.fillna(0, inplace = True)
-    res.to_latex(path + "\\result.tex",na_rep="", formatters = decimal, column_format = form, escape=False)
+    res = df.sort_values(by = 'Number', axis = 'index')    
+    make_latex_table(res, path + "\\result.tex")
     
     #test_values
     test_values = res[["Number","Energy level", "Thickness", "Drop weight", "Drop height", "Age"]]
-    test_values.to_latex(path + "\\test_values.tex",na_rep="", formatters = decimal, column_format = form, escape=False)
+    make_latex_table(test_values, path + "\\test_values.tex")
     
     #short_result
     short_result = res[["Number", "Force", "Acceleration", "Displacement", "Crack area", "Opening angle"]]
-    short_result.to_latex(path + "\\short_result.tex",na_rep="", formatters = decimal, column_format = form, escape=False)
+    make_latex_table(short_result, path + "\\short_result.tex")
     
     #just cracks
     crack = res[res["Broken/Cracked"] == "cracked"]
-    cracks = crack.drop(["Broken/Cracked"], axis=1)
+    crack =  crack.drop(["Broken/Cracked"], axis=1)
+    make_latex_table(crack, path + "\\crack.tex")
     
-    ## format numbers with thousand separator . and decimal separator ,
-    form = column_format(len(crack.columns))
-    decimal = [number_format] * len(crack.columns)    
-    cracks.to_latex(path + "\\crack.tex",na_rep="", formatters = decimal, column_format = form, escape=False, index=False)
-    
+    #legend
     write_legend(res_path,df.iloc[1:]["Number"])
-    res_xlsx = res.copy()
-    new_index = []
-    for i in res.index:
-        try:
-            new_index.append(i.replace("\_", "_"))
-        except:
-            new_index.append(i)
-    res_xlsx = res.reset_index()
-
-
-    new_unit = [short_unit[i] for i in res_xlsx.columns]
-        
-    res_w_unit = pd.DataFrame(data = new_unit, index = res_xlsx.columns)
-    res_w_unit = res_w_unit.transpose()
-    res_w_unit = res_w_unit.append(res_xlsx)
     
-#    res_w_unit = res_w_unit.assign(Name = new_index)
-    res_w_unit.set_index("Name", inplace = True)    
+    #result file, add units
+    new_unit = [short_unit[i] for i in res.columns]        
+    res_w_unit = pd.DataFrame(data = new_unit, index = res.columns)#, columns = ['Name'])
+    res_w_unit = res_w_unit.transpose()
+    res_w_unit = res_w_unit.append(res)
+    res_w_unit.index.rename("Name", inplace = True)
+    print(res_w_unit.index)
 
     with pd.ExcelWriter(res_path + '\\result.xlsx') as writer:
             res_w_unit.to_excel(writer, sheet_name = "Results", na_rep="")
@@ -866,7 +867,7 @@ def make_mask(direct, results, index, res_df):
 #    excl_accl.to_latex(os.path.join(path, "exclude.tex"),formatters = excl_accl_format, escape = False,na_rep=" ")
 
     excl_format = [ex_in_clude] * len(mask.columns)
-    mask.to_latex(os.path.join(path, "exclude.tex"),formatters = excl_format, escape = False,na_rep="")
+    mask.drop(["Additional accelerometer vertical","Additional accelerometer horizontal"]).to_latex(os.path.join(path, "exclude.tex"),formatters = excl_format, escape = False,na_rep="")
 
 #make a pretty mask#
     #rename columns
@@ -953,6 +954,7 @@ def xls_to_df(excel=r'C:\Users\kekaun\OneDrive - LKAB\roundSamples\test_data.xls
     
 #writes a legend
 def write_legend(direct,df):
+    df = add_slash(df)
     leg = open(direct + "\\tables\\legend.tex","w")
     leg.write("""\\begin{table}
     \\centering
@@ -1049,6 +1051,10 @@ def heatmap(df,direct):
                      (1.0, 0.0, 0.0))}
             
     plt.register_cmap(name='LKAB', data=blackoutside)
+    #sort index and colums
+    df = df.sort_index(axis = 0)
+    df = df.sort_index(axis = 1)
+    
     sns_plot = sns.heatmap(df,  center = 0, annot=True, fmt='.2f',cmap = "LKAB", vmin = 0.0, vmax = 1.00,)
     plt.tight_layout()
     fig = sns_plot.get_figure()

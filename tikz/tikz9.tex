@@ -1,0 +1,36 @@
+\begin{tikzpicture}
+%sample size
+
+%sample
+\draw
+(0,0) -- (7.8,0) -- (7.8,7.8) -- (0,7.8) -- cycle;
+
+%bolts
+\draw 
+(0.9,0.9) circle [radius = 0.1]
+(0.9,6.9) circle [radius = 0.1]
+(6.9,6.9) circle [radius = 0.1]
+(6.9,0.9) circle [radius = 0.1];
+
+%measurements
+\draw [{Latex[length=3mm, width=1mm]}-{Latex[length=3mm, width=1mm]}]
+(0,-1) -- (0.9,-1) node [midway, above] {0,15 m};
+\draw [{Latex[length=3mm, width=1mm]}-{Latex[length=3mm, width=1mm]}]
+(0.9,-1) -- (6.9,-1) node [midway, above] {1,0 m} ;
+\draw [{Latex[length=3mm, width=1mm]}-{Latex[length=3mm, width=1mm]}]
+(6.9,-1)--(7.8,-1) node [midway, above] {0,15 m};
+
+\draw [{Latex[length=3mm, width=1mm]}-{Latex[length=3mm, width=1mm]}]
+(0,-2) -- (7.8,-2) node [midway, above] {1,3 m} ;
+
+
+\draw [{Latex[length=3mm, width=1mm]}-{Latex[length=3mm, width=1mm]}]
+(8.8,0) -- (8.8,0.9) node [midway, above, sloped] {0,15 m};
+\draw [{Latex[length=3mm, width=1mm]}-{Latex[length=3mm, width=1mm]}]
+(8.8,0.9) -- (8.8,6.9) node [midway, above, sloped] {1,0 m} ;
+\draw [{Latex[length=3mm, width=1mm]}-{Latex[length=3mm, width=1mm]}]
+(8.8,6.9)--(8.8,7.8) node [midway, above, sloped] {0,15 m};
+
+\draw [{Latex[length=3mm, width=1mm]}-{Latex[length=3mm, width=1mm]}]
+(9.8,0) -- (9.8,7.8) node [midway, above, sloped] {1,3 m} ;
+\end{tikzpicture}

@@ -1,0 +1,35 @@
+\newpage
+
+\pagenumbering{Roman}
+
+\setcounter{page}{1}
+
+\chapter*{Appendix table of contents}
+\addcontentsline{toc}{chapter}{Appendix Table of Contents}
+
+\stopcontents[main]
+
+\startcontents[appendix]
+
+\printcontents[appendix]{}{-1}{}
+
+\clearpage
+
+\stopcontents[appendix]
+
+\resumecontents[main]
+
+\addcontentsline{toc}{chapter}{Appendix}
+
+\stopcontents[main]
+
+\resumecontents[appendix]
+
+\part*{Appendix}
+
+\setcounter{chapter}{0}
+\renewcommand*{\theHsection}{chX.\the\value{chapter}} %so the chaptercounter works and hyperref is happy
+
+\normalsize
+
+\raggedright

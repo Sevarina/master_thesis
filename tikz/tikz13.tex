@@ -1,0 +1,78 @@
+\begin{tikzpicture}
+%caomapign 2 sensor array over view
+
+% telfer
+\draw
+(0,0) -- (3,0) arc (90:0:1) -- ++ (0,-2) coordinate (centre);
+%closed hook
+(centre) -- ++ (255:0.5) arc (-195:-90:0.14)
+(centre) -- ++ (285:0.5) arc (15:-90:0.14);
+%open hook
+\draw
+(centre) -- ++ (240:0.5) arc (-210:-105:0.14)
+(centre) -- ++ (300:0.5) arc (30:-65:0.14)
+(centre) ++ (0.5,-0.3) node [right] {hook};
+\draw[fill=blue]
+(1,-.25) circle [radius=0.25];
+\draw (1,-1) node {rotary encoder}
+(2,0.5) node {crane};
+
+
+% drop weight
+\draw
+(3.5,-6) rectangle ++ (1,-3)
+%(3.9,-6) -- (3.9,-5.8) arc (180:0:0.1) -- (4.1,-6)
+(4,-5) node {drop weight};
+\draw[fill=blue]
+%(4.3,-5.95) circle [radius = 0.05];
+(4.2,-6) -- ++ (0,.2) arc (180:0:0.1) -- ++ (0,-.2);
+\draw [{Latex[length=3mm, width=1mm]}-{Latex[length=3mm, width=1mm]}] (4.9,-5.45) -- ++ (0,-1);
+\draw (5.2,-5.95) node [right] {accelerometer};
+\draw (4,-10) node[single arrow,draw,rotate=-90,minimum height=25pt] {};
+
+
+%sample
+\draw (1,-12) rectangle ++ (6,1)
+(4,-11.5) node {sample};
+
+%additional accelerometers
+\draw (7,-11.75) rectangle ++ (.1,.5)
+(5,-12) rectangle ++ (.5,-.1);
+\draw[fill=red]
+%(7.15,-11.5) circle [radius = 0.05]
+(7.1,-11.4) -- ++ (.2,0) arc (90:-90:0.1) -- ++ (-0.2,0)
+%(5.25,-12.15) circle [radius = 0.05]
+(5.35,-12.1) -- ++ (0,-.2) arc (0:-180:0.1) -- ++ (0,.2);
+\draw [{Latex[length=3mm, width=1mm]}-{Latex[length=3mm, width=1mm]}] (7.6,-11.5) -- ++ (1,0);
+\draw [{Latex[length=3mm, width=1mm]}-{Latex[length=3mm, width=1mm]}] (5.25,-12.6) -- ++ (0,-1);
+\draw (7.4,-12.7) node {accelerometer};
+
+%loadcells
+\draw[fill=blue]
+(1,-12) rectangle ++ (.5,-.5);
+%(6.5,-12) rectangle ++ (.5,-.5);
+\draw 
+%(7,-13) node {loadcell}
+(1.25,-13) node {loadcell};
+
+%laser
+\draw[fill=blue]
+(0,-14.75) rectangle ++ (1,-.5);
+\draw [blue,-{Latex[length=3mm, width=1mm]}]
+(1,-15) -- (4,-15) -- (4,-12.1);
+\draw (0.5,-14.25) node {laser};
+%mirror
+\draw
+(3.75,-15.25) -- ++ (.5,.5)
+(5,-15) node {mirror};
+%tape
+\draw [red,thick]
+(3.5,-12.05) --  (4.5,-12.05);
+\draw (3.7,-12.5) node [below,left] {tape};
+
+%high speed camera
+\draw [fill = blue] (-2,-12) rectangle ++ (.5,-.5)
+(-1.5,-12.1) -- ++ (0.2,0.1) -- ++ (0,-0.3) -- ++ (-0.2,0.1);
+\draw (-2,-13) node {high speed camera};
+
+\end{tikzpicture}

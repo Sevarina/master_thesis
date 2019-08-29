@@ -76,9 +76,9 @@ def make_layout_nav_filelist(target= 'files you want to test'):
     return layout
 
 #file choosing layout
-def make_choose_samples_layout(file_list, target = 'Please select which samples to analyse!'):
+def make_choose_samples_layout(file_list, target = 'analyse'):
     layout_test = [
-        [sg.Text(target)],
+        [sg.Text(('Please choose the files you want to '+ target +"!"))],
         ]
 
     if file_list == []:
@@ -86,12 +86,12 @@ def make_choose_samples_layout(file_list, target = 'Please select which samples 
     else:
         for i in file_list:
             layout_test.append([sg.Text(i, key = i), sg.Button("remove", key = "remove_" + i)])
-        layout_test.append([sg.Button('Add sample'), sg.Button('Start analysis'), sg.Button('Quit')])
+        layout_test.append([sg.Button('Add sample'), sg.Button('Start'), sg.Button('Quit')])
     return layout_test
 
 
 #file picker function
-def nav_filelist_check(target = 'files you want to test', extension = 'npy', file_list = []):
+def nav_filelist_check(target = 'test', extension = 'npy', file_list = []):
     while True:
         window = sg.Window('Drop test program').Layout(make_layout_nav_filelist(target = target))
         event, values = window.Read()
@@ -129,7 +129,7 @@ def nav_filelist_check(target = 'files you want to test', extension = 'npy', fil
 #file choosing window
 def choose_samples(file_list= [], extension = '.asc', target = 'files you want to test'):
     while True:
-        window = sg.Window('Drop test program').Layout(make_choose_samples_layout(file_list))
+        window = sg.Window('Drop test program').Layout(make_choose_samples_layout(file_list, target))
         event, values = window.Read()
         print(event)
         if event == 'Quit':
@@ -262,25 +262,26 @@ def choose_file(file_list, verb):
 
 layout_man = [
         [sg.Text("What do you want to do?")],
-        [sg.Button("Convert a single data set", tooltip = "Convert one data set from .asc to .npy")],
-        [sg.Button("Convert several data sets at once", tooltip = "Convert all data sets in a folder from .asc to .npy")],
-        [sg.Button("Run analysis for all data sets in a folder", tooltip = "Analyse all .npy in the chosen folder")],
+#        [sg.Button("Convert a single data set", tooltip = "Convert one data set from .asc to .npy")],
+#        [sg.Button("Convert several data sets at once", tooltip = "Convert all data sets in a folder from .asc to .npy")],
+        [sg.Button("Convert data sets", tooltip = "Convert one or more data sets from .asc to .npy")],
+        [sg.Button("Run analysis", tooltip = "Choose .npy files and analyse them")],
         [sg.Button("Draw linear regression diagrams", tooltip = "Draws a linear regression for all columns of a result table")],
 #        [sg.Button("Edit data set", tooltip = "Remove outliers from a data set")],
         [sg.Cancel()]   
         ]
 
 def manual():
+    window = sg.Window('Drop test program').Layout(layout_man)    
     while True:
-        window = sg.Window('Drop test program').Layout(layout_man)    
         event, values = window.Read()
-        if event == "Convert a single data set":
-            window.Close()
-            convert_single_file(target_file = "data you want to convert", target_folder = "where you want the converted data to be saved")
-        elif event == "Convert several data sets at once":
+#        if event == "Convert a single data set":
+#            window.Close()
+#            convert_single_file(target_file = "data you want to convert", target_folder = "where you want the converted data to be saved")
+        if event == "Convert data sets":
             window.Close()
 #            file_list, direct = nav_folder_check(target = "data you want to convert", extension = "asc")
-            file_list = choose_samples(target = 'files you want to convert')
+            file_list = choose_samples(target = 'convert')
             if file_list == 'Quit':
                 return 'Quit'
             if file_list == None or file_list == 'Cancel':
@@ -289,24 +290,29 @@ def manual():
             convert_list = choose_file(file_list, "convert")
             if convert_list != []:
                 convert_file(basic_array, convert_list)
-        elif event == "Run analysis for all data sets in a folder":
+            return
+        elif event == "Run analysis":
             window.Close()
-            file_list = choose_samples(target = 'data you want to analyse', extension = 'npy')
+            file_list = choose_samples(target = 'analyse', extension = 'npy')
             if file_list == 'Quit':
                 return 'Quit'
             if file_list == None or file_list == 'Cancel':
                 return
-            basic_array = os.path.dirname(file_list[0])            
+       
             #            file_list, basic_array = nav_folder_check(target = "data you want to analyse", extension = "npy")
+            _, metadata = nav_folder_check(target = "the folder where the test_data and the exclude file are saved")
             _, result = nav_folder_check(target = "where you the results to be saved")
             core.calc(basic_array, result)
+            return
         elif event == "Draw linear regression diagrams":
-            _, test_data =  nav_folder_check("test data folder")
-            df = UI_open_df(test_data, "test_data")
+            window.Close()
+            _, metadata = nav_folder_check(target = "the folder where the test_data and the exclude file are saved")
+            df = UI_open_df(metadata, "test_data")
             if df is None:
                 continue
-            _, result = nav_folder_check(target = "result folder")
-            core.draw_diagrams(metadata = test_data, results= result, df = df)
+            _, result = nav_folder_check(target = "the folder with the results of the analysis")
+            core.draw_diagrams(metadata = metadata, results= result, df = df)
+            return
         else: 
 #            event is None or event == "Cancel":
             window.Close()
@@ -392,8 +398,6 @@ def input_test_data(file, num):
     window_test_data = sg.Window("Drop test program").Layout(make_add_test_layout(os.path.basename(file[:-4])))
     while True:
         event, values = window_test_data.Read()
-#        print(values)
-
         if event == "Skip sample":
             window_test_data.Close()
             return
@@ -532,7 +536,6 @@ def make_index_list(index, columns):
        big_list.append(help_list)
     return(big_list)
 
-#TODO broken samples exclude the broken stuff right away
 def input_exclusion(file_list, df):
     columns = ["Loadcells","Accelerometer","Laser sensor", "Cracks", "High speed camera"]#, "Additional accelerometer vertical","Additional accelerometer horizontal"]
     index = [os.path.basename(i)[:-4] for i in file_list]
@@ -553,6 +556,7 @@ def input_exclusion(file_list, df):
                 exclusion.loc[i,j] = values[i + "_" + j]
             if df.loc[i,"Broken/cracked"] == "broken":
                 exclusion.loc[i,"Cracks"] == True
+                exclusion.loc[i,"High speed camera"] == True
         return exclusion
     elif event == "Quit":
         exclusion_window.Close()
@@ -593,7 +597,6 @@ def convert_file(basic_array, file_list):
         res_list.append(save_path)
     return res_list
 
-#TODO add progress bar
 def run_auto(file_list, direct):
     #make folders
     data, basic_array, metadata, results = make_test_dir(direct)
@@ -669,7 +672,7 @@ def use_GUI():
         elif event == "Add sample to existing project":
             window.Close()
             #open everything you need to calc
-            file = nav_file_check(target = "file that you want converted", extension = "asc")
+            file = nav_file_check(target = "choose the .asc file you want to add to the project", extension = "asc")
             if file is None:
                 return
             _, project = nav_folder_check(target = "the project you want to add the file to")

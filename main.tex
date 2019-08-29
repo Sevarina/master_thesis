@@ -1,0 +1,224 @@
+\documentclass[12pt,listof=numbered,pagesize,bibliography=totocnumbered,oneside]{scrreprt} 
+%Schriftgröße, zufälliges zeug, zufälliges Zeug, Literaturverzeichnis bekommt eine Nummer im Inhaltsverzeichnis
+%scrreport weil anders als Article gibt es auch chapters, aber es ist nicht nötig herumzufuchsen um bei jedem chapter das Kapitel:XXX weg zu kriegen
+
+%%%%%%%%%%%%%%%%%%%%% CITATIONS & LANGUAGE
+
+\usepackage[british]{babel} %für die Worttrennung, das Datum, die Bibliographie usw...
+\usepackage[utf8]{inputenc} %sonst gibts kein ß usw
+\usepackage{csquotes} %sonst beschwert sich Biber
+
+% BIBLIOGRAPHY AND CITATION STYLE
+\usepackage[
+maxcitenames=3,
+backend=biber,
+style=apa,
+citestyle=authoryear
+]{biblatex} %biblatex mit biber laden 
+\ExecuteBibliographyOptions{
+sorting=nyt, %Sortierung Autor, Titel, Jahr 
+bibwarn=true, %Probleme mit den Daten, die Backend betreﬀen anzeigen 
+isbn=false, %keine isbn anzeigen 
+url=false, %keine url anzeigen 
+doi=false
+}
+\addbibresource{Bib.bib} %Bibliographiedateien laden 
+
+\DeclareLanguageMapping{british}{british-apa}
+
+\DefineBibliographyStrings{british}{ %has to be same as Babel!
+   andothers = {{et\,al\adddot}},             
+} 
+%%%%%%%%%%%%%%%%%%%% FORMAT
+
+%% PAGE DIMENSIONS
+\usepackage{geometry} % to change the page dimensions
+\geometry{a4paper} % or letterpaper (US) or a5paper or....
+\geometry{top=2.5cm, bottom=2.5cm, left=3cm, right=2.5cm} %wie in der Formatvorlage definiert
+
+%% LANDSCAPE
+\usepackage{lscape} %\begin{landscape} ... \end{lanscape}
+
+%% FONT
+\usepackage{helvet}
+\renewcommand\familydefault{\sfdefault}
+\usepackage[T1]{fontenc}
+
+% SIZING OF SECTION HEADERS
+\setkomafont{chapter}{\LARGE}
+\setkomafont{section}{\Large}
+\setkomafont{subsection}{\large}
+\setkomafont{subsubsection}{\normalsize}
+\setkomafont{paragraph}{\normalsize}
+\setkomafont{subparagraph}{\normalsize}
+
+%SIZING OF CAPTIONS
+\usepackage[font=small]{caption}
+
+% FONT SIZE
+\makeatletter 
+\renewcommand\LARGE{\@setfontsize\LARGE{16pt}{19}}
+\renewcommand\Large{\@setfontsize\Large{14pt}{17}}
+\renewcommand\large{\@setfontsize\large{12pt}{15}}
+\renewcommand\small{\@setfontsize\small{10pt}{10}}%Abbildungs-,Tabellenbeschriftung und Fußnote
+\makeatother
+
+%% SPACE AROUND SECTION HEADERS
+\RedeclareSectionCommand[
+  beforeskip=.7\baselineskip,afterskip=.3\baselineskip]{chapter}
+\RedeclareSectionCommand[
+  beforeskip=.7\baselineskip,afterskip=.3\baselineskip]{section}
+\RedeclareSectionCommand[
+  beforeskip=1\baselineskip,afterskip=.3\baselineskip]{subsection}
+
+%% GENERAL SPACING
+\usepackage[onehalfspacing]{setspace}
+% \usepackage[doublespacing]{setspace}
+
+%% HEADER AND FOOTER
+\usepackage{scrlayer-scrpage}
+%\pagestyle{myheadings}
+%\plainheadsepline=true
+\lefoot*{A New Drop Test Rig for Kiirunavaara Mine}
+\refoot*{Page \pagemark}
+
+
+%\pagestyle{fancy}
+%\fancyhf{}
+%\lfoot{Interim Report}
+%\lfoot{A New Drop Test Rig for Kiirunavaara Mine}
+%\rfoot{Page \thepage}
+
+% Redefine the plain page style
+%\fancypagestyle{plain}{%
+%  \fancyhf{}%
+%\lfoot{A New Drop Test Rig for Kiirunavaara Mine}
+%\rfoot{Page \thepage}
+%}
+
+%% FRONTPAGE
+
+% DATE
+\usepackage[en-GB]{datetime2} 
+
+% TABLE (GRAY LINES)
+\usepackage[table]{xcolor} %to make nice gray lines on the title page
+
+%%%%%%%%%%%%%%%%%% STUFF I NEED
+
+\usepackage{graphicx} % support the \includegraphics command and options
+
+\usepackage{subcaption} % make it possible to include more than one captioned figure/table in a single float
+
+% ° 
+\usepackage{textcomp} 
+
+% SECOND TOC
+\usepackage{titletoc} 
+\dottedcontents{section}[4.6em]{}{3pc}{-1pc}
+\dottedcontents{subsection}[7.7em]{}{3pc}{-1pc}
+\makeatletter
+\renewcommand\@dotsep{500}   % default value 4.5
+\makeatother
+
+% INPUT PDFs
+\usepackage{pdfpages}
+
+% NICER ARRAYS
+\usepackage{array} 
+
+% COMMENT SECTIONS WITH \begin{comment} ...  \end{comment}
+\usepackage{comment} 
+
+%%%%%%%%%%%%%%%%% TABLES
+
+\usepackage{multirow}
+
+\renewcommand{\arraystretch}{1.2}
+
+\usepackage{booktabs,ragged2e}
+
+\newcolumntype{P}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+
+%%%%%%%%%%%%%%%% MATH
+
+
+\usepackage{amsmath} %math stuff
+\usepackage{mathtools} %nice looking math stuff
+%\newcommand*\rfrac[2]{{}^{#1}\!/_{#2}} %shorter fractual, \rfrac{top}{bottom}
+\newcommand{\rfrac}[2]{\frac{\text{#1}}{\text{#2}}} %shorter fractual, \rfrac{top}{bottom}
+
+%%%%%%%%%%%%% TIKZ
+
+\usepackage{tikz} % NOT drawing
+\usetikzlibrary{
+    arrows.meta,
+    calc,
+    datavisualization,
+    patterns,
+    shapes.arrows
+    }
+    
+\usepackage{tikz-3dplot}
+%%%%%%%%%%%%%% REFERENCING
+
+\usepackage{hyperref}
+
+
+%%%%%%%%%%%%% working title
+\author{Karin Ungerer}
+\date{\today}
+\title{Interim Report}
+
+
+\begin{document}
+
+\startcontents[main]
+
+
+\input{./Textbausteine/1_Titelblatt}
+
+\input{./Textbausteine/2_Widmung}
+
+\input{./Textbausteine/3_Zusammenfassung}
+
+\newpage
+
+\printcontents[main]{}{0}{}
+\addcontentsline{to_c}{chapter}{Table of Contents}
+\cleardoubleoddpage
+
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\input{./Textbausteine/a1_rockmech}
+
+\input{Textbausteine/a2_testingMethods}
+
+\input{./Textbausteine/a3_Kiirunavaara}
+
+\input{./Textbausteine/a4_material}
+
+\input{./Textbausteine/b_testrig}
+
+\input{Textbausteine/ba_tests}
+
+\input{./Textbausteine/c_results}
+
+\input{./Textbausteine/d_consequences}
+
+\input{./Textbausteine/e_conclusion}
+
+\small
+
+\printbibliography
+
+\listoffigures
+
+\listoftables
+
+\input{./Textbausteine/5_Abkuerzungsverzeichnis}
+\input{./Textbausteine/6_Anhang_Inhaltsverzeichnis}
+\input{./Textbausteine/4_Anhang}
+
+\end{document}

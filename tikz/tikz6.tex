@@ -1,0 +1,98 @@
+\begin{tikzpicture}
+%3D square sample
+
+
+%steel frame
+\draw (0,12) rectangle ++(8,-0.3);
+\draw (3.8,15.5) -- ++ (6,0)
+(3.8,15.2) -- ++ (5.75,0)
+(3.8,15.5) -- ++ (0,-0.3)
+(3.8,15.2) -- ++ (-2.1,-2.7)
+(8,11.7) -- ++ (3.2,4) -- ++ (0,0.3);
+\begin{scope}
+\pgftransformcm{1}{0}{0.4}{0.5}{\pgfpoint{0}{12cm}}
+\draw (0,0) rectangle (8,8);
+\draw (1,1) rectangle (7,7);
+\end{scope}
+
+
+
+%mesh
+\begin{scope}
+\pgftransformcm{1}{0}{0.4}{0.5}{\pgfpoint{0}{-4.5cm}}
+\draw [step=1] (0,0) grid (8,8);
+\end{scope}
+
+%concrete slab
+\begin{scope}
+\pgftransformcm{1}{0}{0.4}{0.5}{\pgfpoint{0}{7cm}}
+\draw[fill=lightgray] (0,0) rectangle (8,8);
+\draw[fill=black] 
+(1.5,1.5) circle [radius = 0.1]
+(6.5,1.5) circle [radius = 0.1]
+(1.5,6.5) circle [radius = 0.1]
+(6.5,6.5) circle [radius = 0.1]; 
+\end{scope}
+\draw[fill=lightgray] (0,7) rectangle (8,5);
+\begin{scope}
+\pgftransformcm{0}{1}{0.4}{0.5}{\pgfpoint{8cm}{7cm}}
+\draw[fill=lightgray] (0,0) rectangle (-2,8);
+\end{scope}
+\begin{scope}
+\pgftransformcm{1}{0}{0.4}{0.5}{\pgfpoint{4cm}{7cm}}
+\draw[fill=white] (0,4) circle [radius = 2];
+\end{scope}
+
+
+%sample
+%\draw[fill=gray] 
+(0.2,0.25) rectangle ++ (0.5,0.5)
+(7.7,0.25) rectangle ++ (0.5,0.5)
+(0.5,0) rectangle (7.5,0.5);
+\draw[fill=gray]
+(0.7,0.25) rectangle (7.7,0.75);
+
+    %side
+\begin{scope}
+\pgftransformcm{0}{1}{0.4}{0.5}{\pgfpoint{7.5cm}{0cm}}
+\draw[fill=gray] (0,0.5) rectangle ++ (0.5,7);
+\end{scope}
+
+    %top
+\begin{scope}
+\pgftransformcm{1}{0}{0.4}{0.5}{\pgfpoint{0}{0.5cm}}
+\draw[fill=gray]
+(0.5,0.5) -- (7.5,0.5) -- (7.5,7.5) -- (0.5,7.5) --  cycle;
+    %bolt
+\draw[fill=black] 
+(1.5,1.5) circle [radius = 0.1]
+(6.5,1.5) circle [radius = 0.1]
+(1.5,6.5) circle [radius = 0.1]
+(6.5,6.5) circle [radius = 0.1]; 
+\end{scope}
+
+%bolts
+\draw[ultra thin] 
+(2.1,9.5) -- ++ (0,-15) coordinate [pos=0.95] (bolt1)
+(7.1,9.5) -- ++ (0,-15) coordinate [pos=0.95] (bolt2)
+(4.1,11.5) -- ++ (0,-15) coordinate [pos=0.95] (bolt3)
+(9.1,11.5) -- ++ (0,-15) coordinate [pos=0.95] (bolt4);
+
+%Text
+\draw
+(12,14) node [right,align =left] {steel frame}
+(12,7) node [right,align =left] {concrete slab}
+(12,2) node [right, align = left] {sample}
+(12,-3) node [right,align = left] {mesh}
+
+(5,-6) node (bolts) {bolts};
+\draw[-{Latex[length=3mm, width=1mm]}]
+(bolts) -- (bolt1);
+\draw[-{Latex[length=3mm, width=1mm]}]
+(bolts) --(bolt2);
+\draw[-{Latex[length=3mm, width=1mm]}]
+(bolts) -- (bolt3);
+\draw[-{Latex[length=3mm, width=1mm]}]
+(bolts) -- (bolt4);
+
+\end{tikzpicture}

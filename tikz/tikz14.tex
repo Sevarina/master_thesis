@@ -1,0 +1,48 @@
+\begin{tikzpicture}
+%sensor array of second campaign under view
+
+
+%sample
+\draw(4,4) circle [radius=4];
+
+%load cells
+\draw [fill = blue] (90:3.75) ++ (4,4) circle [radius=.25]
+ (210:3.75) ++ (4,4) circle [radius=.25]
+ (-30:3.75) ++ (4,4) circle [radius=.25];
+\draw (-30:5) ++ (4,4) node (load) {load cell}
+(3,6) node [align=center] {expected cracks};
+
+%accelerometers
+\draw (4,4) ++ (210:1.5) coordinate (accel);
+\draw[rotate=120] (accel) -| ++ (0.25,-0.5) coordinate [pos=0] (that)  -| ++ (-0.5,0.5)  -- cycle;
+\draw[fill = red] (4,4) ++ (210:1.25) circle [radius=.1];
+\path (4,4) -- ++ (-110:4) coordinate (side);
+\draw[rotate=-20] (side) -| ++ (0.25,-.1)  -|  ++ (-0.5,0.1) -- cycle;
+\draw[rotate=-20, fill=red] (side) ++ (0.1,-0.1) -- ++ (0,-.2) arc (0:-180:0.1) coordinate [pos=0.7] (here) -- ++ (0,.2);
+\draw (0,-1) node (this) {accelerometer};
+\draw [-{Latex[length=3mm, width=1mm]}] (this) -- (that);
+\draw [-{Latex[length=3mm, width=1mm]}] (this) -- (here);
+
+%cracks
+%\path[clip] (4,4) -- ++ (25:4) arc (25:35:4) -- 
+%(4,4) -- ++ (145:4) arc (145:155:4) -- 
+%(4,4) -- ++ (265:4) arc (265:275:4) -- cycle;
+
+%\path[clip] (4,4) -| ++ (0.2,-5) -| ++ (-0.4,5) -- (4,4) -- ++ (-60:0.2) -- ++ (30:5) -- ++ (120:0.4) -- ++ (-150:5) -- (4,4) -- ++ (60:0.2) -- ++ (150:5) -- ++ (240:0.4) -- ++ (330:5) --cycle;
+
+%\path[fill = lightgray] (4,4) circle [radius = 0.23];
+\begin{scope}
+
+
+\path[clip] (4,4) -| ++ (0.2,-5) -| ++ (-0.4,5) -- cycle
+(4,4) -- ++ (-60:0.2) -- ++ (30:5) -- ++ (120:0.4) -- ++ (-150:5) -- cycle 
+(4,4) -- ++ (60:0.2) -- ++ (150:5) -- ++ (240:0.4) -- ++ (330:5) --cycle;
+
+
+\draw [fill=lightgray] (4,4) circle [radius=4];
+\end{scope}
+\draw[fill=red] (3.5,3.5) rectangle (4.5,4.5);
+\draw
+(4,5) node {tape};
+
+\end{tikzpicture}

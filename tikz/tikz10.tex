@@ -1,0 +1,32 @@
+\begin{tikzpicture}
+%round sample
+
+%text
+\path (90:5) ++ (4,4) coordinate (start)
+(-30:5) ++ (4,4) coordinate (end);
+\draw [{Latex[length=3mm, width=1mm]}-{Latex[length=3mm, width=1mm]}] (start) arc (90:-30:5)
+node [above, sloped,midway] {120\textdegree};
+
+
+%sample
+\draw(4,4) circle [radius=4];
+
+%load cells
+\draw (90:3.5) ++ (4,4) circle [radius=.5];
+\draw (210:3.5) ++ (4,4) circle [radius=.5];
+\draw (-30:3.5) ++ (4,4) circle [radius=.5];
+
+%measurements
+\draw[{Latex[length=3mm, width=1mm]}-{Latex[length=3mm, width=1mm]}]
+(0,-1) -- (8,-1) node [above,midway] {0,8 m};
+
+%text
+\draw (210:5) ++ (4,4) node (load) {load cell}
+(4,5) node {impact zone};
+
+%impact zone
+\path[clip] (4,4) circle [radius=0.5];
+\foreach \x in {2.4,2.6,...,4.6}
+\draw[ultra thin] (\x,3.3) -- ++ (2,2);
+
+\end{tikzpicture}

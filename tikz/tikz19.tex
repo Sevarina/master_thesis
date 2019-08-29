@@ -1,0 +1,35 @@
+\begin{tikzpicture}
+%current support system
+
+%membrane
+\draw (0,0) arc [radius = 8cm, start angle= 120, end angle= 60];
+\draw (0,-1) arc [radius = 8cm, start angle= 120, end angle= 60];
+\draw [thick,dash pattern={on 7pt off 2pt on 1pt off 3pt}] (0,-1.3) arc [radius = 8cm, start angle= 120, end angle= 60];
+\path (0,-1.8) arc [radius = 8cm, start angle= 120, end angle= 60] 
+coordinate [pos = 0.2] (left)
+coordinate [pos = 0.35] (leftmid)
+coordinate [pos = 0.5] (mid)
+coordinate [pos = 0.65] (rightmid)
+coordinate [pos = 0.8] (right);
+
+%bolts
+\draw 
+(left) -- ++ (110:4)
+(leftmid) -- ++ (100:10)
+(mid) -- ++ (90:4)
+(rightmid) -- ++ (80:10)
+(right) -- ++ (70:4);
+
+%text
+\node[right] at (8.5,0.5) {rock};
+
+\node[right] at (8.5,-0.5) {FRS};
+
+\node[right] at (8.5,-1.3) {welded mesh};
+
+\node at (4,-1.8) {excavation};
+
+\node at (4,7) {cable bolts};
+
+\node at (7,3) [right] {dynamic bolts};
+\end{tikzpicture}

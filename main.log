@@ -1,0 +1,2549 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (MiKTeX 2.9.7050 64-bit) (preloaded format=pdflatex 2019.7.15)  29 AUG 2019 13:11
+entering extended mode
+**./main.tex
+(main.tex
+LaTeX2e <2018-12-01>
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/koma-script\scrreprt.cls"
+Document Class: scrreprt 2019/02/01 v3.26b KOMA-Script document class (report)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/koma-script\scrkbase.sty"
+Package: scrkbase 2019/02/01 v3.26b KOMA-Script package (KOMA-Script-dependent 
+basics and keyval usage)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/koma-script\scrbase.sty"
+Package: scrbase 2019/02/01 v3.26b KOMA-Script package (KOMA-Script-independent
+ basics and keyval usage)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/graphics\keyval.sty"
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks14
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/koma-script\scrlfile.sty"
+Package: scrlfile 2019/02/01 v3.26b KOMA-Script package (loading files)
+)))
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/koma-script\tocbasic.sty"
+Package: tocbasic 2019/02/01 v3.26b KOMA-Script package (handling toc-files)
+\scr@dte@tocline@numberwidth=\skip41
+\scr@dte@tocline@numbox=\box27
+)
+Package tocbasic Info: omitting babel extension for `toc'
+(tocbasic)             because of feature `nobabel' available
+(tocbasic)             for `toc' on input line 136.
+Package scrreprt Info: You've used standard option `12pt'.
+(scrreprt)             This is correct!
+(scrreprt)             Internally I'm using `fontsize=12pt'.
+(scrreprt)             If you'd like to set the option with \KOMAoptions,
+(scrreprt)             you'd have to use `fontsize=12pt' there
+(scrreprt)             instead of `12pt', too.
+Class scrreprt Info: You've used standard option `oneside'.
+(scrreprt)           This is correct!
+(scrreprt)           Internally I'm using `twoside=false'.
+(scrreprt)           If you'd like to set the option with \KOMAoptions,
+(scrreprt)           you'd have to use `twoside=false' there
+(scrreprt)           instead of `oneside', too.
+Class scrreprt Info: File `scrsize12pt.clo' used to setup font sizes on input l
+ine 2373.
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/koma-script\scrsize12pt.clo"
+File: scrsize12pt.clo 2019/02/01 v3.26b KOMA-Script font size class option (12p
+t)
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/koma-script\typearea.sty"
+Package: typearea 2019/02/01 v3.26b KOMA-Script package (type area)
+\ta@bcor=\skip42
+\ta@div=\count80
+Package typearea Info: You've used standard option `oneside'.
+(typearea)             This is correct!
+(typearea)             Internally I'm using `twoside=false'.
+(typearea)             If you'd like to set the option with \KOMAoptions,
+(typearea)             you'd have to use `twoside=false' there
+(typearea)             instead of `oneside', too.
+\ta@hblk=\skip43
+\ta@vblk=\skip44
+\ta@temp=\skip45
+\footheight=\skip46
+Package typearea Info: These are the values describing the layout:
+(typearea)             DIV  = 12
+(typearea)             BCOR = 0.0pt
+(typearea)             \paperwidth      = 597.50793pt
+(typearea)              \textwidth      = 448.13095pt
+(typearea)              DIV departure   = -6%
+(typearea)              \evensidemargin = 2.4185pt
+(typearea)              \oddsidemargin  = 2.4185pt
+(typearea)             \paperheight     = 845.04694pt
+(typearea)              \textheight     = 635.5pt
+(typearea)              \topmargin      = -41.72441pt
+(typearea)              \headheight     = 18.125pt
+(typearea)              \headsep        = 21.75pt
+(typearea)              \topskip        = 12.0pt
+(typearea)              \footskip       = 50.75pt
+(typearea)              \baselineskip   = 14.5pt
+(typearea)              on input line 1715.
+)
+\c@part=\count81
+\c@chapter=\count82
+\c@section=\count83
+\c@subsection=\count84
+\c@subsubsection=\count85
+\c@paragraph=\count86
+\c@subparagraph=\count87
+\scr@dte@chapter@maxnumwidth=\skip47
+Class scrreprt Info: using compatibility default `afterindent=bysign'
+(scrreprt)           for `\chapter on input line 5305.
+\scr@dte@section@maxnumwidth=\skip48
+Class scrreprt Info: using compatibility default `runin=bysign'
+(scrreprt)           for `\section on input line 5315.
+Class scrreprt Info: using compatibility default `afterindent=bysign'
+(scrreprt)           for `\section on input line 5315.
+\scr@dte@part@maxnumwidth=\skip49
+Class scrreprt Info: using compatibility default `afterindent=true'
+(scrreprt)           for `\part on input line 5324.
+\scr@dte@subsection@maxnumwidth=\skip50
+Class scrreprt Info: using compatibility default `runin=bysign'
+(scrreprt)           for `\subsection on input line 5334.
+Class scrreprt Info: using compatibility default `afterindent=bysign'
+(scrreprt)           for `\subsection on input line 5334.
+\scr@dte@subsubsection@maxnumwidth=\skip51
+Class scrreprt Info: using compatibility default `runin=bysign'
+(scrreprt)           for `\subsubsection on input line 5344.
+Class scrreprt Info: using compatibility default `afterindent=bysign'
+(scrreprt)           for `\subsubsection on input line 5344.
+\scr@dte@paragraph@maxnumwidth=\skip52
+Class scrreprt Info: using compatibility default `runin=bysign'
+(scrreprt)           for `\paragraph on input line 5354.
+Class scrreprt Info: using compatibility default `afterindent=bysign'
+(scrreprt)           for `\paragraph on input line 5354.
+\scr@dte@subparagraph@maxnumwidth=\skip53
+Class scrreprt Info: using compatibility default `runin=bysign'
+(scrreprt)           for `\subparagraph on input line 5364.
+Class scrreprt Info: using compatibility default `afterindent=bysign'
+(scrreprt)           for `\subparagraph on input line 5364.
+\abovecaptionskip=\skip54
+\belowcaptionskip=\skip55
+\c@pti@nb@sid@b@x=\box28
+Package tocbasic Info: omitting babel extension for `lof'
+(tocbasic)             because of feature `nobabel' available
+(tocbasic)             for `lof' on input line 6613.
+\scr@dte@figure@maxnumwidth=\skip56
+\c@figure=\count88
+Package tocbasic Info: omitting babel extension for `lot'
+(tocbasic)             because of feature `nobabel' available
+(tocbasic)             for `lot' on input line 6630.
+\scr@dte@table@maxnumwidth=\skip57
+\c@table=\count89
+Class scrreprt Info: Redefining `\numberline' on input line 6799.
+\bibindent=\dimen102
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/babel\babel.sty"
+Package: babel 2019/06/03 3.32 The Babel package
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/babel\switch.def"
+File: switch.def 2019/06/03 3.32 Babel switching mechanism
+)
+*************************************
+* Local config file bblopts.cfg used
+*
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/arabi\bblopts.cfg"
+File: bblopts.cfg 2005/09/08 v0.1 add Arabic and Farsi to "declared" options of
+ babel
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/babel-english\british.ldf"
+Language: british 2017/06/06 v3.3r English support from the babel system
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/babel-english\english.ldf"
+Language: english 2017/06/06 v3.3r English support from the babel system
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/babel\babel.def"
+File: babel.def 2019/06/03 3.32 Babel common definitions
+\babel@savecnt=\count90
+\U@D=\dimen103
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/babel\txtbabel.def")
+\bbl@dirlevel=\count91
+)
+\l@canadian = a dialect from \language\l@american 
+\l@australian = a dialect from \language\l@british 
+\l@newzealand = a dialect from \language\l@british 
+)))
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/base\inputenc.sty"
+Package: inputenc 2018/08/11 v1.3c Input encoding file
+\inpenc@prehook=\toks15
+\inpenc@posthook=\toks16
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/csquotes\csquotes.sty"
+Package: csquotes 2019/05/10 v5.2e context-sensitive quotations (JAW)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/etoolbox\etoolbox.sty"
+Package: etoolbox 2018/08/19 v2.5f e-TeX tools for LaTeX (JAW)
+\etb@tempcnta=\count92
+)
+\csq@reset=\count93
+\csq@gtype=\count94
+\csq@glevel=\count95
+\csq@qlevel=\count96
+\csq@maxlvl=\count97
+\csq@tshold=\count98
+\csq@ltx@everypar=\toks17
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/csquotes\csquotes.def"
+File: csquotes.def 2019/05/10 v5.2e csquotes generic definitions (JAW)
+)
+Package csquotes Info: Trying to load configuration file 'csquotes.cfg'...
+Package csquotes Info: ... configuration file loaded successfully.
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/csquotes\csquotes.cfg"
+File: csquotes.cfg 
+))
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/biblatex\biblatex.sty"
+Package: biblatex 2018/11/02 v3.12 programmable bibliographies (PK/MW)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/oberdiek\pdftexcmds.sty"
+Package: pdftexcmds 2018/09/10 v0.29 Utility functions of pdfTeX for LuaTeX (HO
+)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/oberdiek\infwarerr.sty"
+Package: infwarerr 2016/05/16 v1.4 Providing info/warning/error messages (HO)
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/oberdiek\ifluatex.sty"
+Package: ifluatex 2016/05/16 v1.4 Provides the ifluatex switch (HO)
+Package ifluatex Info: LuaTeX not detected.
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/oberdiek\ltxcmds.sty"
+Package: ltxcmds 2016/05/16 v1.23 LaTeX kernel commands for general use (HO)
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/oberdiek\ifpdf.sty"
+Package: ifpdf 2018/09/07 v3.3 Provides the ifpdf switch
+)
+Package pdftexcmds Info: LuaTeX not detected.
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/oberdiek\kvoptions.sty"
+Package: kvoptions 2016/05/16 v3.12 Key value format for package options (HO)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/oberdiek\kvsetkeys.sty"
+Package: kvsetkeys 2016/05/16 v1.17 Key value parser (HO)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/oberdiek\etexcmds.sty"
+Package: etexcmds 2016/05/16 v1.6 Avoid name clashes with e-TeX commands (HO)
+)))
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/logreq\logreq.sty"
+Package: logreq 2010/08/04 v1.0 xml request logger
+\lrq@indent=\count99
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/logreq\logreq.def"
+File: logreq.def 2010/08/04 v1.0 logreq spec v1.0
+))
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/base\ifthen.sty"
+Package: ifthen 2014/09/29 v1.1c Standard LaTeX ifthen package (DPC)
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/url\url.sty"
+\Urlmuskip=\muskip10
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+\c@tabx@nest=\count100
+\c@listtotal=\count101
+\c@listcount=\count102
+\c@liststart=\count103
+\c@liststop=\count104
+\c@citecount=\count105
+\c@citetotal=\count106
+\c@multicitecount=\count107
+\c@multicitetotal=\count108
+\c@instcount=\count109
+\c@maxnames=\count110
+\c@minnames=\count111
+\c@maxitems=\count112
+\c@minitems=\count113
+\c@citecounter=\count114
+\c@maxcitecounter=\count115
+\c@savedcitecounter=\count116
+\c@uniquelist=\count117
+\c@uniquename=\count118
+\c@refsection=\count119
+\c@refsegment=\count120
+\c@maxextratitle=\count121
+\c@maxextratitleyear=\count122
+\c@maxextraname=\count123
+\c@maxextradate=\count124
+\c@maxextraalpha=\count125
+\c@abbrvpenalty=\count126
+\c@highnamepenalty=\count127
+\c@lownamepenalty=\count128
+\c@maxparens=\count129
+\c@parenlevel=\count130
+\blx@tempcnta=\count131
+\blx@tempcntb=\count132
+\blx@tempcntc=\count133
+\blx@maxsection=\count134
+\blx@maxsegment@0=\count135
+\blx@notetype=\count136
+\blx@parenlevel@text=\count137
+\blx@parenlevel@foot=\count138
+\blx@sectionciteorder@0=\count139
+\blx@entrysetcounter=\count140
+\labelnumberwidth=\skip58
+\labelalphawidth=\skip59
+\biblabelsep=\skip60
+\bibitemsep=\skip61
+\bibnamesep=\skip62
+\bibinitsep=\skip63
+\bibparsep=\skip64
+\bibhang=\skip65
+\blx@bcfin=\read1
+\blx@bcfout=\write3
+\c@mincomprange=\count141
+\c@maxcomprange=\count142
+\c@mincompwidth=\count143
+Package biblatex Info: Trying to load biblatex default data model...
+Package biblatex Info: ... file 'blx-dm.def' found.
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/biblatex\blx-dm.def"
+File: blx-dm.def 2018/11/02 v3.12 biblatex localization (PK/MW)
+)
+Package biblatex Info: Trying to load biblatex style data model...
+Package biblatex Info: ... file 'apa.dbx' found.
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/biblatex-apa\apa.dbx"
+File: apa.dbx 2018/04/02 v7.7 APA biblatex style data model
+)
+Package biblatex Info: Trying to load biblatex custom data model...
+Package biblatex Info: ... file 'biblatex-dm.cfg' not found.
+\c@afterword=\count144
+\c@savedafterword=\count145
+\c@annotator=\count146
+\c@savedannotator=\count147
+\c@author=\count148
+\c@savedauthor=\count149
+\c@bookauthor=\count150
+\c@savedbookauthor=\count151
+\c@commentator=\count152
+\c@savedcommentator=\count153
+\c@editor=\count154
+\c@savededitor=\count155
+\c@editora=\count156
+\c@savededitora=\count157
+\c@editorb=\count158
+\c@savededitorb=\count159
+\c@editorc=\count160
+\c@savededitorc=\count161
+\c@foreword=\count162
+\c@savedforeword=\count163
+\c@holder=\count164
+\c@savedholder=\count165
+\c@introduction=\count166
+\c@savedintroduction=\count167
+\c@namea=\count168
+\c@savednamea=\count169
+\c@nameb=\count170
+\c@savednameb=\count171
+\c@namec=\count172
+\c@savednamec=\count173
+\c@translator=\count174
+\c@savedtranslator=\count175
+\c@shortauthor=\count176
+\c@savedshortauthor=\count177
+\c@shorteditor=\count178
+\c@savedshorteditor=\count179
+\c@with=\count180
+\c@savedwith=\count181
+\c@writer=\count182
+\c@savedwriter=\count183
+\c@producer=\count184
+\c@savedproducer=\count185
+\c@execproducer=\count186
+\c@savedexecproducer=\count187
+\c@director=\count188
+\c@saveddirector=\count189
+\c@labelname=\count190
+\c@savedlabelname=\count191
+\c@institution=\count192
+\c@savedinstitution=\count193
+\c@lista=\count194
+\c@savedlista=\count195
+\c@listb=\count196
+\c@savedlistb=\count197
+\c@listc=\count198
+\c@savedlistc=\count199
+\c@listd=\count266
+\c@savedlistd=\count267
+\c@liste=\count268
+\c@savedliste=\count269
+\c@listf=\count270
+\c@savedlistf=\count271
+\c@location=\count272
+\c@savedlocation=\count273
+\c@organization=\count274
+\c@savedorganization=\count275
+\c@origlocation=\count276
+\c@savedoriglocation=\count277
+\c@origpublisher=\count278
+\c@savedorigpublisher=\count279
+\c@publisher=\count280
+\c@savedpublisher=\count281
+\c@language=\count282
+\c@savedlanguage=\count283
+\c@origlanguage=\count284
+\c@savedoriglanguage=\count285
+\c@pageref=\count286
+\c@savedpageref=\count287
+\shorthandwidth=\skip66
+\shortjournalwidth=\skip67
+\shortserieswidth=\skip68
+\shorttitlewidth=\skip69
+\shortauthorwidth=\skip70
+\shorteditorwidth=\skip71
+\locallabelnumberwidth=\skip72
+\locallabelalphawidth=\skip73
+\localshorthandwidth=\skip74
+\localshortjournalwidth=\skip75
+\localshortserieswidth=\skip76
+\localshorttitlewidth=\skip77
+\localshortauthorwidth=\skip78
+\localshorteditorwidth=\skip79
+Package biblatex Info: Trying to load compatibility code...
+Package biblatex Info: ... file 'blx-compat.def' found.
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/biblatex\blx-compat.def"
+File: blx-compat.def 2018/11/02 v3.12 biblatex compatibility (PK/MW)
+)
+Package biblatex Info: Trying to load generic definitions...
+Package biblatex Info: ... file 'biblatex.def' found.
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/biblatex\biblatex.def"
+File: biblatex.def 2018/11/02 v3.12 biblatex compatibility (PK/MW)
+\c@textcitecount=\count288
+\c@textcitetotal=\count289
+\c@textcitemaxnames=\count290
+\c@biburlnumpenalty=\count291
+\c@biburlucpenalty=\count292
+\c@biburllcpenalty=\count293
+\c@smartand=\count294
+)
+Package biblatex Info: Trying to load bibliography style 'apa'...
+Package biblatex Info: ... file 'apa.bbx' found.
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/biblatex-apa\apa.bbx"
+File: apa.bbx 2018/04/02 v7.7 APA biblatex references style
+Package biblatex Info: Trying to load bibliography style 'standard'...
+Package biblatex Info: ... file 'standard.bbx' found.
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/biblatex/bbx\standard.bbx"
+File: standard.bbx 2018/11/02 v3.12 biblatex bibliography style (PK/MW)
+\c@bbx:relatedcount=\count295
+\c@bbx:relatedtotal=\count296
+))
+Package biblatex Info: Trying to load citation style 'authoryear'...
+Package biblatex Info: ... file 'authoryear.cbx' found.
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/biblatex/cbx\authoryear.cbx"
+File: authoryear.cbx 2018/11/02 v3.12 biblatex citation style (PK/MW)
+Package biblatex Info: Redefining '\cite'.
+Package biblatex Info: Redefining '\parencite'.
+Package biblatex Info: Redefining '\footcite'.
+Package biblatex Info: Redefining '\footcitetext'.
+Package biblatex Info: Redefining '\smartcite'.
+Package biblatex Info: Redefining '\textcite'.
+Package biblatex Info: Redefining '\textcites'.
+)
+Package biblatex Info: Trying to load configuration file...
+Package biblatex Info: ... file 'biblatex.cfg' found.
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/biblatex\biblatex.cfg"
+File: biblatex.cfg 
+))
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/geometry\geometry.sty"
+Package: geometry 2018/04/16 v5.8 Page Geometry
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/oberdiek\ifvtex.sty"
+Package: ifvtex 2016/05/16 v1.6 Detect VTeX and its facilities (HO)
+Package ifvtex Info: VTeX not detected.
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/ifxetex\ifxetex.sty"
+Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
+)
+\Gm@cnth=\count297
+\Gm@cntv=\count298
+\c@Gm@tempcnt=\count299
+\Gm@bindingoffset=\dimen104
+\Gm@wd@mp=\dimen105
+\Gm@odd@mp=\dimen106
+\Gm@even@mp=\dimen107
+\Gm@layoutwidth=\dimen108
+\Gm@layoutheight=\dimen109
+\Gm@layouthoffset=\dimen110
+\Gm@layoutvoffset=\dimen111
+\Gm@dimlist=\toks18
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/geometry\geometry.cfg"))
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/graphics\lscape.sty"
+Package: lscape 2000/10/22 v3.01 Landscape Pages (DPC)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/graphics\graphics.sty"
+Package: graphics 2017/06/25 v1.2c Standard LaTeX Graphics (DPC,SPQR)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/graphics\trig.sty"
+Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/graphics-cfg\graphics.cfg"
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 99.
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/graphics-def\pdftex.def"
+File: pdftex.def 2018/01/08 v1.0l Graphics/color driver for pdftex
+)))
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/psnfss\helvet.sty"
+Package: helvet 2005/04/12 PSNFSS-v9.2a (WaS) 
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/base\fontenc.sty"
+Package: fontenc 2018/08/11 v2.0j Standard LaTeX package
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/base\t1enc.def"
+File: t1enc.def 2018/08/11 v2.0j Standard LaTeX file
+LaTeX Font Info:    Redeclaring font encoding T1 on input line 48.
+))
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/caption\caption.sty"
+Package: caption 2018/10/06 v3.3-154 Customizing captions (AR)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/caption\caption3.sty"
+Package: caption3 2018/09/12 v1.8c caption3 kernel (AR)
+Package caption3 Info: TeX engine: e-TeX on input line 64.
+\captionmargin=\dimen112
+\captionmargin@=\dimen113
+\captionwidth=\dimen114
+\caption@tempdima=\dimen115
+\caption@indent=\dimen116
+\caption@parindent=\dimen117
+\caption@hangindent=\dimen118
+)
+Package caption Info: KOMA-Script document class.
+\c@caption@flags=\count300
+\c@ContinuedFloat=\count301
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/setspace\setspace.sty"
+Package: setspace 2011/12/19 v6.7a set line spacing
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/koma-script\scrlayer-scrpage.st
+y"
+Package: scrlayer-scrpage 2019/02/01 v3.26b KOMA-Script package (end user inter
+face for scrlayer)
+ ("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/koma-script\scrlayer.sty"
+Package: scrlayer 2019/02/01 v3.26b KOMA-Script package (defining layers and pa
+ge styles)
+Package scrlayer Info: Using already defined \footheight
+(scrlayer)             hoping, that this is a length and
+(scrlayer)             not only a macro on input line 109.
+Package scrlayer Info: patching LaTeX kernel macro \pagestyle on input line 208
+3.
+)
+Package scrlayer-scrpage Info: Makeing stand-alone element `pagehead' from
+(scrlayer-scrpage)             alias to `pageheadfoot' on input line 1241.
+Package scrlayer-scrpage Info: deactivating warning for font element
+(scrlayer-scrpage)             `pagefoot' on input line 1268.
+)
+Package scrlayer-scrpage Info: auto-selection of `pagestyleset=KOMA-Script'.
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/datetime2\datetime2.sty"
+Package: datetime2 2018/07/20 v1.5.3 (NLCT) date and time formats
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/tracklang\tracklang.sty"
+Package: tracklang 2018/05/13 v1.3.6 (NLCT) Track Languages
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/tracklang\tracklang.tex"))
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/xkeyval\xkeyval.sty"
+Package: xkeyval 2014/12/03 v2.7a package option processing (HA)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/xkeyval\xkeyval.tex"
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/xkeyval\xkvutils.tex"
+\XKV@toks=\toks19
+\XKV@tempa@toks=\toks20
+)
+\XKV@depth=\count302
+File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
+))
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/datetime2-english\datetime2-en-
+GB.ldf"
+File: datetime2-en-GB.ldf 2016/03/09 v1.04 (NLCT)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/datetime2-english\datetime2-eng
+lish-base.ldf"
+File: datetime2-english-base.ldf 2016/03/09 v1.04 (NLCT)
+)))
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/xcolor\xcolor.sty"
+Package: xcolor 2016/05/11 v2.12 LaTeX color extensions (UK)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/graphics-cfg\color.cfg"
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: pdftex.def on input line 225.
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/colortbl\colortbl.sty"
+Package: colortbl 2018/12/12 v1.0d Color table columns (DPC)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/tools\array.sty"
+Package: array 2018/12/30 v2.4k Tabular extension package (FMi)
+\col@sep=\dimen119
+\ar@mcellbox=\box29
+\extrarowheight=\dimen120
+\NC@list=\toks21
+\extratabsurround=\skip80
+\backup@length=\skip81
+\ar@cellbox=\box30
+)
+\everycr=\toks22
+\minrowclearance=\skip82
+)
+\rownum=\count303
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1348.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1352.
+Package xcolor Info: Model `RGB' extended on input line 1364.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1366.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1367.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1368.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1369.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1370.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1371.
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/graphics\graphicx.sty"
+Package: graphicx 2017/06/01 v1.1a Enhanced LaTeX Graphics (DPC,SPQR)
+\Gin@req@height=\dimen121
+\Gin@req@width=\dimen122
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/caption\subcaption.sty"
+Package: subcaption 2018/05/01 v1.1-162 Sub-captions (AR)
+\c@subfigure=\count304
+\c@subtable=\count305
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/base\textcomp.sty"
+Package: textcomp 2018/08/11 v2.0j Standard LaTeX package
+Package textcomp Info: Sub-encoding information:
+(textcomp)               5 = only ISO-Adobe without \textcurrency
+(textcomp)               4 = 5 + \texteuro
+(textcomp)               3 = 4 + \textohm
+(textcomp)               2 = 3 + \textestimated + \textcurrency
+(textcomp)               1 = TS1 - \textcircled - \t
+(textcomp)               0 = TS1 (full)
+(textcomp)             Font families with sub-encoding setting implement
+(textcomp)             only a restricted character set as indicated.
+(textcomp)             Family '?' is the default used for unknown fonts.
+(textcomp)             See the documentation for details.
+Package textcomp Info: Setting ? sub-encoding to TS1/1 on input line 79.
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/base\ts1enc.def"
+File: ts1enc.def 2001/06/05 v3.0e (jk/car/fm) Standard LaTeX file
+Now handling font encoding TS1 ...
+... processing UTF-8 mapping file for font encoding TS1
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/base\ts1enc.dfu"
+File: ts1enc.dfu 2018/10/05 v1.2f UTF-8 support for inputenc
+   defining Unicode char U+00A2 (decimal 162)
+   defining Unicode char U+00A3 (decimal 163)
+   defining Unicode char U+00A4 (decimal 164)
+   defining Unicode char U+00A5 (decimal 165)
+   defining Unicode char U+00A6 (decimal 166)
+   defining Unicode char U+00A7 (decimal 167)
+   defining Unicode char U+00A8 (decimal 168)
+   defining Unicode char U+00A9 (decimal 169)
+   defining Unicode char U+00AA (decimal 170)
+   defining Unicode char U+00AC (decimal 172)
+   defining Unicode char U+00AE (decimal 174)
+   defining Unicode char U+00AF (decimal 175)
+   defining Unicode char U+00B0 (decimal 176)
+   defining Unicode char U+00B1 (decimal 177)
+   defining Unicode char U+00B2 (decimal 178)
+   defining Unicode char U+00B3 (decimal 179)
+   defining Unicode char U+00B4 (decimal 180)
+   defining Unicode char U+00B5 (decimal 181)
+   defining Unicode char U+00B6 (decimal 182)
+   defining Unicode char U+00B7 (decimal 183)
+   defining Unicode char U+00B9 (decimal 185)
+   defining Unicode char U+00BA (decimal 186)
+   defining Unicode char U+00BC (decimal 188)
+   defining Unicode char U+00BD (decimal 189)
+   defining Unicode char U+00BE (decimal 190)
+   defining Unicode char U+00D7 (decimal 215)
+   defining Unicode char U+00F7 (decimal 247)
+   defining Unicode char U+0192 (decimal 402)
+   defining Unicode char U+02C7 (decimal 711)
+   defining Unicode char U+02D8 (decimal 728)
+   defining Unicode char U+02DD (decimal 733)
+   defining Unicode char U+0E3F (decimal 3647)
+   defining Unicode char U+2016 (decimal 8214)
+   defining Unicode char U+2020 (decimal 8224)
+   defining Unicode char U+2021 (decimal 8225)
+   defining Unicode char U+2022 (decimal 8226)
+   defining Unicode char U+2030 (decimal 8240)
+   defining Unicode char U+2031 (decimal 8241)
+   defining Unicode char U+203B (decimal 8251)
+   defining Unicode char U+203D (decimal 8253)
+   defining Unicode char U+2044 (decimal 8260)
+   defining Unicode char U+204E (decimal 8270)
+   defining Unicode char U+2052 (decimal 8274)
+   defining Unicode char U+20A1 (decimal 8353)
+   defining Unicode char U+20A4 (decimal 8356)
+   defining Unicode char U+20A6 (decimal 8358)
+   defining Unicode char U+20A9 (decimal 8361)
+   defining Unicode char U+20AB (decimal 8363)
+   defining Unicode char U+20AC (decimal 8364)
+   defining Unicode char U+20B1 (decimal 8369)
+   defining Unicode char U+2103 (decimal 8451)
+   defining Unicode char U+2116 (decimal 8470)
+   defining Unicode char U+2117 (decimal 8471)
+   defining Unicode char U+211E (decimal 8478)
+   defining Unicode char U+2120 (decimal 8480)
+   defining Unicode char U+2122 (decimal 8482)
+   defining Unicode char U+2126 (decimal 8486)
+   defining Unicode char U+2127 (decimal 8487)
+   defining Unicode char U+212E (decimal 8494)
+   defining Unicode char U+2190 (decimal 8592)
+   defining Unicode char U+2191 (decimal 8593)
+   defining Unicode char U+2192 (decimal 8594)
+   defining Unicode char U+2193 (decimal 8595)
+   defining Unicode char U+2329 (decimal 9001)
+   defining Unicode char U+232A (decimal 9002)
+   defining Unicode char U+2422 (decimal 9250)
+   defining Unicode char U+25E6 (decimal 9702)
+   defining Unicode char U+25EF (decimal 9711)
+   defining Unicode char U+266A (decimal 9834)
+   defining Unicode char U+FEFF (decimal 65279)
+))
+LaTeX Info: Redefining \oldstylenums on input line 334.
+Package textcomp Info: Setting cmr sub-encoding to TS1/0 on input line 349.
+Package textcomp Info: Setting cmss sub-encoding to TS1/0 on input line 350.
+Package textcomp Info: Setting cmtt sub-encoding to TS1/0 on input line 351.
+Package textcomp Info: Setting cmvtt sub-encoding to TS1/0 on input line 352.
+Package textcomp Info: Setting cmbr sub-encoding to TS1/0 on input line 353.
+Package textcomp Info: Setting cmtl sub-encoding to TS1/0 on input line 354.
+Package textcomp Info: Setting ccr sub-encoding to TS1/0 on input line 355.
+Package textcomp Info: Setting ptm sub-encoding to TS1/4 on input line 356.
+Package textcomp Info: Setting pcr sub-encoding to TS1/4 on input line 357.
+Package textcomp Info: Setting phv sub-encoding to TS1/4 on input line 358.
+Package textcomp Info: Setting ppl sub-encoding to TS1/3 on input line 359.
+Package textcomp Info: Setting pag sub-encoding to TS1/4 on input line 360.
+Package textcomp Info: Setting pbk sub-encoding to TS1/4 on input line 361.
+Package textcomp Info: Setting pnc sub-encoding to TS1/4 on input line 362.
+Package textcomp Info: Setting pzc sub-encoding to TS1/4 on input line 363.
+Package textcomp Info: Setting bch sub-encoding to TS1/4 on input line 364.
+Package textcomp Info: Setting put sub-encoding to TS1/5 on input line 365.
+Package textcomp Info: Setting uag sub-encoding to TS1/5 on input line 366.
+Package textcomp Info: Setting ugq sub-encoding to TS1/5 on input line 367.
+Package textcomp Info: Setting ul8 sub-encoding to TS1/4 on input line 368.
+Package textcomp Info: Setting ul9 sub-encoding to TS1/4 on input line 369.
+Package textcomp Info: Setting augie sub-encoding to TS1/5 on input line 370.
+Package textcomp Info: Setting dayrom sub-encoding to TS1/3 on input line 371.
+Package textcomp Info: Setting dayroms sub-encoding to TS1/3 on input line 372.
+
+Package textcomp Info: Setting pxr sub-encoding to TS1/0 on input line 373.
+Package textcomp Info: Setting pxss sub-encoding to TS1/0 on input line 374.
+Package textcomp Info: Setting pxtt sub-encoding to TS1/0 on input line 375.
+Package textcomp Info: Setting txr sub-encoding to TS1/0 on input line 376.
+Package textcomp Info: Setting txss sub-encoding to TS1/0 on input line 377.
+Package textcomp Info: Setting txtt sub-encoding to TS1/0 on input line 378.
+Package textcomp Info: Setting lmr sub-encoding to TS1/0 on input line 379.
+Package textcomp Info: Setting lmdh sub-encoding to TS1/0 on input line 380.
+Package textcomp Info: Setting lmss sub-encoding to TS1/0 on input line 381.
+Package textcomp Info: Setting lmssq sub-encoding to TS1/0 on input line 382.
+Package textcomp Info: Setting lmvtt sub-encoding to TS1/0 on input line 383.
+Package textcomp Info: Setting lmtt sub-encoding to TS1/0 on input line 384.
+Package textcomp Info: Setting qhv sub-encoding to TS1/0 on input line 385.
+Package textcomp Info: Setting qag sub-encoding to TS1/0 on input line 386.
+Package textcomp Info: Setting qbk sub-encoding to TS1/0 on input line 387.
+Package textcomp Info: Setting qcr sub-encoding to TS1/0 on input line 388.
+Package textcomp Info: Setting qcs sub-encoding to TS1/0 on input line 389.
+Package textcomp Info: Setting qpl sub-encoding to TS1/0 on input line 390.
+Package textcomp Info: Setting qtm sub-encoding to TS1/0 on input line 391.
+Package textcomp Info: Setting qzc sub-encoding to TS1/0 on input line 392.
+Package textcomp Info: Setting qhvc sub-encoding to TS1/0 on input line 393.
+Package textcomp Info: Setting futs sub-encoding to TS1/4 on input line 394.
+Package textcomp Info: Setting futx sub-encoding to TS1/4 on input line 395.
+Package textcomp Info: Setting futj sub-encoding to TS1/4 on input line 396.
+Package textcomp Info: Setting hlh sub-encoding to TS1/3 on input line 397.
+Package textcomp Info: Setting hls sub-encoding to TS1/3 on input line 398.
+Package textcomp Info: Setting hlst sub-encoding to TS1/3 on input line 399.
+Package textcomp Info: Setting hlct sub-encoding to TS1/5 on input line 400.
+Package textcomp Info: Setting hlx sub-encoding to TS1/5 on input line 401.
+Package textcomp Info: Setting hlce sub-encoding to TS1/5 on input line 402.
+Package textcomp Info: Setting hlcn sub-encoding to TS1/5 on input line 403.
+Package textcomp Info: Setting hlcw sub-encoding to TS1/5 on input line 404.
+Package textcomp Info: Setting hlcf sub-encoding to TS1/5 on input line 405.
+Package textcomp Info: Setting pplx sub-encoding to TS1/3 on input line 406.
+Package textcomp Info: Setting pplj sub-encoding to TS1/3 on input line 407.
+Package textcomp Info: Setting ptmx sub-encoding to TS1/4 on input line 408.
+Package textcomp Info: Setting ptmj sub-encoding to TS1/4 on input line 409.
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/titlesec\titletoc.sty"
+Package: titletoc 2011/12/15 v1.6 TOC entries
+\ttl@leftsep=\dimen123
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/pdfpages\pdfpages.sty"
+Package: pdfpages 2017/10/31 v0.5l Insert pages of external PDF documents (AM)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/tools\calc.sty"
+Package: calc 2017/05/25 v4.3 Infix arithmetic (KKT,FJ)
+\calc@Acount=\count306
+\calc@Bcount=\count307
+\calc@Adimen=\dimen124
+\calc@Bdimen=\dimen125
+\calc@Askip=\skip83
+\calc@Bskip=\skip84
+LaTeX Info: Redefining \setlength on input line 80.
+LaTeX Info: Redefining \addtolength on input line 81.
+\calc@Ccount=\count308
+\calc@Cskip=\skip85
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/eso-pic\eso-pic.sty"
+Package: eso-pic 2018/04/12 v2.0h eso-pic (RN)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/oberdiek\atbegshi.sty"
+Package: atbegshi 2016/06/09 v1.18 At begin shipout hook (HO)
+))
+\AM@pagewidth=\dimen126
+\AM@pageheight=\dimen127
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/pdfpages\pppdftex.def"
+File: pppdftex.def 2017/10/31 v0.5l Pdfpages driver for pdfTeX (AM)
+)
+\AM@pagebox=\box31
+\AM@global@opts=\toks23
+\AM@toc@title=\toks24
+\c@AM@survey=\count309
+\AM@templatesizebox=\box32
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/comment\comment.sty"
+\CommentStream=\write4
+
+Excluding comment 'comment')
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/multirow\multirow.sty"
+Package: multirow 2019/05/31 v2.5 Span multiple rows of a table
+\multirow@colwidth=\skip86
+\multirow@cntb=\count310
+\multirow@dima=\skip87
+\bigstrutjot=\dimen128
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/booktabs\booktabs.sty"
+Package: booktabs 2005/04/14 v1.61803 publication quality tables
+\heavyrulewidth=\dimen129
+\lightrulewidth=\dimen130
+\cmidrulewidth=\dimen131
+\belowrulesep=\dimen132
+\belowbottomsep=\dimen133
+\aboverulesep=\dimen134
+\abovetopsep=\dimen135
+\cmidrulesep=\dimen136
+\cmidrulekern=\dimen137
+\defaultaddspace=\dimen138
+\@cmidla=\count311
+\@cmidlb=\count312
+\@aboverulesep=\dimen139
+\@belowrulesep=\dimen140
+\@thisruleclass=\count313
+\@lastruleclass=\count314
+\@thisrulewidth=\dimen141
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/ms\ragged2e.sty"
+Package: ragged2e 2009/05/21 v2.1 ragged2e Package (MS)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/ms\everysel.sty"
+Package: everysel 2011/10/28 v1.2 EverySelectfont Package (MS)
+)
+\CenteringLeftskip=\skip88
+\RaggedLeftLeftskip=\skip89
+\RaggedRightLeftskip=\skip90
+\CenteringRightskip=\skip91
+\RaggedLeftRightskip=\skip92
+\RaggedRightRightskip=\skip93
+\CenteringParfillskip=\skip94
+\RaggedLeftParfillskip=\skip95
+\RaggedRightParfillskip=\skip96
+\JustifyingParfillskip=\skip97
+\CenteringParindent=\skip98
+\RaggedLeftParindent=\skip99
+\RaggedRightParindent=\skip100
+\JustifyingParindent=\skip101
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/amsmath\amsmath.sty"
+Package: amsmath 2018/12/01 v2.17b AMS math features
+\@mathmargin=\skip102
+
+For additional information on amsmath, use the `?' option.
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/amsmath\amstext.sty"
+Package: amstext 2000/06/29 v2.01 AMS text
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/amsmath\amsgen.sty"
+File: amsgen.sty 1999/11/30 v2.0 generic functions
+\@emptytoks=\toks25
+\ex@=\dimen142
+))
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/amsmath\amsbsy.sty"
+Package: amsbsy 1999/11/29 v1.2d Bold Symbols
+\pmbraise@=\dimen143
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/amsmath\amsopn.sty"
+Package: amsopn 2016/03/08 v2.02 operator names
+)
+\inf@bad=\count315
+LaTeX Info: Redefining \frac on input line 223.
+\uproot@=\count316
+\leftroot@=\count317
+LaTeX Info: Redefining \overline on input line 385.
+\classnum@=\count318
+\DOTSCASE@=\count319
+LaTeX Info: Redefining \ldots on input line 482.
+LaTeX Info: Redefining \dots on input line 485.
+LaTeX Info: Redefining \cdots on input line 606.
+\Mathstrutbox@=\box33
+\strutbox@=\box34
+\big@size=\dimen144
+LaTeX Font Info:    Redeclaring font encoding OML on input line 729.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 730.
+\macc@depth=\count320
+\c@MaxMatrixCols=\count321
+\dotsspace@=\muskip11
+\c@parentequation=\count322
+\dspbrk@lvl=\count323
+\tag@help=\toks26
+\row@=\count324
+\column@=\count325
+\maxfields@=\count326
+\andhelp@=\toks27
+\eqnshift@=\dimen145
+\alignsep@=\dimen146
+\tagshift@=\dimen147
+\tagwidth@=\dimen148
+\totwidth@=\dimen149
+\lineht@=\dimen150
+\@envbody=\toks28
+\multlinegap=\skip103
+\multlinetaggap=\skip104
+\mathdisplay@stack=\toks29
+LaTeX Info: Redefining \[ on input line 2844.
+LaTeX Info: Redefining \] on input line 2845.
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/mathtools\mathtools.sty"
+Package: mathtools 2018/01/08 v1.21 mathematical typesetting tools
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/mathtools\mhsetup.sty"
+Package: mhsetup 2017/03/31 v1.3 programming setup (MH)
+)
+LaTeX Info: Thecontrolsequence`\('isalreadyrobust on input line 129.
+LaTeX Info: Thecontrolsequence`\)'isalreadyrobust on input line 129.
+LaTeX Info: Thecontrolsequence`\['isalreadyrobust on input line 129.
+LaTeX Info: Thecontrolsequence`\]'isalreadyrobust on input line 129.
+\g_MT_multlinerow_int=\count327
+\l_MT_multwidth_dim=\dimen151
+\origjot=\skip105
+\l_MT_shortvdotswithinadjustabove_dim=\dimen152
+\l_MT_shortvdotswithinadjustbelow_dim=\dimen153
+\l_MT_above_intertext_sep=\dimen154
+\l_MT_below_intertext_sep=\dimen155
+\l_MT_above_shortintertext_sep=\dimen156
+\l_MT_below_shortintertext_sep=\dimen157
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/pgf/frontendlayer\tikz.sty"
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/pgf/basiclayer\pgf.sty"
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/pgf/utilities\pgfrcs.sty"
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/utilities\pgfutil-common.
+tex"
+\pgfutil@everybye=\toks30
+\pgfutil@tempdima=\dimen158
+\pgfutil@tempdimb=\dimen159
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/utilities\pgfutil-common-
+lists.tex"))
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/utilities\pgfutil-latex.d
+ef"
+\pgfutil@abb=\box35
+ ("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/ms\everyshi.sty"
+Package: everyshi 2001/05/15 v3.00 EveryShipout Package (MS)
+))
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/utilities\pgfrcs.code.tex
+" ("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf\pgf.revision.tex")
+Package: pgfrcs 2019/07/12 v3.1.4 (3.1.4)
+))
+Package: pgf 2019/07/12 v3.1.4 (3.1.4)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/pgf/basiclayer\pgfcore.sty"
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/pgf/systemlayer\pgfsys.sty"
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/systemlayer\pgfsys.code.t
+ex"
+Package: pgfsys 2019/07/12 v3.1.4 (3.1.4)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/utilities\pgfkeys.code.te
+x"
+\pgfkeys@pathtoks=\toks31
+\pgfkeys@temptoks=\toks32
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/utilities\pgfkeysfiltered
+.code.tex"
+\pgfkeys@tmptoks=\toks33
+))
+\pgf@x=\dimen160
+\pgf@y=\dimen161
+\pgf@xa=\dimen162
+\pgf@ya=\dimen163
+\pgf@xb=\dimen164
+\pgf@yb=\dimen165
+\pgf@xc=\dimen166
+\pgf@yc=\dimen167
+\pgf@xd=\dimen168
+\pgf@yd=\dimen169
+\w@pgf@writea=\write5
+\r@pgf@reada=\read2
+\c@pgf@counta=\count328
+\c@pgf@countb=\count329
+\c@pgf@countc=\count330
+\c@pgf@countd=\count331
+\t@pgf@toka=\toks34
+\t@pgf@tokb=\toks35
+\t@pgf@tokc=\toks36
+\pgf@sys@id@count=\count332
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/systemlayer\pgf.cfg"
+File: pgf.cfg 2019/07/12 v3.1.4 (3.1.4)
+)
+Driver file for pgf: pgfsys-pdftex.def
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/systemlayer\pgfsys-pdftex
+.def"
+File: pgfsys-pdftex.def 2019/07/12 v3.1.4 (3.1.4)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/systemlayer\pgfsys-common
+-pdf.def"
+File: pgfsys-common-pdf.def 2019/07/12 v3.1.4 (3.1.4)
+)))
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/systemlayer\pgfsyssoftpat
+h.code.tex"
+File: pgfsyssoftpath.code.tex 2019/07/12 v3.1.4 (3.1.4)
+\pgfsyssoftpath@smallbuffer@items=\count333
+\pgfsyssoftpath@bigbuffer@items=\count334
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/systemlayer\pgfsysprotoco
+l.code.tex"
+File: pgfsysprotocol.code.tex 2019/07/12 v3.1.4 (3.1.4)
+))
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/basiclayer\pgfcore.code.t
+ex"
+Package: pgfcore 2019/07/12 v3.1.4 (3.1.4)
+ ("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfmath.code.tex"
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfmathcalc.code.tex
+"
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfmathutil.code.tex
+")
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfmathparser.code.t
+ex"
+\pgfmath@dimen=\dimen170
+\pgfmath@count=\count335
+\pgfmath@box=\box36
+\pgfmath@toks=\toks37
+\pgfmath@stack@operand=\toks38
+\pgfmath@stack@operation=\toks39
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfmathfunctions.cod
+e.tex"
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfmathfunctions.bas
+ic.code.tex")
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfmathfunctions.tri
+gonometric.code.tex")
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfmathfunctions.ran
+dom.code.tex")
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfmathfunctions.com
+parison.code.tex")
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfmathfunctions.bas
+e.code.tex")
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfmathfunctions.rou
+nd.code.tex")
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfmathfunctions.mis
+c.code.tex")
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfmathfunctions.int
+egerarithmetics.code.tex")))
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfmathfloat.code.te
+x"
+\c@pgfmathroundto@lastzeros=\count336
+)) ("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfint.code.tex")
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/basiclayer\pgfcorepoints.
+code.tex"
+File: pgfcorepoints.code.tex 2019/07/12 v3.1.4 (3.1.4)
+\pgf@picminx=\dimen171
+\pgf@picmaxx=\dimen172
+\pgf@picminy=\dimen173
+\pgf@picmaxy=\dimen174
+\pgf@pathminx=\dimen175
+\pgf@pathmaxx=\dimen176
+\pgf@pathminy=\dimen177
+\pgf@pathmaxy=\dimen178
+\pgf@xx=\dimen179
+\pgf@xy=\dimen180
+\pgf@yx=\dimen181
+\pgf@yy=\dimen182
+\pgf@zx=\dimen183
+\pgf@zy=\dimen184
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/basiclayer\pgfcorepathcon
+struct.code.tex"
+File: pgfcorepathconstruct.code.tex 2019/07/12 v3.1.4 (3.1.4)
+\pgf@path@lastx=\dimen185
+\pgf@path@lasty=\dimen186
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/basiclayer\pgfcorepathusa
+ge.code.tex"
+File: pgfcorepathusage.code.tex 2019/07/12 v3.1.4 (3.1.4)
+\pgf@shorten@end@additional=\dimen187
+\pgf@shorten@start@additional=\dimen188
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/basiclayer\pgfcorescopes.
+code.tex"
+File: pgfcorescopes.code.tex 2019/07/12 v3.1.4 (3.1.4)
+\pgfpic=\box37
+\pgf@hbox=\box38
+\pgf@layerbox@main=\box39
+\pgf@picture@serial@count=\count337
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/basiclayer\pgfcoregraphic
+state.code.tex"
+File: pgfcoregraphicstate.code.tex 2019/07/12 v3.1.4 (3.1.4)
+\pgflinewidth=\dimen189
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/basiclayer\pgfcoretransfo
+rmations.code.tex"
+File: pgfcoretransformations.code.tex 2019/07/12 v3.1.4 (3.1.4)
+\pgf@pt@x=\dimen190
+\pgf@pt@y=\dimen191
+\pgf@pt@temp=\dimen192
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/basiclayer\pgfcorequick.c
+ode.tex"
+File: pgfcorequick.code.tex 2019/07/12 v3.1.4 (3.1.4)
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/basiclayer\pgfcoreobjects
+.code.tex"
+File: pgfcoreobjects.code.tex 2019/07/12 v3.1.4 (3.1.4)
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/basiclayer\pgfcorepathpro
+cessing.code.tex"
+File: pgfcorepathprocessing.code.tex 2019/07/12 v3.1.4 (3.1.4)
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/basiclayer\pgfcorearrows.
+code.tex"
+File: pgfcorearrows.code.tex 2019/07/12 v3.1.4 (3.1.4)
+\pgfarrowsep=\dimen193
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/basiclayer\pgfcoreshade.c
+ode.tex"
+File: pgfcoreshade.code.tex 2019/07/12 v3.1.4 (3.1.4)
+\pgf@max=\dimen194
+\pgf@sys@shading@range@num=\count338
+\pgf@shadingcount=\count339
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/basiclayer\pgfcoreimage.c
+ode.tex"
+File: pgfcoreimage.code.tex 2019/07/12 v3.1.4 (3.1.4)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/basiclayer\pgfcoreexterna
+l.code.tex"
+File: pgfcoreexternal.code.tex 2019/07/12 v3.1.4 (3.1.4)
+\pgfexternal@startupbox=\box40
+))
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/basiclayer\pgfcorelayers.
+code.tex"
+File: pgfcorelayers.code.tex 2019/07/12 v3.1.4 (3.1.4)
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/basiclayer\pgfcoretranspa
+rency.code.tex"
+File: pgfcoretransparency.code.tex 2019/07/12 v3.1.4 (3.1.4)
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/basiclayer\pgfcorepattern
+s.code.tex"
+File: pgfcorepatterns.code.tex 2019/07/12 v3.1.4 (3.1.4)
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/basiclayer\pgfcorerdf.cod
+e.tex"
+File: pgfcorerdf.code.tex 2019/07/12 v3.1.4 (3.1.4)
+)))
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/modules\pgfmoduleshapes.c
+ode.tex"
+File: pgfmoduleshapes.code.tex 2019/07/12 v3.1.4 (3.1.4)
+\pgfnodeparttextbox=\box41
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/modules\pgfmoduleplot.cod
+e.tex"
+File: pgfmoduleplot.code.tex 2019/07/12 v3.1.4 (3.1.4)
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/pgf/compatibility\pgfcomp-versi
+on-0-65.sty"
+Package: pgfcomp-version-0-65 2019/07/12 v3.1.4 (3.1.4)
+\pgf@nodesepstart=\dimen195
+\pgf@nodesepend=\dimen196
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/pgf/compatibility\pgfcomp-versi
+on-1-18.sty"
+Package: pgfcomp-version-1-18 2019/07/12 v3.1.4 (3.1.4)
+))
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/pgf/utilities\pgffor.sty"
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/pgf/utilities\pgfkeys.sty"
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/utilities\pgfkeys.code.te
+x")) ("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/pgf/math\pgfmath.sty"
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfmath.code.tex"))
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/utilities\pgffor.code.tex
+"
+Package: pgffor 2019/07/12 v3.1.4 (3.1.4)
+ ("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfmath.code.tex")
+\pgffor@iter=\dimen197
+\pgffor@skip=\dimen198
+\pgffor@stack=\toks40
+\pgffor@toks=\toks41
+))
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/frontendlayer/tikz\tikz.c
+ode.tex"
+Package: tikz 2019/07/12 v3.1.4 (3.1.4)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/libraries\pgflibraryploth
+andlers.code.tex"
+File: pgflibraryplothandlers.code.tex 2019/07/12 v3.1.4 (3.1.4)
+\pgf@plot@mark@count=\count340
+\pgfplotmarksize=\dimen199
+)
+\tikz@lastx=\dimen256
+\tikz@lasty=\dimen257
+\tikz@lastxsaved=\dimen258
+\tikz@lastysaved=\dimen259
+\tikz@lastmovetox=\dimen260
+\tikz@lastmovetoy=\dimen261
+\tikzleveldistance=\dimen262
+\tikzsiblingdistance=\dimen263
+\tikz@figbox=\box42
+\tikz@figbox@bg=\box43
+\tikz@tempbox=\box44
+\tikz@tempbox@bg=\box45
+\tikztreelevel=\count341
+\tikznumberofchildren=\count342
+\tikznumberofcurrentchild=\count343
+\tikz@fig@count=\count344
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/modules\pgfmodulematrix.c
+ode.tex"
+File: pgfmodulematrix.code.tex 2019/07/12 v3.1.4 (3.1.4)
+\pgfmatrixcurrentrow=\count345
+\pgfmatrixcurrentcolumn=\count346
+\pgf@matrix@numberofcolumns=\count347
+)
+\tikz@expandcount=\count348
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/frontendlayer/tikz/librar
+ies\tikzlibrarytopaths.code.tex"
+File: tikzlibrarytopaths.code.tex 2019/07/12 v3.1.4 (3.1.4)
+)))
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/libraries\pgflibraryarrow
+s.meta.code.tex"
+File: pgflibraryarrows.meta.code.tex 2019/07/12 v3.1.4 (3.1.4)
+\pgfarrowinset=\dimen264
+\pgfarrowlength=\dimen265
+\pgfarrowwidth=\dimen266
+\pgfarrowlinewidth=\dimen267
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/frontendlayer/tikz/librar
+ies\tikzlibrarycalc.code.tex"
+File: tikzlibrarycalc.code.tex 2019/07/12 v3.1.4 (3.1.4)
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/frontendlayer/tikz/librar
+ies/datavisualization\tikzlibrarydatavisualization.code.tex"
+File: tikzlibrarydatavisualization.code.tex 2019/07/12 v3.1.4 (3.1.4)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/modules\pgfmoduledatavisu
+alization.code.tex"
+File: pgfmoduledatavisualization.code.tex 2019/07/12 v3.1.4 (3.1.4)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/modules\pgfmoduleoo.code.
+tex"
+\pgfoo@objectcount=\count349
+\pgfoothis@count=\count350
+\pgfoo@toks=\toks42
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/libraries\pgflibraryfpu.c
+ode.tex")
+\pgf@lib@dv@cache@count=\count351
+\pgf@lib@dv@cache@count=\count352
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/frontendlayer/tikz/librar
+ies\tikzlibrarybackgrounds.code.tex"
+File: tikzlibrarybackgrounds.code.tex 2019/07/12 v3.1.4 (3.1.4)
+\pgf@layerbox@background=\box46
+\pgf@layerboxsaved@background=\box47
+)
+\tikzdvvisualizercounter=\count353
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/frontendlayer/tikz/librar
+ies\tikzlibrarypatterns.code.tex"
+File: tikzlibrarypatterns.code.tex 2019/07/12 v3.1.4 (3.1.4)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/libraries\pgflibrarypatte
+rns.code.tex"
+File: pgflibrarypatterns.code.tex 2019/07/12 v3.1.4 (3.1.4)
+))
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/frontendlayer/tikz/librar
+ies\tikzlibraryshapes.arrows.code.tex"
+File: tikzlibraryshapes.arrows.code.tex 2019/07/12 v3.1.4 (3.1.4)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/libraries/shapes\pgflibra
+ryshapes.arrows.code.tex"
+File: pgflibraryshapes.arrows.code.tex 2019/07/12 v3.1.4 (3.1.4)
+))
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/tikz-3dplot\tikz-3dplot.sty"
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/frontendlayer/tikz/librar
+ies\tikzlibrary3d.code.tex"
+File: tikzlibrary3d.code.tex 2019/07/12 v3.1.4 (3.1.4)
+)
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/frontendlayer/tikz/librar
+ies\tikzlibraryarrows.code.tex"
+File: tikzlibraryarrows.code.tex 2019/07/12 v3.1.4 (3.1.4)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/pgf/libraries\pgflibraryarrow
+s.code.tex"
+File: pgflibraryarrows.code.tex 2019/07/12 v3.1.4 (3.1.4)
+\arrowsize=\dimen268
+)))
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/hyperref\hyperref.sty"
+Package: hyperref 2018/11/30 v6.88e Hypertext links for LaTeX
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/oberdiek\hobsub-hyperref.sty"
+Package: hobsub-hyperref 2016/05/16 v1.14 Bundle oberdiek, subset hyperref (HO)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/oberdiek\hobsub-generic.sty"
+Package: hobsub-generic 2016/05/16 v1.14 Bundle oberdiek, subset generic (HO)
+Package: hobsub 2016/05/16 v1.14 Construct package bundles (HO)
+Package hobsub Info: Skipping package `infwarerr' (already loaded).
+Package hobsub Info: Skipping package `ltxcmds' (already loaded).
+Package hobsub Info: Skipping package `ifluatex' (already loaded).
+Package hobsub Info: Skipping package `ifvtex' (already loaded).
+Package: intcalc 2016/05/16 v1.2 Expandable calculations with integers (HO)
+Package hobsub Info: Skipping package `ifpdf' (already loaded).
+Package hobsub Info: Skipping package `etexcmds' (already loaded).
+Package hobsub Info: Skipping package `kvsetkeys' (already loaded).
+Package: kvdefinekeys 2016/05/16 v1.4 Define keys (HO)
+Package hobsub Info: Skipping package `pdftexcmds' (already loaded).
+Package: pdfescape 2016/05/16 v1.14 Implements pdfTeX's escape features (HO)
+Package: bigintcalc 2016/05/16 v1.4 Expandable calculations on big integers (HO
+)
+Package: bitset 2016/05/16 v1.2 Handle bit-vector datatype (HO)
+Package: uniquecounter 2016/05/16 v1.3 Provide unlimited unique counter (HO)
+)
+Package hobsub Info: Skipping package `hobsub' (already loaded).
+Package: letltxmacro 2016/05/16 v1.5 Let assignment for LaTeX macros (HO)
+Package: hopatch 2016/05/16 v1.3 Wrapper for package hooks (HO)
+Package: xcolor-patch 2016/05/16 xcolor patch
+Package: atveryend 2016/05/16 v1.9 Hooks at the very end of document (HO)
+Package hobsub Info: Skipping package `atbegshi' (already loaded).
+Package: refcount 2016/05/16 v3.5 Data extraction from label references (HO)
+Package: hycolor 2016/05/16 v1.8 Color options for hyperref/bookmark (HO)
+) ("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/oberdiek\auxhook.sty"
+Package: auxhook 2016/05/16 v1.4 Hooks for auxiliary files (HO)
+)
+\@linkdim=\dimen269
+\Hy@linkcounter=\count354
+\Hy@pagecounter=\count355
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/hyperref\pd1enc.def"
+File: pd1enc.def 2018/11/30 v6.88e Hyperref: PDFDocEncoding definition (HO)
+Now handling font encoding PD1 ...
+... no UTF-8 mapping file for font encoding PD1
+)
+\Hy@SavedSpaceFactor=\count356
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/00miktex\hyperref.cfg"
+File: hyperref.cfg 2002/06/06 v1.2 hyperref configuration of TeXLive
+)
+Package hyperref Info: Hyper figures OFF on input line 4519.
+Package hyperref Info: Link nesting OFF on input line 4524.
+Package hyperref Info: Hyper index ON on input line 4527.
+Package hyperref Info: Plain pages OFF on input line 4534.
+Package hyperref Info: Backreferencing OFF on input line 4539.
+Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
+Package hyperref Info: Bookmarks ON on input line 4772.
+\c@Hy@tempcnt=\count357
+LaTeX Info: Redefining \url on input line 5125.
+\XeTeXLinkMargin=\dimen270
+\Fld@menulength=\count358
+\Field@Width=\dimen271
+\Fld@charsize=\dimen272
+Package hyperref Info: Hyper figures OFF on input line 6380.
+Package hyperref Info: Link nesting OFF on input line 6385.
+Package hyperref Info: Hyper index ON on input line 6388.
+Package hyperref Info: backreferencing OFF on input line 6395.
+Package hyperref Info: Link coloring OFF on input line 6400.
+Package hyperref Info: Link coloring with OCG OFF on input line 6405.
+Package hyperref Info: PDF/A mode OFF on input line 6410.
+LaTeX Info: Redefining \ref on input line 6450.
+LaTeX Info: Redefining \pageref on input line 6454.
+\Hy@abspage=\count359
+\c@Item=\count360
+\c@Hfootnote=\count361
+)
+Package hyperref Info: Driver (autodetected): hpdftex.
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/hyperref\hpdftex.def"
+File: hpdftex.def 2018/11/30 v6.88e Hyperref driver for pdfTeX
+\Fld@listcount=\count362
+\c@bookmark@seq@number=\count363
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/oberdiek\rerunfilecheck.sty"
+Package: rerunfilecheck 2016/05/16 v1.8 Rerun checks for auxiliary files (HO)
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
+82.
+)
+\Hy@SectionHShift=\skip106
+)
+Package csquotes Info: Checking for multilingual support...
+Package csquotes Info: ... found 'babel' package.
+Package csquotes Info: Adjusting default style.
+Package csquotes Info: Redefining alias 'default' -> 'british'.
+Package biblatex Info: Trying to load language 'british' -> 'british-apa'...
+Package biblatex Info: ... file 'british-apa.lbx' found.
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/biblatex-apa\british-apa.lbx"
+File: british-apa.lbx 2018/04/02 v7.7 APA biblatex localisation
+Package biblatex Info: Trying to load language 'british'...
+Package biblatex Info: ... file 'british.lbx' found.
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/biblatex/lbx\british.lbx"
+File: british.lbx 2018/11/02 v3.12 biblatex localization (PK/MW)
+)
+Package biblatex Info: Trying to load language 'british'...
+Package biblatex Info: ... file 'british.lbx' found.
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/biblatex/lbx\british.lbx"
+File: british.lbx 2018/11/02 v3.12 biblatex localization (PK/MW)
+Package biblatex Info: Trying to load language 'english' -> 'english-apa'...
+Package biblatex Info: ... file 'english-apa.lbx' found.
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/biblatex-apa\english-apa.lbx"
+File: english-apa.lbx 2018/04/02 v7.7 APA biblatex localisation
+Package biblatex Info: Trying to load language 'american' -> 'american-apa'...
+Package biblatex Info: ... file 'american-apa.lbx' found.
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/biblatex-apa\american-apa.lbx"
+File: american-apa.lbx 2018/04/02 v7.7 APA biblatex localisation
+Package biblatex Info: Trying to load language 'american'...
+Package biblatex Info: ... file 'american.lbx' found.
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/biblatex/lbx\american.lbx"
+File: american.lbx 2018/11/02 v3.12 biblatex localization (PK/MW)
+Package biblatex Info: Trying to load language 'english'...
+Package biblatex Info: ... file 'english.lbx' found.
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/biblatex/lbx\english.lbx"
+File: english.lbx 2018/11/02 v3.12 biblatex localization (PK/MW)
+)))))) (main.aux)
+\openout1 = `main.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 174.
+LaTeX Font Info:    ... okay on input line 174.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 174.
+LaTeX Font Info:    ... okay on input line 174.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 174.
+LaTeX Font Info:    ... okay on input line 174.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 174.
+LaTeX Font Info:    ... okay on input line 174.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 174.
+LaTeX Font Info:    ... okay on input line 174.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 174.
+LaTeX Font Info:    ... okay on input line 174.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 174.
+LaTeX Font Info:    Try loading font information for TS1+cmr on input line 174.
+
+ ("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/base\ts1cmr.fd"
+File: ts1cmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    ... okay on input line 174.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 174.
+LaTeX Font Info:    ... okay on input line 174.
+LaTeX Font Info:    Try loading font information for T1+phv on input line 174.
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/psnfss\t1phv.fd"
+File: t1phv.fd 2001/06/04 scalable font definitions for T1/phv.
+)
+Package biblatex Info: Input encoding 'utf8' detected.
+Package biblatex Info: Automatic encoding selection.
+(biblatex)             Assuming data encoding 'utf8'.
+\openout3 = `main.bcf'.
+
+Package biblatex Info: Trying to load bibliographic data...
+Package biblatex Info: ... file 'main.bbl' found.
+ (main.bbl)
+Package biblatex Info: Reference section=0 on input line 174.
+Package biblatex Info: Reference segment=0 on input line 174.
+
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: 
+* h-part:(L,W,R)=(85.35826pt, 441.01773pt, 71.13188pt)
+* v-part:(T,H,B)=(71.13188pt, 702.78308pt, 71.13188pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=441.01773pt
+* \textheight=702.78308pt
+* \oddsidemargin=13.08827pt
+* \evensidemargin=13.08827pt
+* \topmargin=-41.0131pt
+* \headheight=18.125pt
+* \headsep=21.75pt
+* \topskip=12.0pt
+* \footskip=50.75pt
+* \marginparwidth=49.79233pt
+* \marginparsep=12.8401pt
+* \columnsep=10.0pt
+* \skip\footins=10.8pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/context/base/mkii\supp-pdf.mkii"
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count364
+\scratchdimen=\dimen273
+\scratchbox=\box48
+\nofMPsegments=\count365
+\nofMParguments=\count366
+\everyMPshowfont=\toks43
+\MPscratchCnt=\count367
+\MPscratchDim=\dimen274
+\MPnumerator=\count368
+\makeMPintoPDFobject=\count369
+\everyMPtoPDFconversion=\toks44
+) ("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/oberdiek\epstopdf-base.sty"
+Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/oberdiek\grfext.sty"
+Package: grfext 2016/05/16 v1.2 Manage graphics extensions (HO)
+)
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+38.
+Package grfext Info: Graphics extension search list:
+(grfext)             [.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 456.
+)
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: hyperref package is loaded.
+Package caption Info: End \AtBeginDocument code.
+\AtBeginShipoutBox=\box49
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/oberdiek\pdflscape.sty"
+Package: pdflscape 2016/05/14 v0.11 Display of landscape pages in PDF (HO)
+Package pdflscape Info: Auto-detected driver: pdftex on input line 81.
+)
+ABD: EverySelectfont initializing macros
+LaTeX Info: Redefining \selectfont on input line 174.
+ ABD: EveryShipout initializing macros
+Package hyperref Info: Link coloring OFF on input line 174.
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/hyperref\nameref.sty"
+Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/generic/oberdiek\gettitlestring.sty"
+Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
+)
+\c@section@level=\count370
+)
+LaTeX Info: Redefining \ref on input line 174.
+LaTeX Info: Redefining \pageref on input line 174.
+LaTeX Info: Redefining \nameref on input line 174.
+ (main.out) (main.out)
+\@outlinefile=\write6
+\openout6 = `main.out'.
+
+Class scrreprt Info: loading recommended package `bookmark'.
+(scrreprt)           Using `bookmark' together with `hyperref' is recommended,
+(scrreprt)           because of handling of possible bookmark level gaps.
+(scrreprt)           You can avoid loading `bookmark' with KOMA-Script option
+(scrreprt)           `bookmarkpackage=false' before \begin{document} and
+(scrreprt)           you can avoid this message with `\usepackage{bookmark}'
+(scrreprt)           before \begin{document} on input line 174.
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/oberdiek\bookmark.sty"
+Package: bookmark 2016/05/17 v1.26 PDF bookmarks (HO)
+
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/oberdiek\bkm-pdftex.def"
+File: bkm-pdftex.def 2016/05/17 v1.26 bookmark driver for pdfTeX (HO)
+Package auxhook Info: \AddLineBeginMainAux comes a little late,
+(auxhook)             because the main .aux file is already opened on input lin
+e 164.
+\BKM@id=\count371
+))
+\c@ttl@toc@main=\count372
+
+(Textbausteine/1_Titelblatt.tex
+<pics/MUL.jpg, id=6, 355.3275pt x 455.7025pt>
+File: pics/MUL.jpg Graphic file (type jpg)
+<use pics/MUL.jpg>
+Package pdftex.def Info: pics/MUL.jpg  used on input line 3.
+(pdftex.def)             Requested size: 53.29681pt x 68.35242pt.
+LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <24.88> not available
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 19.
+LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <12> not available
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 27.
+LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <16> not available
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 27.
+<pics/Logo.png, id=7, 105.0324pt x 55.6479pt>
+File: pics/Logo.png Graphic file (type png)
+<use pics/Logo.png>
+Package pdftex.def Info: pics/Logo.png  used on input line 38.
+(pdftex.def)             Requested size: 88.2022pt x 46.73116pt.
+ [1
+
+
+
+{C:/Users/kekaun/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map} <./pics/MUL
+.jpg> <./pics/Logo.png>])
+(Textbausteine/2_Widmung.tex [2
+
+]) (Textbausteine/3_Zusammenfassung.tex [3
+
+]
+LaTeX Font Info:    Font shape `T1/phv/m/it' in size <12> not available
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 12.
+)
+[4
+
+] (main.ptc
+Package tocbasic Info: Using my definition of `\numberline' on input line 5.
+Package tocbasic Info: Using my definition of `\numberline' on input line 7.
+Package tocbasic Info: Using my definition of `\numberline' on input line 9.
+Package tocbasic Info: Using my definition of `\numberline' on input line 11.
+Package tocbasic Info: Using my definition of `\numberline' on input line 19.
+Package tocbasic Info: Using my definition of `\numberline' on input line 31.
+Package tocbasic Info: Using my definition of `\numberline' on input line 39.
+Package tocbasic Info: Using my definition of `\numberline' on input line 51.
+Package tocbasic Info: Using my definition of `\numberline' on input line 65.
+Package tocbasic Info: Using my definition of `\numberline' on input line 67.
+ [5]
+Package tocbasic Info: Using my definition of `\numberline' on input line 99.
+
+Overfull \hbox (4.62514pt too wide) in paragraph at lines 109--109
+ []|| [][]\T1/phv/m/n/12 2019-02 un-til 2019-05: Ad-di-tional Ac-cel-er-o-meter
+ and Other Changes 
+ []
+
+Package tocbasic Info: Using my definition of `\numberline' on input line 113.
+Package tocbasic Info: Using my definition of `\numberline' on input line 137.
+[6]
+Package tocbasic Info: Using my definition of `\numberline' on input line 169.
+Package tocbasic Info: Using my definition of `\numberline' on input line 171.
+Package tocbasic Info: Using my definition of `\numberline' on input line 173.
+Package tocbasic Info: Using my definition of `\numberline' on input line 175.
+Package tocbasic Info: Using my definition of `\numberline' on input line 177.
+Package tocbasic Info: Using my definition of `\numberline' on input line 179.
+Package tocbasic Info: Using my definition of `\numberline' on input line 185.
+) [7] (Textbausteine/a1_rockmech.tex
+chapter 1.
+LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <14> not available
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 21.
+LaTeX Font Info:    Try loading font information for TS1+phv on input line 27.
+("C:\Users\kekaun\Programs\MiKTeX 2.9\tex/latex/psnfss\ts1phv.fd"
+File: ts1phv.fd 2001/06/04 scalable font definitions for TS1/phv.
+)pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has
+ been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.45 
+      [1
+
+
+
+] [2] [3]
+chapter 2.
+Excluding 'comment' comment. (tikz/tikz21.tex) (tikz/tikz22.tex) [4
+
+] [5]
+[6] Excluding 'comment' comment. [7] [8] [9] [10])
+(Textbausteine/a2_testingMethods.tex [11]
+chapter 3.
+[12
+
+] [13]
+chapter 4.
+(tikz/tikz15.tex) [14
+
+]
+<pics/GAP611_side.JPG, id=525, 361.35pt x 465.23813pt>
+File: pics/GAP611_side.JPG Graphic file (type jpg)
+<use pics/GAP611_side.JPG>
+Package pdftex.def Info: pics/GAP611_side.JPG  used on input line 76.
+(pdftex.def)             Requested size: 361.34912pt x 465.23698pt.
+ [15 <./pics/GAP611_side.JPG>]
+<pics/WASMbolt.JPG, id=536, 438.13687pt x 561.59813pt>
+File: pics/WASMbolt.JPG Graphic file (type jpg)
+<use pics/WASMbolt.JPG>
+Package pdftex.def Info: pics/WASMbolt.JPG  used on input line 97.
+(pdftex.def)             Requested size: 198.45662pt x 254.37926pt.
+<pics/WASMstatic.JPG, id=537, 453.94594pt x 405.76593pt>
+File: pics/WASMstatic.JPG Graphic file (type jpg)
+<use pics/WASMstatic.JPG>
+Package pdftex.def Info: pics/WASMstatic.JPG  used on input line 100.
+(pdftex.def)             Requested size: 198.45662pt x 177.39214pt.
+<pics/WASMmesh.jpg, id=538, 450.18187pt x 604.50844pt>
+File: pics/WASMmesh.jpg Graphic file (type jpg)
+<use pics/WASMmesh.jpg>
+Package pdftex.def Info: pics/WASMmesh.jpg  used on input line 103.
+(pdftex.def)             Requested size: 198.45662pt x 266.49185pt.
+)
+(Textbausteine/a3_Kiirunavaara.tex [16] [17 <./pics/WASMbolt.JPG> <./pics/WASMs
+tatic.JPG> <./pics/WASMmesh.jpg>]
+chapter 5.
+<pics/geo.jpg, id=559, 252.945pt x 426.09187pt>
+File: pics/geo.jpg Graphic file (type jpg)
+<use pics/geo.jpg>
+Package pdftex.def Info: pics/geo.jpg  used on input line 14.
+(pdftex.def)             Requested size: 208.61272pt x 351.39154pt.
+Excluding 'comment' comment. (tikz/tikz19.tex) (tikz/tikz20.tex) [18
+
+] [19 <./pics/geo.jpg>] [20]) (Textbausteine/a4_material.tex [21]
+chapter 6.
+<pics/Fjallband.jpg, id=602, 1589.94pt x 196.48407pt>
+File: pics/Fjallband.jpg Graphic file (type jpg)
+<use pics/Fjallband.jpg>
+Package pdftex.def Info: pics/Fjallband.jpg  used on input line 36.
+(pdftex.def)             Requested size: 418.96548pt x 51.7742pt.
+[22
+
+ <./pics/Fjallband.jpg>]) (Textbausteine/b_testrig.tex [23]
+chapter 7.
+<./pics/rig.png, id=620, 454.69875pt x 530.73282pt>
+File: ./pics/rig.png Graphic file (type png)
+<use ./pics/rig.png>
+Package pdftex.def Info: ./pics/rig.png  used on input line 9.
+(pdftex.def)             Requested size: 441.01773pt x 514.76973pt.
+[24
+
+] [25 <./pics/rig.png>]
+<appendix/2018-12-04_Rfrs_50_0,3.JPG, id=637, 841.9455pt x 841.9455pt>
+File: appendix/2018-12-04_Rfrs_50_0,3.JPG Graphic file (type jpg)
+<use appendix/2018-12-04_Rfrs_50_0,3.JPG>
+Package pdftex.def Info: appendix/2018-12-04_Rfrs_50_0,3.JPG  used on input lin
+e 42.
+(pdftex.def)             Requested size: 198.45662pt x 198.44818pt.
+ (tikz/tikz1.tex) [26 <./appendix/2018-12-04_Rfrs_50_0,3.JPG>] [27]
+<pics/speedcalc.png, id=657, 578.16pt x 289.08pt>
+File: pics/speedcalc.png Graphic file (type png)
+<use pics/speedcalc.png>
+Package pdftex.def Info: pics/speedcalc.png  used on input line 95.
+(pdftex.def)             Requested size: 396.91325pt x 198.45529pt.
+ [28 <./pics/speedcalc.png>] (tikz/tikz16.tex
+Missing character: There is no ( in font nullfont!
+Missing character: There is no - in font nullfont!
+Missing character: There is no 1 in font nullfont!
+Missing character: There is no , in font nullfont!
+Missing character: There is no - in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no . in font nullfont!
+Missing character: There is no 5 in font nullfont!
+Missing character: There is no ) in font nullfont!
+Missing character: There is no [ in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no ] in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no d in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no d in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no ; in font nullfont!
+) (tikz/tikz17.tex
+Missing character: There is no ( in font nullfont!
+Missing character: There is no - in font nullfont!
+Missing character: There is no 1 in font nullfont!
+Missing character: There is no , in font nullfont!
+Missing character: There is no - in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no . in font nullfont!
+Missing character: There is no 5 in font nullfont!
+Missing character: There is no ) in font nullfont!
+Missing character: There is no [ in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no ] in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no d in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no d in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no ; in font nullfont!
+)
+<pics/loadip.png, id=680, 578.16pt x 433.62pt>
+File: pics/loadip.png Graphic file (type png)
+<use pics/loadip.png>
+Package pdftex.def Info: pics/loadip.png  used on input line 168.
+(pdftex.def)             Requested size: 418.96548pt x 314.2242pt.
+
+(tikz/tikz10.tex) [29] [30 <./pics/loadip.png>] (tikz/tikz6.tex
+Missing character: There is no ( in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no . in font nullfont!
+Missing character: There is no 2 in font nullfont!
+Missing character: There is no , in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no . in font nullfont!
+Missing character: There is no 2 in font nullfont!
+Missing character: There is no 5 in font nullfont!
+Missing character: There is no ) in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no g in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no + in font nullfont!
+Missing character: There is no + in font nullfont!
+Missing character: There is no ( in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no . in font nullfont!
+Missing character: There is no 5 in font nullfont!
+Missing character: There is no , in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no . in font nullfont!
+Missing character: There is no 5 in font nullfont!
+Missing character: There is no ) in font nullfont!
+Missing character: There is no ( in font nullfont!
+Missing character: There is no 7 in font nullfont!
+Missing character: There is no . in font nullfont!
+Missing character: There is no 7 in font nullfont!
+Missing character: There is no , in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no . in font nullfont!
+Missing character: There is no 2 in font nullfont!
+Missing character: There is no 5 in font nullfont!
+Missing character: There is no ) in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no g in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no + in font nullfont!
+Missing character: There is no + in font nullfont!
+Missing character: There is no ( in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no . in font nullfont!
+Missing character: There is no 5 in font nullfont!
+Missing character: There is no , in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no . in font nullfont!
+Missing character: There is no 5 in font nullfont!
+Missing character: There is no ) in font nullfont!
+Missing character: There is no ( in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no . in font nullfont!
+Missing character: There is no 5 in font nullfont!
+Missing character: There is no , in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no ) in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no g in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no ( in font nullfont!
+Missing character: There is no 7 in font nullfont!
+Missing character: There is no . in font nullfont!
+Missing character: There is no 5 in font nullfont!
+Missing character: There is no , in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no . in font nullfont!
+Missing character: There is no 5 in font nullfont!
+Missing character: There is no ) in font nullfont!
+Missing character: There is no ; in font nullfont!
+)
+(tikz/tikz7.tex) (tikz/tikz8.tex) (tikz/tikz9.tex)
+<pics/steelframe.jpg, id=710, 3982.88pt x 2987.16pt>
+File: pics/steelframe.jpg Graphic file (type jpg)
+<use pics/steelframe.jpg>
+Package pdftex.def Info: pics/steelframe.jpg  used on input line 221.
+(pdftex.def)             Requested size: 418.96548pt x 314.18523pt.
+ [31] [32] [33] [34 <./pics/steelframe.jpg>]
+<pics/impact_energy.png, id=731, 578.16pt x 433.62pt>
+File: pics/impact_energy.png Graphic file (type png)
+<use pics/impact_energy.png>
+Package pdftex.def Info: pics/impact_energy.png  used on input line 240.
+(pdftex.def)             Requested size: 418.96548pt x 314.2242pt.
+<pics/cum_energy.png, id=732, 578.16pt x 433.62pt>
+File: pics/cum_energy.png Graphic file (type png)
+<use pics/cum_energy.png>
+Package pdftex.def Info: pics/cum_energy.png  used on input line 247.
+(pdftex.def)             Requested size: 418.96548pt x 314.2242pt.
+ (tikz/tikz5.tex)
+LaTeX Font Info:    Font shape `T1/phv/m/it' in size <10> not available
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 263.
+ [35] [36 <./pics/impact_energy.png> <./pics/cum_energy.png>] [37]
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[38] [39] [40] (tikz/tikz11.tex) Excluding 'comment' comment. [41]
+Excluding 'comment' comment.) (Textbausteine/ba_tests.tex [42]
+chapter 8.
+[43
+
+] (tables/test_values.tex)
+Overfull \hbox (122.48497pt too wide) in paragraph at lines 1--97
+ [][] 
+ []
+
+[44] [45] (tikz/tikz18.tex) (tikz/tikz12.tex
+Missing character: There is no ( in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no ) in font nullfont!
+Missing character: There is no - in font nullfont!
+Missing character: There is no - in font nullfont!
+Missing character: There is no + in font nullfont!
+Missing character: There is no + in font nullfont!
+Missing character: There is no ( in font nullfont!
+Missing character: There is no 2 in font nullfont!
+Missing character: There is no 5 in font nullfont!
+Missing character: There is no 5 in font nullfont!
+Missing character: There is no : in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no . in font nullfont!
+Missing character: There is no 5 in font nullfont!
+Missing character: There is no ) in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no ( in font nullfont!
+Missing character: There is no - in font nullfont!
+Missing character: There is no 1 in font nullfont!
+Missing character: There is no 9 in font nullfont!
+Missing character: There is no 5 in font nullfont!
+Missing character: There is no : in font nullfont!
+Missing character: There is no - in font nullfont!
+Missing character: There is no 9 in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no : in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no . in font nullfont!
+Missing character: There is no 1 in font nullfont!
+Missing character: There is no 4 in font nullfont!
+Missing character: There is no ) in font nullfont!
+Missing character: There is no ( in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no ) in font nullfont!
+Missing character: There is no - in font nullfont!
+Missing character: There is no - in font nullfont!
+Missing character: There is no + in font nullfont!
+Missing character: There is no + in font nullfont!
+Missing character: There is no ( in font nullfont!
+Missing character: There is no 2 in font nullfont!
+Missing character: There is no 8 in font nullfont!
+Missing character: There is no 5 in font nullfont!
+Missing character: There is no : in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no . in font nullfont!
+Missing character: There is no 5 in font nullfont!
+Missing character: There is no ) in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no ( in font nullfont!
+Missing character: There is no 1 in font nullfont!
+Missing character: There is no 5 in font nullfont!
+Missing character: There is no : in font nullfont!
+Missing character: There is no - in font nullfont!
+Missing character: There is no 9 in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no : in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no . in font nullfont!
+Missing character: There is no 1 in font nullfont!
+Missing character: There is no 4 in font nullfont!
+Missing character: There is no ) in font nullfont!
+Missing character: There is no ; in font nullfont!
+ Excluding 'comment' comment.)
+(tikz/tikz13.tex
+Missing character: There is no ( in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no ) in font nullfont!
+Missing character: There is no - in font nullfont!
+Missing character: There is no - in font nullfont!
+Missing character: There is no + in font nullfont!
+Missing character: There is no + in font nullfont!
+Missing character: There is no ( in font nullfont!
+Missing character: There is no 2 in font nullfont!
+Missing character: There is no 5 in font nullfont!
+Missing character: There is no 5 in font nullfont!
+Missing character: There is no : in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no . in font nullfont!
+Missing character: There is no 5 in font nullfont!
+Missing character: There is no ) in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no ( in font nullfont!
+Missing character: There is no - in font nullfont!
+Missing character: There is no 1 in font nullfont!
+Missing character: There is no 9 in font nullfont!
+Missing character: There is no 5 in font nullfont!
+Missing character: There is no : in font nullfont!
+Missing character: There is no - in font nullfont!
+Missing character: There is no 9 in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no : in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no . in font nullfont!
+Missing character: There is no 1 in font nullfont!
+Missing character: There is no 4 in font nullfont!
+Missing character: There is no ) in font nullfont!
+Missing character: There is no ( in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no ) in font nullfont!
+Missing character: There is no - in font nullfont!
+Missing character: There is no - in font nullfont!
+Missing character: There is no + in font nullfont!
+Missing character: There is no + in font nullfont!
+Missing character: There is no ( in font nullfont!
+Missing character: There is no 2 in font nullfont!
+Missing character: There is no 8 in font nullfont!
+Missing character: There is no 5 in font nullfont!
+Missing character: There is no : in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no . in font nullfont!
+Missing character: There is no 5 in font nullfont!
+Missing character: There is no ) in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no ( in font nullfont!
+Missing character: There is no 1 in font nullfont!
+Missing character: There is no 5 in font nullfont!
+Missing character: There is no : in font nullfont!
+Missing character: There is no - in font nullfont!
+Missing character: There is no 9 in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no : in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no . in font nullfont!
+Missing character: There is no 1 in font nullfont!
+Missing character: There is no 4 in font nullfont!
+Missing character: There is no ) in font nullfont!
+Missing character: There is no ; in font nullfont!
+) [46] [47] [48]) (Textbausteine/c_results.tex [49]
+chapter 9.
+[50
+
+] (tables/exclude.tex
+Underfull \hbox (badness 10000) in paragraph at lines 3--3
+[]|\T1/phv/m/n/12 Additional
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3--3
+\T1/phv/m/n/12 ac-cel-er-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3--3
+\T1/phv/m/n/12 o-meter
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3--4
+[]|\T1/phv/m/n/12 Additional
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3--4
+\T1/phv/m/n/12 ac-cel-er-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3--4
+\T1/phv/m/n/12 o-meter
+ []
+
+)
+Overfull \hbox (15.73865pt too wide) in paragraph at lines 1--29
+ [][] 
+ []
+
+
+LaTeX Warning: Float too large for page by 2.54968pt on input line 31.
+
+[51] (tables/exclude_accel.tex)
+Overfull \hbox (109.36768pt too wide) in paragraph at lines 1--37
+ [][] 
+ []
+
+[52
+
+
+] [53] [54] (tikz/tikz2.tex Excluding 'comment' comment.) (tikz/tikz3.tex
+Excluding 'comment' comment. Excluding 'comment' comment.) [55]
+<pics/perfectlaser.png, id=909, 462.528pt x 346.896pt>
+File: pics/perfectlaser.png Graphic file (type png)
+<use pics/perfectlaser.png>
+Package pdftex.def Info: pics/perfectlaser.png  used on input line 82.
+(pdftex.def)             Requested size: 198.45662pt x 148.84477pt.
+<pics/goodlaser.png, id=910, 462.528pt x 346.896pt>
+File: pics/goodlaser.png Graphic file (type png)
+<use pics/goodlaser.png>
+Package pdftex.def Info: pics/goodlaser.png  used on input line 85.
+(pdftex.def)             Requested size: 198.45662pt x 148.84477pt.
+<pics/badlaser.png, id=911, 462.528pt x 346.896pt>
+File: pics/badlaser.png Graphic file (type png)
+<use pics/badlaser.png>
+Package pdftex.def Info: pics/badlaser.png  used on input line 88.
+(pdftex.def)             Requested size: 198.45662pt x 148.84477pt.
+<pics/weirdlaser.png, id=912, 462.528pt x 346.896pt>
+File: pics/weirdlaser.png Graphic file (type png)
+<use pics/weirdlaser.png>
+Package pdftex.def Info: pics/weirdlaser.png  used on input line 91.
+(pdftex.def)             Requested size: 198.45662pt x 148.84477pt.
+<pics/parallel.jpg, id=913, 2302.6025pt x 2302.6025pt>
+File: pics/parallel.jpg Graphic file (type jpg)
+<use pics/parallel.jpg>
+Package pdftex.def Info: pics/parallel.jpg  used on input line 99.
+(pdftex.def)             Requested size: 198.45662pt x 198.44157pt.
+<pics/basket.jpg, id=914, 2027.575pt x 2027.575pt>
+File: pics/basket.jpg Graphic file (type jpg)
+<use pics/basket.jpg>
+Package pdftex.def Info: pics/basket.jpg  used on input line 101.
+(pdftex.def)             Requested size: 198.45662pt x 198.43802pt.
+ [56
+
+
+] [57 <./pics/perfectlaser.png> <./pics/goodlaser.png> <./pics/badlaser.png> <.
+/pics/weirdlaser.png> <./pics/parallel.jpg> <./pics/basket.jpg>]
+<pics/accelbounce.png, id=934, 462.528pt x 346.896pt>
+File: pics/accelbounce.png Graphic file (type png)
+<use pics/accelbounce.png>
+Package pdftex.def Info: pics/accelbounce.png  used on input line 158.
+(pdftex.def)             Requested size: 198.45662pt x 148.84477pt.
+<pics/loadbounce.png, id=935, 462.528pt x 346.896pt>
+File: pics/loadbounce.png Graphic file (type png)
+<use pics/loadbounce.png>
+Package pdftex.def Info: pics/loadbounce.png  used on input line 160.
+(pdftex.def)             Requested size: 198.45662pt x 148.84477pt.
+<pics/bounce_0.png, id=937, 213.37718pt x 213.37718pt>
+File: pics/bounce_0.png Graphic file (type png)
+<use pics/bounce_0.png>
+Package pdftex.def Info: pics/bounce_0.png  used on input line 171.
+(pdftex.def)             Requested size: 198.45662pt x 198.45499pt.
+<pics/bounce_1.png, id=938, 213.37718pt x 213.37718pt>
+File: pics/bounce_1.png Graphic file (type png)
+<use pics/bounce_1.png>
+Package pdftex.def Info: pics/bounce_1.png  used on input line 173.
+(pdftex.def)             Requested size: 198.45662pt x 198.45499pt.
+
+Underfull \hbox (badness 1577) in paragraph at lines 173--173
+[][]|\T1/phv/m/n/10 Step 1: Sample de-forms plastic and
+ []
+
+<pics/bounce_2.png, id=939, 202.89803pt x 141.46852pt>
+File: pics/bounce_2.png Graphic file (type png)
+<use pics/bounce_2.png>
+Package pdftex.def Info: pics/bounce_2.png  used on input line 176.
+(pdftex.def)             Requested size: 198.45662pt x 138.37485pt.
+<pics/bounce_3.png, id=940, 213.37718pt x 213.37718pt>
+File: pics/bounce_3.png Graphic file (type png)
+<use pics/bounce_3.png>
+Package pdftex.def Info: pics/bounce_3.png  used on input line 178.
+(pdftex.def)             Requested size: 198.45662pt x 198.45499pt.
+[58 <./pics/accelbounce.png> <./pics/loadbounce.png>] [59 <./pics/bounce_0.png>
+ <./pics/bounce_1.png> <./pics/bounce_2.png> <./pics/bounce_3.png>]
+<graph/2019-02-20_Rfrs_100_1,0.png, id=963, 462.528pt x 346.896pt>
+File: graph/2019-02-20_Rfrs_100_1,0.png Graphic file (type png)
+<use graph/2019-02-20_Rfrs_100_1,0.png>
+Package pdftex.def Info: graph/2019-02-20_Rfrs_100_1,0.png  used on input line 
+203.
+(pdftex.def)             Requested size: 198.45662pt x 148.84477pt.
+<graph/2019-02-20_Rfrs_100_1,0_vertical.png, id=964, 462.528pt x 346.896pt>
+File: graph/2019-02-20_Rfrs_100_1,0_vertical.png Graphic file (type png)
+<use graph/2019-02-20_Rfrs_100_1,0_vertical.png>
+Package pdftex.def Info: graph/2019-02-20_Rfrs_100_1,0_vertical.png  used on in
+put line 207.
+(pdftex.def)             Requested size: 198.45662pt x 148.84477pt.
+<graph/2019-04-16_Rfrs_75_0,5.png, id=965, 462.528pt x 346.896pt>
+File: graph/2019-04-16_Rfrs_75_0,5.png Graphic file (type png)
+<use graph/2019-04-16_Rfrs_75_0,5.png>
+Package pdftex.def Info: graph/2019-04-16_Rfrs_75_0,5.png  used on input line 2
+18.
+(pdftex.def)             Requested size: 198.45662pt x 148.84477pt.
+<graph/2019-04-16_Rfrs_75_0,5_vertical.png, id=966, 462.528pt x 346.896pt>
+File: graph/2019-04-16_Rfrs_75_0,5_vertical.png Graphic file (type png)
+<use graph/2019-04-16_Rfrs_75_0,5_vertical.png>
+Package pdftex.def Info: graph/2019-04-16_Rfrs_75_0,5_vertical.png  used on inp
+ut line 220.
+(pdftex.def)             Requested size: 198.45662pt x 148.84477pt.
+<graph/2019-04-16_Rfrs_75_0,5_horizontal.png, id=967, 462.528pt x 346.896pt>
+File: graph/2019-04-16_Rfrs_75_0,5_horizontal.png Graphic file (type png)
+<use graph/2019-04-16_Rfrs_75_0,5_horizontal.png>
+Package pdftex.def Info: graph/2019-04-16_Rfrs_75_0,5_horizontal.png  used on i
+nput line 222.
+(pdftex.def)             Requested size: 198.45662pt x 148.84477pt.
+<appendix/2019-02-20_Rfrs_75_0,5.jpg, id=968, 2266.4675pt x 2266.4675pt>
+File: appendix/2019-02-20_Rfrs_75_0,5.jpg Graphic file (type jpg)
+<use appendix/2019-02-20_Rfrs_75_0,5.jpg>
+Package pdftex.def Info: appendix/2019-02-20_Rfrs_75_0,5.jpg  used on input lin
+e 230.
+(pdftex.def)             Requested size: 198.45662pt x 198.43991pt.
+<appendix/2019-04-16_Rfrs_75_0,5.jpg, id=969, 2203.23125pt x 2203.23125pt>
+File: appendix/2019-04-16_Rfrs_75_0,5.jpg Graphic file (type jpg)
+<use appendix/2019-04-16_Rfrs_75_0,5.jpg>
+Package pdftex.def Info: appendix/2019-04-16_Rfrs_75_0,5.jpg  used on input lin
+e 231.
+(pdftex.def)             Requested size: 198.45662pt x 198.45035pt.
+<appendix/2019-05-06_Rfrs_75_0,8.jpg, id=970, 2987.16pt x 2987.16pt>
+File: appendix/2019-05-06_Rfrs_75_0,8.jpg Graphic file (type jpg)
+<use appendix/2019-05-06_Rfrs_75_0,8.jpg>
+Package pdftex.def Info: appendix/2019-05-06_Rfrs_75_0,8.jpg  used on input lin
+e 233.
+(pdftex.def)             Requested size: 198.45662pt x 198.45677pt.
+
+(tikz/tikz14.tex)
+<pics/2018-12-04_Rfrs_50_0,3_2_energy.png, id=975, 578.16pt x 433.62pt>
+File: pics/2018-12-04_Rfrs_50_0,3_2_energy.png Graphic file (type png)
+<use pics/2018-12-04_Rfrs_50_0,3_2_energy.png>
+Package pdftex.def Info: pics/2018-12-04_Rfrs_50_0,3_2_energy.png  used on inpu
+t line 254.
+(pdftex.def)             Requested size: 418.96548pt x 314.2242pt.
+<pics/2018-12-10_Rfrs_100_1,5_energy.png, id=976, 578.16pt x 433.62pt>
+File: pics/2018-12-10_Rfrs_100_1,5_energy.png Graphic file (type png)
+<use pics/2018-12-10_Rfrs_100_1,5_energy.png>
+Package pdftex.def Info: pics/2018-12-10_Rfrs_100_1,5_energy.png  used on input
+ line 261.
+(pdftex.def)             Requested size: 418.96548pt x 314.2242pt.
+<pics/2019-02-20_Rfrs_75_0,5_energy.png, id=977, 578.16pt x 433.62pt>
+File: pics/2019-02-20_Rfrs_75_0,5_energy.png Graphic file (type png)
+<use pics/2019-02-20_Rfrs_75_0,5_energy.png>
+Package pdftex.def Info: pics/2019-02-20_Rfrs_75_0,5_energy.png  used on input 
+line 268.
+(pdftex.def)             Requested size: 418.96548pt x 314.2242pt.
+<pics/2019-04-16_Rfrs_75_0,5_energy.png, id=978, 578.16pt x 433.62pt>
+File: pics/2019-04-16_Rfrs_75_0,5_energy.png Graphic file (type png)
+<use pics/2019-04-16_Rfrs_75_0,5_energy.png>
+Package pdftex.def Info: pics/2019-04-16_Rfrs_75_0,5_energy.png  used on input 
+line 275.
+(pdftex.def)             Requested size: 418.96548pt x 314.2242pt.
+<pics/2019-05-06_Rfrs_75_0,8_energy.png, id=979, 578.16pt x 433.62pt>
+File: pics/2019-05-06_Rfrs_75_0,8_energy.png Graphic file (type png)
+<use pics/2019-05-06_Rfrs_75_0,8_energy.png>
+Package pdftex.def Info: pics/2019-05-06_Rfrs_75_0,8_energy.png  used on input 
+line 282.
+(pdftex.def)             Requested size: 418.96548pt x 314.2242pt.
+ [60] [61 <./graph/2019-02-20_Rfrs_100_1,0.png> <./graph/2019-02-20_Rfrs_100_1,
+0_vertical.png> <./graph/2019-04-16_Rfrs_75_0,5.png> <./graph/2019-04-16_Rfrs_7
+5_0,5_vertical.png> <./graph/2019-04-16_Rfrs_75_0,5_horizontal.png>] [62 <./app
+endix/2019-02-20_Rfrs_75_0,5.jpg> <./appendix/2019-04-16_Rfrs_75_0,5.jpg> <./ap
+pendix/2019-05-06_Rfrs_75_0,8.jpg>] [63 <./pics/2018-12-04_Rfrs_50_0,3_2_energy
+.png>] [64 <./pics/2018-12-10_Rfrs_100_1,5_energy.png> <./pics/2019-02-20_Rfrs_
+75_0,5_energy.png>] [65 <./pics/2019-04-16_Rfrs_75_0,5_energy.png> <./pics/2019
+-05-06_Rfrs_75_0,8_energy.png>]
+<diagram/heatmap.png, id=1029, 722.7pt x 505.89pt>
+File: diagram/heatmap.png Graphic file (type png)
+<use diagram/heatmap.png>
+Package pdftex.def Info: diagram/heatmap.png  used on input line 322.
+(pdftex.def)             Requested size: 418.96548pt x 293.27745pt.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[66] [67 <./diagram/heatmap.png>] (tables/short_result.tex) [68]
+<./diagram/Force_Acceleration.png, id=1046, 722.7pt x 505.89pt>
+File: ./diagram/Force_Acceleration.png Graphic file (type png)
+<use ./diagram/Force_Acceleration.png>
+Package pdftex.def Info: ./diagram/Force_Acceleration.png  used on input line 3
+46.
+(pdftex.def)             Requested size: 418.96548pt x 293.27745pt.
+<diagram/compare_impact_loadcell_force.png, id=1047, 578.16pt x 433.62pt>
+File: diagram/compare_impact_loadcell_force.png Graphic file (type png)
+<use diagram/compare_impact_loadcell_force.png>
+Package pdftex.def Info: diagram/compare_impact_loadcell_force.png  used on inp
+ut line 353.
+(pdftex.def)             Requested size: 418.96548pt x 314.2242pt.
+ [69
+
+
+] [70 <./diagram/Force_Acceleration.png> <./diagram/compare_impact_loadcell_for
+ce.png>]
+<./diagram/Acceleration_Thickness.png, id=1065, 722.7pt x 505.89pt>
+File: ./diagram/Acceleration_Thickness.png Graphic file (type png)
+<use ./diagram/Acceleration_Thickness.png>
+Package pdftex.def Info: ./diagram/Acceleration_Thickness.png  used on input li
+ne 374.
+(pdftex.def)             Requested size: 418.96548pt x 293.27745pt.
+<./diagram/Acceleration_Energy-level.png, id=1066, 722.7pt x 505.89pt>
+File: ./diagram/Acceleration_Energy-level.png Graphic file (type png)
+<use ./diagram/Acceleration_Energy-level.png>
+Package pdftex.def Info: ./diagram/Acceleration_Energy-level.png  used on input
+ line 386.
+(pdftex.def)             Requested size: 418.96548pt x 293.27745pt.
+<./diagram/Force_Energy-level.png, id=1067, 722.7pt x 505.89pt>
+File: ./diagram/Force_Energy-level.png Graphic file (type png)
+<use ./diagram/Force_Energy-level.png>
+Package pdftex.def Info: ./diagram/Force_Energy-level.png  used on input line 3
+93.
+(pdftex.def)             Requested size: 418.96548pt x 293.27745pt.
+
+[71 <./diagram/Acceleration_Thickness.png>] [72 <./diagram/Acceleration_Energy-
+level.png> <./diagram/Force_Energy-level.png>]
+<./diagram/Energy-level_Thickness.png, id=1085, 722.7pt x 505.89pt>
+File: ./diagram/Energy-level_Thickness.png Graphic file (type png)
+<use ./diagram/Energy-level_Thickness.png>
+Package pdftex.def Info: ./diagram/Energy-level_Thickness.png  used on input li
+ne 405.
+(pdftex.def)             Requested size: 418.96548pt x 293.27745pt.
+<./diagram/Force_Thickness.png, id=1086, 722.7pt x 505.89pt>
+File: ./diagram/Force_Thickness.png Graphic file (type png)
+<use ./diagram/Force_Thickness.png>
+Package pdftex.def Info: ./diagram/Force_Thickness.png  used on input line 412.
+
+(pdftex.def)             Requested size: 418.96548pt x 293.27745pt.
+<./diagram/Displacement_Opening-angle.png, id=1090, 722.7pt x 505.89pt>
+File: ./diagram/Displacement_Opening-angle.png Graphic file (type png)
+<use ./diagram/Displacement_Opening-angle.png>
+Package pdftex.def Info: ./diagram/Displacement_Opening-angle.png  used on inpu
+t line 423.
+(pdftex.def)             Requested size: 418.96548pt x 293.27745pt.
+<./diagram/Displacement_Crack-area.png, id=1091, 722.7pt x 505.89pt>
+File: ./diagram/Displacement_Crack-area.png Graphic file (type png)
+<use ./diagram/Displacement_Crack-area.png>
+Package pdftex.def Info: ./diagram/Displacement_Crack-area.png  used on input l
+ine 430.
+(pdftex.def)             Requested size: 418.96548pt x 293.27745pt.
+<diagram/Crack-area_Opening-angle.png, id=1092, 722.7pt x 505.89pt>
+File: diagram/Crack-area_Opening-angle.png Graphic file (type png)
+<use diagram/Crack-area_Opening-angle.png>
+Package pdftex.def Info: diagram/Crack-area_Opening-angle.png  used on input li
+ne 437.
+(pdftex.def)             Requested size: 418.96548pt x 293.27745pt.
+<./diagram/Displacement_Age.png, id=1093, 722.7pt x 505.89pt>
+File: ./diagram/Displacement_Age.png Graphic file (type png)
+<use ./diagram/Displacement_Age.png>
+Package pdftex.def Info: ./diagram/Displacement_Age.png  used on input line 444
+.
+(pdftex.def)             Requested size: 418.96548pt x 293.27745pt.
+ [73 <./diagram/Energy-level_Thickness.png>] [74 <./diagram/Force_Thickness.png
+> <./diagram/Displacement_Opening-angle.png>] [75 <./diagram/Displacement_Crack
+-area.png> <./diagram/Crack-area_Opening-angle.png>] [76 <./diagram/Displacemen
+t_Age.png>] [77])
+(Textbausteine/d_consequences.tex [78]
+chapter 10.
+[79
+
+] [80] [81] Excluding 'comment' comment. Excluding 'comment' comment.
+[82] [83]) (Textbausteine/e_conclusion.tex [84]
+chapter 11.
+[85
+
+] [86]) [87]
+chapter 12.
+LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <10> not available
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 214.
+[88
+
+] [89] [90] [91]
+chapter 13.
+(main.lof
+Package tocbasic Info: Using my definition of `\numberline' on input line 8.
+Package tocbasic Info: Using my definition of `\numberline' on input line 14.
+Package tocbasic Info: Using my definition of `\numberline' on input line 16.
+Package tocbasic Info: Using my definition of `\numberline' on input line 18.
+Package tocbasic Info: Using my definition of `\numberline' on input line 22.
+Package tocbasic Info: Using my definition of `\numberline' on input line 24.
+Package tocbasic Info: Using my definition of `\numberline' on input line 26.
+Package tocbasic Info: Using my definition of `\numberline' on input line 30.
+Package tocbasic Info: Using my definition of `\numberline' on input line 34.
+Package tocbasic Info: Using my definition of `\numberline' on input line 36.
+Package tocbasic Info: Using my definition of `\numberline' on input line 38.
+Package tocbasic Info: Using my definition of `\numberline' on input line 40.
+Package tocbasic Info: Using my definition of `\numberline' on input line 42.
+Package tocbasic Info: Using my definition of `\numberline' on input line 44.
+Package tocbasic Info: Using my definition of `\numberline' on input line 46.
+Package tocbasic Info: Using my definition of `\numberline' on input line 48.
+Package tocbasic Info: Using my definition of `\numberline' on input line 50.
+Package tocbasic Info: Using my definition of `\numberline' on input line 52.
+Package tocbasic Info: Using my definition of `\numberline' on input line 54.
+Package tocbasic Info: Using my definition of `\numberline' on input line 56.
+Package tocbasic Info: Using my definition of `\numberline' on input line 58.
+Package tocbasic Info: Using my definition of `\numberline' on input line 60.
+Package tocbasic Info: Using my definition of `\numberline' on input line 62.
+Package tocbasic Info: Using my definition of `\numberline' on input line 66.
+Package tocbasic Info: Using my definition of `\numberline' on input line 68.
+Package tocbasic Info: Using my definition of `\numberline' on input line 70.
+Package tocbasic Info: Using my definition of `\numberline' on input line 74.
+Package tocbasic Info: Using my definition of `\numberline' on input line 76.
+Package tocbasic Info: Using my definition of `\numberline' on input line 78.
+Package tocbasic Info: Using my definition of `\numberline' on input line 80.
+Package tocbasic Info: Using my definition of `\numberline' on input line 82.
+Package tocbasic Info: Using my definition of `\numberline' on input line 84.
+Package tocbasic Info: Using my definition of `\numberline' on input line 86.
+Package tocbasic Info: Using my definition of `\numberline' on input line 88.
+Package tocbasic Info: Using my definition of `\numberline' on input line 90.
+Package tocbasic Info: Using my definition of `\numberline' on input line 92.
+Package tocbasic Info: Using my definition of `\numberline' on input line 94.
+Package tocbasic Info: Using my definition of `\numberline' on input line 96.
+Package tocbasic Info: Using my definition of `\numberline' on input line 98.
+Package tocbasic Info: Using my definition of `\numberline' on input line 100.
+Package tocbasic Info: Using my definition of `\numberline' on input line 102.
+Package tocbasic Info: Using my definition of `\numberline' on input line 104.
+Package tocbasic Info: Using my definition of `\numberline' on input line 106.
+Package tocbasic Info: Using my definition of `\numberline' on input line 108.
+Package tocbasic Info: Using my definition of `\numberline' on input line 110.
+Package tocbasic Info: Using my definition of `\numberline' on input line 112.
+Package tocbasic Info: Using my definition of `\numberline' on input line 114.
+Package tocbasic Info: Using my definition of `\numberline' on input line 116.
+Package tocbasic Info: Using my definition of `\numberline' on input line 118.
+ [92
+
+]
+Package tocbasic Info: Using my definition of `\numberline' on input line 120.
+Package tocbasic Info: Using my definition of `\numberline' on input line 122.
+)
+\tf@lof=\write7
+\openout7 = `main.lof'.
+
+ [93]
+chapter 14.
+(main.lot
+Package tocbasic Info: Using my definition of `\numberline' on input line 12.
+Package tocbasic Info: Using my definition of `\numberline' on input line 16.
+Package tocbasic Info: Using my definition of `\numberline' on input line 22.
+Package tocbasic Info: Using my definition of `\numberline' on input line 24.
+Package tocbasic Info: Using my definition of `\numberline' on input line 26.
+Package tocbasic Info: Using my definition of `\numberline' on input line 28.
+Package tocbasic Info: Using my definition of `\numberline' on input line 32.
+Package tocbasic Info: Using my definition of `\numberline' on input line 34.
+Package tocbasic Info: Using my definition of `\numberline' on input line 38.
+Package tocbasic Info: Using my definition of `\numberline' on input line 40.
+Package tocbasic Info: Using my definition of `\numberline' on input line 42.
+Package tocbasic Info: Using my definition of `\numberline' on input line 44.
+Package tocbasic Info: Using my definition of `\numberline' on input line 46.
+)
+\tf@lot=\write8
+\openout8 = `main.lot'.
+
+ (Textbausteine/5_Abkuerzungsverzeichnis.tex [94
+
+]
+chapter 15.
+) (Textbausteine/6_Anhang_Inhaltsverzeichnis.tex [95
+
+]
+\c@ttl@toc@appendix=\count373
+ (main.ptc) [1
+
+]pdfTeX warning (ext4): destination with the same identifier (name{page.II}) ha
+s been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.28 \part*{Appendix}
+                      [2
+
+
+]) (Textbausteine/4_Anhang.tex)
+\tf@ptc=\write9
+\openout9 = `main.ptc'.
+
+pdfTeX warning (ext4): destination with the same identifier (name{page.III}) ha
+s been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.224 \end{document}
+                     [3]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 224.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 224.
+ (main.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 224.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 224.
+Package rerunfilecheck Info: File `main.out' has not changed.
+(rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
+Package logreq Info: Writing requests to 'main.run.xml'.
+\openout1 = `main.run.xml'.
+
+ ) 
+Here is how much of TeX's memory you used:
+ 40120 strings out of 492895
+ 835549 string characters out of 3129764
+ 1465251 words of memory out of 3000000
+ 42900 multiletter control sequences out of 15000+200000
+ 45088 words of font info for 55 fonts, out of 3000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 101i,20n,165p,9085b,7100s stack positions out of 5000i,500n,10000p,200000b,50000s
+{C:/Users/kekaun/Programs/MiKTeX 2.9/fonts/enc/dvips/base/8r.enc}<C:/Users/ke
+kaun/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/ke
+kaun/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/ke
+kaun/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/ke
+kaun/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/kek
+aun/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/keka
+un/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/kekau
+n/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr5.pfb><C:/Users/kekaun/
+Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Users/kekaun/Pr
+ograms/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/kekaun/Prog
+rams/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/kekaun/Progra
+ms/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/kekaun/Progra
+ms/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/kekaun/Program
+s/MiKTeX 2.9/fonts/type1/urw/helvetic/uhvb8a.pfb><C:/Users/kekaun/Programs/MiKT
+eX 2.9/fonts/type1/urw/helvetic/uhvr8a.pfb><C:/Users/kekaun/Programs/MiKTeX 2.9
+/fonts/type1/urw/helvetic/uhvro8a.pfb>
+Output written on main.pdf (105 pages, 11359512 bytes).
+PDF statistics:
+ 1699 PDF objects out of 1728 (max. 8388607)
+ 343 named destinations out of 1000 (max. 500000)
+ 985 words of extra memory for PDF output out of 10000 (max. 10000000)
+
