@@ -31,9 +31,7 @@ locale.setlocale(locale.LC_ALL, 'deu_deu')
 import PySimpleGUI as sg
 
 import clean_file as clean
-#rc('text', usetex=True)
 
-#rc('text.latex', preamble=r'\usepackage{helvet}\renewcommand\familydefault{\sfdefault}')
 mpl.rcParams['text.latex.preamble'] = [r'\usepackage{helvet}\renewcommand\familydefault{\sfdefault}', r'\usepackage{amsmath}' , r'\usepackage[T1]{fontenc}'] 
 
 #"fix" matplotlib font - it´s arial instead of helvetica but better than nothing
@@ -242,9 +240,9 @@ def make_appendix_file(results):
 def iterate_over(direct,results,df,app_file):    
     file_list = make_file_list(direct, "npy")
     for i in file_list:
+        sg.OneLineProgressMeter('Progress', file_list.index(i), len(file_list) - 1, 'key','Progress of calculation')
         if os.path.basename(i)[:-4] in df.index: 
             res_file = open_df(results, "result")
-            sg.OneLineProgressMeter('Progress', file_list.index(i), len(file_list) - 1, 'key','Progress of calculation')
             calc_single_file(i,results,df,res_file,app_file, sample_type = df.at[os.path.basename(i)[:-4],"Sample type"])
     app_file.close()
 
@@ -306,7 +304,7 @@ def open_df(data, filename = "test_data"):
     else:
         raise NameError("No " + filename + " file available!")
     for i in table.index:
-        if i is np.NaN or i is "" or i is " ":
+        if i is np.NaN or i is "" or i is " " or i is 0 or i is "0":
             table = table.drop(i, axis = 0)
     return table
 
@@ -337,6 +335,7 @@ def make_meta_path(data):
     return meta_path
     
 def calc_single_file(filename = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\basic_array\cracked\2018-11-29_Rfrs_75_1,0.npy",results="",df = "sanity_check", res_file ="", app_file = "", sample_type = "Round"):
+    print(filename)
     dataset = Dataset(filename, sample_type)
     
     if results == "":
@@ -352,7 +351,7 @@ def calc_single_file(filename = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\D
 #    if type(df) == pd.core.frame.DataFrame and results != "":
     
 #    try:
-    df.loc[dataset.name]
+#    df.loc[dataset.name]
             #write everything to result files and appendix
     new_chapter_appendix(dataset_name = dataset.name, df = df , app_file = app_file)
     res_file = write_result(dataset,df,res_file)
@@ -366,7 +365,6 @@ def write_result(dataset,df,res_file):
 #make a list to add each individual line
     
     text = []  
-    
     #name
 #    add_list(text,dataset.name.replace("_","\_"))
     
@@ -441,14 +439,7 @@ def new_chapter_appendix(app_file,df,dataset_name):
     #calculate exra accelerometer    
 def calc_extra_accel():
     return "zero"
-
-    #help function, makes it easier to add to a list
-#def add_list(lst,thing,rnd=0,sep=";"):
-#    if isinstance(thing,float):
-#        lst.append(str(np.round(thing,rnd))+sep)        
-#    else:
-#        lst.append(str(thing) + sep)
-        
+  
     #help function, makes it easier to add to a list
 def add_list(lst,thing,rnd=0):
     if isinstance(thing,float):
@@ -579,6 +570,7 @@ def thickness(filename):
 
 #calc velo from height
 def theoryVelo(height):
+    height = math.sqrt(height ** 2)
     return math.sqrt(2*height*9.8/1000)
 
 def broken(path):
@@ -587,13 +579,16 @@ def broken(path):
     else: 
         return 0
 
+def list_ex_include(length):
+    return [ex_in_clude] * length
+
 def ex_in_clude(boolean):
     if boolean == True:
         return ""
     else:
         return "faulty"
 
- 
+
 def draw_diagrams(metadata = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data", results = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results", df = ""):
     #if df is not open yet, open it
     if isinstance(df, str):
@@ -603,33 +598,33 @@ def draw_diagrams(metadata = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data
     
     make_tables(res_df, results)
     
-#    #make dir to save stuff
-#    path = results + "\\diagram"
-#    if os.path.isdir(path) == False:
-#        os.makedirs(path)
-#            
-#    #throw useless info away
-#    res_df = res_df.drop(['Broken/Cracked',"Drop weight","Drop height","Velocity","Number"],axis = 1)
-#    
-#    #correlation dataframe
-#    corr = pd.DataFrame(index = res_df.columns, columns = res_df.columns, dtype = float)
-#    
-#    
-#    mask = make_mask(metadata, results, index = df.index, res_df=res_df)
-#    
-#    #compare impact force to force at the load cells
-#    compare_force(metadata, results, df, res_df, mask)
-#    
-#    counter = 1    
-#    #draw all the silly graphics    
-#    for j in res_df.columns:
-#        for i in res_df.columns:
-#            sg.OneLineProgressMeter('Progress', counter, len(res_df.columns)**2, 'key','Drawing diagrams')
-#            counter += 1
-#            plot_correlation(i, j, mask, res_df, corr, df, path)
-#        
-#    #draw a heatmap
-#    heatmap(corr, results)
+    #make dir to save stuff
+    path = results + "\\diagram"
+    if os.path.isdir(path) == False:
+        os.makedirs(path)
+            
+    #throw useless info away
+    res_df = res_df.drop(['Broken/Cracked',"Drop weight","Drop height","Velocity","Number"],axis = 1)
+    
+    #correlation dataframe
+    corr = pd.DataFrame(index = res_df.columns, columns = res_df.columns, dtype = float)
+    
+    
+    mask = make_mask(metadata, results, index = df.index, res_df=res_df)
+    
+    #compare impact force to force at the load cells
+    compare_force(metadata, results, df, res_df, mask)
+    
+    counter = 1    
+    #draw all the silly graphics    
+    for j in res_df.columns:
+        for i in res_df.columns:
+            sg.OneLineProgressMeter('Progress', counter, len(res_df.columns)**2, 'key','Drawing diagrams')
+            counter += 1
+            plot_correlation(i, j, mask, res_df, corr, df, path)
+    
+    #draw a heatmap
+    heatmap(corr, results)
     
 def compare_force(metadata = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data", results = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results", df = None, res_df = None, mask = None):
     i = 'Acceleration'
@@ -645,7 +640,8 @@ def compare_force(metadata = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data
     impact = res_df[i] * df['Drop weight'] *0.001
     loadcell = res_df[j]
     ##make submask
-    exclude, broken, cracked = make_submask(i, j, mask, index = res_df.index ,df = df)
+    exclude, broken, cracked = make_submask(i, j, mask, index = df.index ,df = df)
+    
     ex_impact = impact[exclude]
     cr_impact = impact[cracked]
     br_impact = impact[broken] 
@@ -655,6 +651,7 @@ def compare_force(metadata = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data
     br_loadcell = loadcell[broken]
     
     mpl.rcParams["figure.figsize"] = (10,7)
+
     ax.plot(cr_impact, cr_loadcell, "b.",label="cracked")
     ax.plot(br_impact, br_loadcell, "r.", label = "broken")
     ax.plot(ex_impact, ex_loadcell,"xk", label = "excluded")       
@@ -764,16 +761,18 @@ def plot_correlation(i, j, mask, res, corr, df, path):
     
     #linear interpolation (if there are values for it)
 #    try:
+    print(crack[i], crack[j].empty)
     if crack[i].empty or crack[j].empty:
         corr[i][j] = 0
         corr[j][i] = 0
+        print("HELP!")
     else:
         slope, intercept, r_value, p_value, std_err = sp.stats.linregress(crack[i].astype(float),crack[j].astype(float))
         sortx = list(crack[i].astype(float).sort_values())
         sorty =[]
         for m in sortx:
             sorty.append(m * slope + intercept)
-        ax.plot(sortx, sorty,"b--", label="$R^2$ = %0.04f \nx = %0.04f \ny = %0.04f" %(r_value**2,slope,intercept))
+        ax.plot(sortx, sorty,"b--", label="$R^2$ = %0.02f \nx = %0.04f \ny = %0.04f" %(r_value**2,slope,intercept))
     #            ax.plot(sortx, sorty,"b--")
         #put R2 in the correct spot of the dataframe
         corr[i][j] = r_value**2
@@ -834,16 +833,17 @@ def make_tables(df,res_path):
     #legend
     write_legend(res_path,df.iloc[1:]["Number"])
     
-    #result file, add units
-    new_unit = [short_unit[i] for i in res.columns]        
-    res_w_unit = pd.DataFrame(data = new_unit, index = res.columns)#, columns = ['Name'])
-    res_w_unit = res_w_unit.transpose()
-    res_w_unit = res_w_unit.append(res)
-    res_w_unit.index.rename("Name", inplace = True)
-    print(res_w_unit.index)
-
-    with pd.ExcelWriter(res_path + '\\result.xlsx') as writer:
-            res_w_unit.to_excel(writer, sheet_name = "Results", na_rep="")
+##    #result file, add units if they are not there already
+#    print(res.index[0])
+#    if res.index[0] != 0 or res.index[0] != "":
+#        new_unit = [short_unit[i] for i in res.columns]        
+#        res_w_unit = pd.DataFrame(data = new_unit, index = res.columns)#, columns = ['Name'])
+#        res_w_unit = res_w_unit.transpose()
+#        res_w_unit = res_w_unit.append(res)
+#        res_w_unit.index.rename("Name", inplace = True)    
+#        with pd.ExcelWriter(res_path + '\\result.xlsx') as writer:
+#                res_w_unit.to_excel(writer, sheet_name = "Results", na_rep="")
+   
     
 def make_mask(direct, results, index, res_df):
    #make a mask to filter out everything that is useless
@@ -865,9 +865,9 @@ def make_mask(direct, results, index, res_df):
 #    excl_accl = mask[["Additional accelerometer vertical","Additional accelerometer horizontal"]]    
 #    excl_accl_format = [ex_in_clude] * len(excl_accl.columns)
 #    excl_accl.to_latex(os.path.join(path, "exclude.tex"),formatters = excl_accl_format, escape = False,na_rep=" ")
-
-    excl_format = [ex_in_clude] * len(mask.columns)
-    mask.drop(["Additional accelerometer vertical","Additional accelerometer horizontal"]).to_latex(os.path.join(path, "exclude.tex"),formatters = excl_format, escape = False,na_rep="")
+    exclude_table = mask.drop(["Additional accelerometer vertical","Additional accelerometer horizontal"], axis = 1)
+    excl_format = [ex_in_clude] * len(exclude_table.columns)
+    exclude_table.to_latex(os.path.join(path, "exclude.tex"),formatters = excl_format, escape = False,na_rep="")
 
 #make a pretty mask#
     #rename columns
