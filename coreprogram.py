@@ -233,7 +233,8 @@ def make_appendix_file(results):
     app = open(app_path,"w")
     
     #write appendix
-    app.write("\includepdf[pages=-]{appendix/lacing.pdf}\n\n")
+    #app.write("\includepdf[pages=-]{appendix/lacing.pdf}\n\n")
+    app.write("\chapter{TSL}\n\n\includepdf[pages=-]{appendix/TSL.pdf}\n\n")
     
     return app
     
@@ -406,11 +407,11 @@ def write_result(dataset,df,res_file):
     add_list(text,filtered_peak(dataset.accel),2)
 
     #peak deformation
-    deform = filtered_peak(dataset.laser)
+    deform = filtered_peak(-dataset.laser)
     add_list(text,deform,1)
     
     #highspeed camera
-    text.append(df.loc[dataset.name, "High speed camera"])
+    text.append(df.loc[dataset.name, "High speed camera"] * 10)
     
 #    broken or cracked?
     if df.loc[dataset.name,"Broken/cracked"].lower() == "broken":
@@ -589,14 +590,14 @@ def ex_in_clude(boolean):
         return "faulty"
 
 
-def draw_diagrams(metadata = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data", results = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results", df = ""):
+def draw_diagrams(metadata = r"C:\Users\kekaun\OneDrive - LKAB\Desktop\Fake", results = r"C:\Users\kekaun\OneDrive - LKAB\Desktop\Fake", df = ""):
     #if df is not open yet, open it
     if isinstance(df, str):
         df = open_df(metadata, "test_data")
     
     res_df = open_df(results, "result")
     
-    make_tables(res_df, results)
+#    make_tables(res_df, results)
     
     #make dir to save stuff
     path = results + "\\diagram"
@@ -613,7 +614,7 @@ def draw_diagrams(metadata = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data
     mask = make_mask(metadata, results, index = df.index, res_df=res_df)
     
     #compare impact force to force at the load cells
-    compare_force(metadata, results, df, res_df, mask)
+#    compare_force(metadata, results, df, res_df, mask)
     
     counter = 1    
     #draw all the silly graphics    
@@ -737,6 +738,7 @@ def plot_correlation(i, j, mask, res, corr, df, path):
     
     #make submask
     exclude, broken, cracked = make_submask(i, j, mask, index = res.index ,df = df)
+    print(exclude)
     exclude = res[exclude]
     crack = res[cracked]
     broke = res[broken]
@@ -801,7 +803,7 @@ def plot_correlation(i, j, mask, res, corr, df, path):
     
 def make_latex_table(df, path):
     ## format latex table
-    form = column_format(len(df.columns))
+    form = column_format(len(df.columns) + 1)
     ## format numbers with thousand separator . and decimal separator ,
     decimal = [number_format] * len(df.columns)
 #    df  = add_slash(df)
