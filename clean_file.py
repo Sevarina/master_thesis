@@ -4,7 +4,7 @@ import numpy as np
 
 
 #the important code
-def clean_array(initial_file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\basic_array\cracked\2019-09-02_75_Rfrs_1,0.asc", clean_file = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\basic_array\cracked\2019-09-02_75_Rfrs_1,0.npy",  sample_type= "round"):
+def clean_array(initial_file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\multiple_impact\2020-01-10-Rfrs_75\2020-01-10-Rfrs_75_0,5m1,5.asc", clean_file = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\multiple_impact\2020-01-10-Rfrs_75\2020-01-10-Rfrs_75_0,5m1,5.npy",  sample_type= "round"):
     array = readData(filename = initial_file)
     #throw away all the rows you don´t need
     if sample_type == "round":

@@ -7,7 +7,6 @@ Created on Mon Mar  4 15:33:33 2019
 """
 
 import numpy as np
-import math
 import statistics as stat
 import matplotlib.style
 import matplotlib as mpl
@@ -207,72 +206,18 @@ class Dataset:
 def calc(data=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data", results=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results" , extra_accel=False):
     #do you want to calculate with the normal sensor array or for the extra accelerometers
     if extra_accel == False:
-        calc_single_impact(data, results)
+        calc_basic_array(data, results)
     else:
         calc_extra_accel()
 
     #calculate basic array
-def calc_single_impact(data,results):
-    #split path into single_impact and metadata
-    single_impact = os.path.join(data,'single_impact')
-    metadata = os.path.join(data,'metadata')
-    
-    #open a result file in the result folder
+def calc_basic_array(data,results):
     make_result_file(results)
-    
-    #make an appendix file which is necessary for latex
     app_file = make_appendix_file(results)
-    
-    #open the file with the test data
-    df = open_df(metadata, 'test_data')
-    
-    #evaluate every impact and add the data to the results file
-    iterate_single(single_impact,results,df,app_file)
-    
-    #draw the diagrams
-    draw_diagrams(metadata, results, df)
+    df = open_df(data)
+    iterate_over(data,results,df,app_file)
+    draw_diagrams(data, results, df)
 
-def calc_multiple_impact(data,results):
-        #split path into single_impact and metadata
-    multiple_impact = os.path.join(data,'multiple_impact')
-    metadata = os.path.join(data,'metadata')
-
-    #open the file with the test data
-    df = open_df(metadata, 'test_data')
-    
-    #iterate over data
-    iterate_multi(multiple_impact, results, df)
-    
-#TODO Find folders with test data
-def iterate_multi(data, results,df):
-    file_list = make_file_list(data, "npy")
-    for i in file_list:
-        sg.OneLineProgressMeter('Progress', file_list.index(i), len(file_list) - 1, 'key','Progress of calculation')
-        if os.path.basename(i)[:-4] in df.index: 
-            res_file = open_df(results, "result")
-            calc_multi_file(i,results,df,res_file, sample_type = df.at[os.path.basename(i)[:-4],"Sample type"])
-    
-#def calc_single_file(filename = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\basic_array\cracked\2018-11-29_Rfrs_75_1,0.npy",results="",df = "sanity_check", res_file ="", app_file = "", sample_type = "Round"):
-#    print(filename)
-#    dataset = Dataset(filename, sample_type)
-#    
-#    if results == "":
-#        help_list = filename.split("\\")
-#        res_path = "\\".join(help_list[:-4]) + "\\Results\\" + dataset.name
-#    else: res_path = results + "\\" + dataset.name
-#        
-#    #make a folder for each file
-#    if os.path.isdir(res_path) == False:
-#        os.mkdir(res_path)
-#    
-#    #write to appendix
-#    new_chapter_appendix(dataset_name = dataset.name, df = df , app_file = app_file)
-#    res_file = write_result(dataset,df,res_file)
-#    save_df(os.path.dirname(res_path),"result",res_file)
-#
-#    dataset.make_graphs(res_path, app = app_file)  
-def calc_multi_file()
-    
 def make_result_file(results):
     index = ["Name", "Number", "Energy level", "Thickness", "Drop weight", "Drop height", "Age", "Velocity", "Force", "Acceleration", "Displacement", "High speed camera", "Broken/Cracked", "Crack area", "Opening angle"]    
     data =  [short_unit[i] for i in index]
@@ -293,7 +238,7 @@ def make_appendix_file(results):
     
     return app
     
-def iterate_single(direct,results,df,app_file):  
+def iterate_over(direct,results,df,app_file):    
     file_list = make_file_list(direct, "npy")
     for i in file_list:
         sg.OneLineProgressMeter('Progress', file_list.index(i), len(file_list) - 1, 'key','Progress of calculation')
@@ -308,7 +253,7 @@ def find_folder(path, folder_name):
         for folder in folders:
             if folder.lower() == folder_name.lower():
                 return os.path.join(root,folder)
-    raise NoFolderError(folder_name, path)
+    return None
 
 #try which format the cell has
 def table_format(c):
@@ -387,7 +332,7 @@ def save_df(data, filename, df):
 
 def make_meta_path(data):
     path = os.path.split(data)
-    meta_path = os.path.join(path,'metadata')
+    meta_path = path[0] + "\\metadata"
     return meta_path
     
 def calc_single_file(filename = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\basic_array\cracked\2018-11-29_Rfrs_75_1,0.npy",results="",df = "sanity_check", res_file ="", app_file = "", sample_type = "Round"):
@@ -402,12 +347,18 @@ def calc_single_file(filename = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\D
     #make a folder for each file
     if os.path.isdir(res_path) == False:
         os.mkdir(res_path)
+    ######################PUT THE STUFF BACK
+    # if there is no data frame and no results file, don't try to make entries into the appendix
+#    if type(df) == pd.core.frame.DataFrame and results != "":
     
-    #write to appendix
+#    try:
+#    df.loc[dataset.name]
+            #write everything to result files and appendix
     new_chapter_appendix(dataset_name = dataset.name, df = df , app_file = app_file)
     res_file = write_result(dataset,df,res_file)
     save_df(os.path.dirname(res_path),"result",res_file)
-
+#    except:
+#            print("filename not in test_data file")
     dataset.make_graphs(res_path, app = app_file)    
     
 #write everything important to the result file        
@@ -786,23 +737,22 @@ def plot_correlation(i, j, mask, res, corr, df, path):
     ax = plt.subplot(111)
     
     #make submask
-    exclude, broken, cracked = make_submask(i, j, mask, index = df.index ,df = df)
+    exclude, broken, cracked = make_submask(i, j, mask, index = res.index ,df = df)
+    print(exclude)
     exclude = res[exclude]
     crack = res[cracked]
     broke = res[broken]
-
+    print(i,j)
     mpl.rcParams["figure.figsize"] = (10,7)
     ax.plot(crack[i], crack[j], "b.",label="cracked")
-    ax.plot(broke[i], broke[j], "r.", label = "broken")  
+    ax.plot(broke[i], broke[j], "r.", label = "broken")
+    ax.plot(exclude[i],exclude[j],"xk", label = "excluded")       
     
     #make limits nice
     xlim = ax.get_xlim()
     ax.set_xlim((xlim[0] - 0.05 * xlim[0],xlim[1]+ 0.05 * xlim[1]))
     ylim = ax.get_ylim()
     ax.set_ylim((ylim[0] - 0.05 * ylim[0], ylim[1] + 0.05 * ylim[1]))
-    
-    #plot excluded data later to keep outliers out of the graphs
-    ax.plot(exclude[i],exclude[j],"xk", label = "excluded")     
                 
     #labels
     ax.set_xlabel(i + " " + latex_unit[i], usetex = True, fontsize = 14)
@@ -812,10 +762,12 @@ def plot_correlation(i, j, mask, res, corr, df, path):
     plt.grid()
     
     #linear interpolation (if there are values for it)
+#    try:
+    print(crack[i], crack[j].empty)
     if crack[i].empty or crack[j].empty:
         corr[i][j] = 0
         corr[j][i] = 0
-        print("HELP! NO VALUES!")
+        print("HELP!")
     else:
         slope, intercept, r_value, p_value, std_err = sp.stats.linregress(crack[i].astype(float),crack[j].astype(float))
         sortx = list(crack[i].astype(float).sort_values())
@@ -835,9 +787,9 @@ def plot_correlation(i, j, mask, res, corr, df, path):
         Number = Number.astype(int)
     except:
         Number = Number.astype(str)    
-#    #write numbers next to points             
-#    texts = [plt.text(res.at[k,i],res.at[k,j],Number.loc[k]) for k in res.index]  
-#    adjust_text(texts)
+    #write numbers next to points             
+    texts = [plt.text(res.at[k,i],res.at[k,j],Number.loc[k]) for k in res.index]  
+    adjust_text(texts)
 
     #legend            
     chartBox = ax.get_position()            
@@ -901,18 +853,15 @@ def make_mask(direct, results, index, res_df):
     try:
         mask = open_df(direct,"exclude")
     except:
-        print("Cannot find the exclude database!")
+        print("help!")
         shape = (len(index),8)
         dummy_data = np.zeros(shape = shape)
         columns = ["Loadcells","Accelerometer","Laser sensor",	"Cracks",	"High speed camera"]#, "Additional accelerometer vertical","Additional accelerometer horizontal"]
         mask = pd.DataFrame(data = dummy_data, index = index, columns = columns)
     mask = mask.astype(bool)
-
+    
 #    mask to latex
-    path = os.path.join(results, 'tables')
-    print(path)
-    if os.path.isdir(path) == False:
-        os.makedirs(path)  
+    path = find_folder(results, "tables")
 
     ##use if there is extra accel data
 #    excl_accl = mask[["Additional accelerometer vertical","Additional accelerometer horizontal"]]    
@@ -936,13 +885,11 @@ def make_mask(direct, results, index, res_df):
     #turn cracks into two columns and exclude broken&cracked samples
     mask.insert(loc = 0, column = 'Opening angle', value = mask.loc[:,'Crack area']) 
     
-    #add the remaining columns as true                    
+    #add the remaining columns as true
     for j in res_df.columns:
         if j not in mask.columns:
             mask.insert(loc = 0, column = j, value = new_data)
-
-    check = res_df.isna()
-    mask[check] = False
+    mask = remove_slash(mask)
     return mask    
     
 def make_submask(i, j, mask,index, df):
@@ -965,6 +912,7 @@ def make_submask(i, j, mask,index, df):
             broken_data.append(True)
         else:
             broken_data.append(False)
+        
     broken = pd.Series(broken_data, index = index, dtype = bool, name = 'Name')
     cracked = ~broken
     broken = broken & submask
@@ -1222,9 +1170,4 @@ def compare_vel_disp():
 
     vel_disp_compare.to_latex("C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Results\\compare.tex", escape = False)
     
-class NoFolderError(Exception):
-    '''raise an error when a folder cannot be found'''
-    def __init__(self, folder, directory):
-
-        # Call the base class constructor with the parameters it needs
-        super(NoFolderError, self).__init__('The folder {} could not be found in {}'.format(folder, directory))
+        
