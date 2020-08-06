@@ -19,7 +19,10 @@ mpl.rcParams['font.family'] = "sans-serif"
 mpl.rcParams['mathtext.default']='default'
 import matplotlib.pyplot as plt
 import coreprogram as core
-import plotly.graph_objects as go
+# 5import plotly.graph_objects as go
+
+from scipy.ndimage.filters import uniform_filter1d
+
 
 latex_unit = {
         "Acceleration" : r"\(\Big[\frac{\text{m}}{\text{s}^\text{2}}\Big]\)",
@@ -53,13 +56,6 @@ latex_unit = {
         "Width 6" : r"\([\text{mm}]\)",
         }
 
+table = pd.read_excel(r"C:\Users\kunge\Downloads\KIRUNA\kiruna.xlsx", sheet_name = "python_dynamic", Index_col = 0, header = 0)
 
-class NoFolderError(Exception):
-    '''raise an error when a folder cannot be found'''
-    def __init__(self, folder, directory):
-
-        # Call the base class constructor with the parameters it needs
-        super(NoFolderError, self).__init__('The folder {} could not be found in {}'.format(folder, directory))
-
-        
-raise NoFolderError('random stuff', 'C:')
+print(table.index)

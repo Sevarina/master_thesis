@@ -4,16 +4,22 @@ import numpy as np
 
 
 #the important code
-def clean_array(initial_file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\multiple_impact\2020-01-10-Rfrs_75\2020-01-10-Rfrs_75_0,5m1,5.asc", clean_file = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\multiple_impact\2020-01-10-Rfrs_75\2020-01-10-Rfrs_75_0,5m1,5.npy",  sample_type= "round"):
+def clean_array(initial_file=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\multiple_impact\2020-01-10-Rfrs_75\2020-01-10-Rfrs_75_0,5m1,5.asc", clean_file = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\multiple_impact\2020-01-10-Rfrs_75\2020-01-10-Rfrs_75_0,5m1,5.npy",  sample_type= "square"):
     array = readData(filename = initial_file)
     #throw away all the rows you don´t need
     if sample_type == "round":
         print("ROUND!")
         newarray = np.delete(array,[5,6,8,10,11,13,14,15,16,17,18,19,20,21,22],1)
-    else: newarray = np.delete(array,[6,8,10,11,13,14,15,16,17,18,19,20,21,22],1)
-    newarray = fix_time(newarray)
-    for i in range(newarray.shape[0]):
-        newarray[i][5] = newarray[i][5] * 9.8
+        newarray = fix_time(newarray)
+        for i in range(newarray.shape[0]):
+            newarray[i][5] = newarray[i][5] * 9.8
+    else: 
+        print("SQUARE!")
+        newarray = np.delete(array,[6,7,9,11,13,14,15,16,17,18,19,20,21,22],1)
+        newarray = fix_time(newarray)
+        for i in range(newarray.shape[0]):
+            newarray[i][6] = newarray[i][6] * 9.8
+
     np.save(clean_file,newarray)
 
 def fix_time(array):
@@ -39,11 +45,11 @@ def readData(maxLines=-1,filename=".\\Data\\cracked\\2019-02-20-Rfs-100-0,5.asc"
                 d = np.nan
             l1.append(d)   
     f.close()
-
-    try:
-        return np.array(l1).reshape(-1,26)
-    except:
-        return np.array(l1).reshape(-1,29)
+    length = len(l1)    
+    for i in range(23,30):
+        if length % i == 0:
+            print(i)
+            return np.array(l1).reshape(-1,i)
     
 def clearData(file):
 # Read and ignore header lines

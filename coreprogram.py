@@ -9,6 +9,7 @@ Created on Mon Mar  4 15:33:33 2019
 import numpy as np
 import math
 import statistics as stat
+
 import matplotlib.style
 import matplotlib as mpl
 #make all plots look nice
@@ -21,7 +22,6 @@ import scipy.signal as sig
 import scipy.integrate as integrate
 
 import seaborn as sns
-import math
 
 import os
 import re
@@ -30,6 +30,9 @@ from adjustText import adjust_text
 import locale
 locale.setlocale(locale.LC_ALL, 'deu_deu')
 import PySimpleGUI as sg
+
+
+from scipy.ndimage.filters import uniform_filter1d
 
 import clean_file as clean
 
@@ -108,7 +111,7 @@ short_unit = {
 
 #contains everything you need from a dataset
 class Dataset:
-    def __init__(self, filename, sample_type = "round"):
+    def __init__(self, filename, sample_type = "square"):
         self.name = os.path.basename(filename)[:-4]
         self.array = np.load(filename)
         self.type = sample_type.lower()
@@ -142,6 +145,18 @@ class Dataset:
             
         self.indizes = indizes
         
+        
+        # #define datasets
+        self.load = self.array[:,self.indizes["load"]]
+        plt.plot(self.load)
+        plt.show()
+        self.laser = self.array[:,self.indizes["laser"]]
+        self.accel = self.array[:,self.indizes["accelerometer"]]
+        # calculate loadcellsum from loadcells
+        loadcells = self.load
+        self.loadsum = np.sum(loadcells,axis=1)
+        
+        #set the lengths
         start_accel, end_accel, start_load, end_load, start_laser, end_laser = calc_scope(self.array, self.indizes["magnetventil"])
         
         #define datasets
@@ -170,14 +185,15 @@ class Dataset:
     def peak_accel(self):
         return filtered_peak(self.accel)
         
-    def get_dropheight(self):
-        #m has a sampling rate of 10kHz, but the telfer of just 1 Hz
-        m = int(np.argmax(self.array[:,self.indizes["magnetventil"]])/10000)
-        u = np.nanargmax(self.array[m:,self.indizes["distance_up"]])
-        up = self.array[u+m,self.indizes["distance_up"]]
-        d = np.nanargmax(self.array[m:,self.indizes["distance_down"]])
-        down = self.array[d+m,self.indizes["distance_down"]]
-        return up - down           
+    # def get_dropheight(self):
+    #     #m has a sampling rate of 10kHz, but the telfer of just 1 Hz
+    #     m = int(np.argmax(self.array[:,self.indizes["magnetventil"]])/10000)
+    #     print(self.array.shape)
+    #     u = np.nanargmax(self.array[m:,self.indizes["distance_up"]])
+    #     up = self.array[u+m,self.indizes["distance_up"]]
+    #     d = np.nanargmax(self.array[m:,self.indizes["distance_down"]])
+    #     down = self.array[d+m,self.indizes["distance_down"]]
+    #     return up - down           
         
     def make_graphs(self,res_path,app):
         # plot accel
@@ -204,7 +220,7 @@ class Dataset:
         plot(res_path,x = self.laser_time, y = self.laser ,xlabel= r"Time \([\text{s}]\)",ylabel=r"Displacement \([\text{mm}]\)", name="Laser_Displacement", limit=(-100,-1),appendix = app, dataset_name = self.name)
 
 #run all the things we really want on all files
-def calc(data=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data", results=r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results" , extra_accel=False):
+def calc(data=r"C:\Users\kunge\Downloads\KIRUNA\new_tests\1_ANALYSIS", results=r"C:\Users\kunge\Downloads\KIRUNA\new_tests\1_ANALYSIS\results" , extra_accel=False):
     #do you want to calculate with the normal sensor array or for the extra accelerometers
     if extra_accel == False:
         calc_single_impact(data, results)
@@ -224,13 +240,14 @@ def calc_single_impact(data,results):
     app_file = make_appendix_file(results)
     
     #open the file with the test data
+
     df = open_df(metadata, 'test_data')
     
     #evaluate every impact and add the data to the results file
     iterate_single(single_impact,results,df,app_file)
     
-    #draw the diagrams
-    draw_diagrams(metadata, results, df)
+    # #draw the diagrams
+    # draw_diagrams(metadata, results, df)
 
 def calc_multiple_impact(data,results):
         #split path into single_impact and metadata
@@ -243,7 +260,6 @@ def calc_multiple_impact(data,results):
     #iterate over data
     iterate_multi(multiple_impact, results, df)
     
-#TODO Find folders with test data
 def iterate_multi(data, results,df):
     file_list = make_file_list(data, "npy")
     for i in file_list:
@@ -252,26 +268,30 @@ def iterate_multi(data, results,df):
             res_file = open_df(results, "result")
             calc_multi_file(i,results,df,res_file, sample_type = df.at[os.path.basename(i)[:-4],"Sample type"])
     
-#def calc_single_file(filename = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\basic_array\cracked\2018-11-29_Rfrs_75_1,0.npy",results="",df = "sanity_check", res_file ="", app_file = "", sample_type = "Round"):
-#    print(filename)
-#    dataset = Dataset(filename, sample_type)
-#    
-#    if results == "":
-#        help_list = filename.split("\\")
-#        res_path = "\\".join(help_list[:-4]) + "\\Results\\" + dataset.name
-#    else: res_path = results + "\\" + dataset.name
-#        
-#    #make a folder for each file
-#    if os.path.isdir(res_path) == False:
-#        os.mkdir(res_path)
-#    
-#    #write to appendix
-#    new_chapter_appendix(dataset_name = dataset.name, df = df , app_file = app_file)
-#    res_file = write_result(dataset,df,res_file)
-#    save_df(os.path.dirname(res_path),"result",res_file)
-#
-#    dataset.make_graphs(res_path, app = app_file)  
-def calc_multi_file()
+def calc_single_file(filename = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\basic_array\cracked\2018-11-29_Rfrs_75_1,0.npy",results="",df = "sanity_check", res_file ="", app_file = "", sample_type = "Square"):
+    print(filename)
+    dataset = Dataset(filename, sample_type)
+    
+    if results == "":
+        help_list = filename.split("\\")
+        res_path = "\\".join(help_list[:-4]) + "\\Results\\" + dataset.name
+    else: res_path = results + "\\" + dataset.name
+        
+    #make a folder for each file
+    if os.path.isdir(res_path) == False:
+        os.mkdir(res_path)
+    
+    #write to appendix
+    new_chapter_appendix(dataset_name = dataset.name, df = df , app_file = app_file)
+    res_file = write_result(dataset,df,res_file)
+    save_df(os.path.dirname(res_path),"result",res_file)
+
+    dataset.make_graphs(res_path, app = app_file)
+            
+                    
+def calc_multi_file():
+    print("")
+    
     
 def make_result_file(results):
     index = ["Name", "Number", "Energy level", "Thickness", "Drop weight", "Drop height", "Age", "Velocity", "Force", "Acceleration", "Displacement", "High speed camera", "Broken/Cracked", "Crack area", "Opening angle"]    
@@ -360,7 +380,7 @@ def open_df(data, filename = "test_data"):
     else:
         raise NameError("No " + filename + " file available!")
     for i in table.index:
-        if i is np.NaN or i is "" or i is " " or i is 0 or i is "0":
+        if i == np.NaN or i == "" or i == " " or i == 0 or i == "0":
             table = table.drop(i, axis = 0)
     return table
 
@@ -390,25 +410,6 @@ def make_meta_path(data):
     meta_path = os.path.join(path,'metadata')
     return meta_path
     
-def calc_single_file(filename = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\basic_array\cracked\2018-11-29_Rfrs_75_1,0.npy",results="",df = "sanity_check", res_file ="", app_file = "", sample_type = "Round"):
-    print(filename)
-    dataset = Dataset(filename, sample_type)
-    
-    if results == "":
-        help_list = filename.split("\\")
-        res_path = "\\".join(help_list[:-4]) + "\\Results\\" + dataset.name
-    else: res_path = results + "\\" + dataset.name
-        
-    #make a folder for each file
-    if os.path.isdir(res_path) == False:
-        os.mkdir(res_path)
-    
-    #write to appendix
-    new_chapter_appendix(dataset_name = dataset.name, df = df , app_file = app_file)
-    res_file = write_result(dataset,df,res_file)
-    save_df(os.path.dirname(res_path),"result",res_file)
-
-    dataset.make_graphs(res_path, app = app_file)    
     
 #write everything important to the result file        
 def write_result(dataset,df,res_file):
@@ -425,7 +426,8 @@ def write_result(dataset,df,res_file):
 
     weig = df.loc[dataset.name,"Drop weight"]
 
-    heig = dataset.get_dropheight()
+    # heig = dataset.get_dropheight()
+    heig = df.loc[dataset.name, "Drop height"]
 
     add_list(text,energy(heig,weig),2) 
 
@@ -517,12 +519,23 @@ def plot(direct,x,y,limit=(-1,-1),xlabel="",ylabel="",name="", appendix = False,
         write_appendix(appendix, ".\\appendix\\" + dataset_name + "\\" + name + ".png", name)
 
 def calc_scope(array,index):
-    start_load = find_start(array, index, cushion=500)
+    start_load = find_start(array, index, cushion=2000)
+    
+    # #if the program cannot find a start, just start from the beginning and end at the end
+    # if start_load is None:    
+    #     start_load = 0
+    #     start_accel = 0
+    #     start_laser = 0
+    #     end_accel = array.shape[1]
+    #     end_load = array.shape[1]
+    #     end_laser = array.shape[1]
+    #     return start_accel, end_accel, start_load, end_load, start_laser, end_laser
+    
     start_accel = start_load
     start_laser = start_load
-    
-    len_accel = 1500
-    len_load = 1500
+    #
+    len_accel = 10000
+    len_load = 10000
     len_laser = 2000
     
     end_accel = start_accel + len_accel
@@ -583,17 +596,26 @@ def load_displacement_curve(file="C:\\Users\\kekaun\\OneDrive - LKAB\\roundSampl
     plt.savefig("C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Results\\" + os.path.basename(file)[:-4] + "_energy.png")
     plt.close()
 
+
 def find_start(array, index = 6, cushion=500): 
+    x = np.where(array[:,index]==1)
+    short_array = array[x[0][0]:,]
+    #stack the filtered values
+    #find where those value cross a threshold - that is your start
+
+    # load = uniform_filter1d(short_array[:,1], size = 100)
+    
+    
     x = np.where(array[:,index]==1)
     a = np.argmax(array[x[0][0]:],axis=0)
     c=[]
     for i in range(1,4):
 # just the load cells        
         c.append(a[i])
-#        c.append(b[i])
     return(int(math.floor(stat.median(c)) - cushion + x[0][0]))
     
 #get peak of anything, input: sliced array, uses a medium filter
+    
 def filtered_peak(array):
     index = np.argmax(sig.medfilt(array))
     return (array[index])
@@ -902,7 +924,7 @@ def make_mask(direct, results, index, res_df):
         mask = open_df(direct,"exclude")
     except:
         print("Cannot find the exclude database!")
-        shape = (len(index),8)
+        shape = (len(index),5)
         dummy_data = np.zeros(shape = shape)
         columns = ["Loadcells","Accelerometer","Laser sensor",	"Cracks",	"High speed camera"]#, "Additional accelerometer vertical","Additional accelerometer horizontal"]
         mask = pd.DataFrame(data = dummy_data, index = index, columns = columns)
@@ -918,9 +940,9 @@ def make_mask(direct, results, index, res_df):
 #    excl_accl = mask[["Additional accelerometer vertical","Additional accelerometer horizontal"]]    
 #    excl_accl_format = [ex_in_clude] * len(excl_accl.columns)
 #    excl_accl.to_latex(os.path.join(path, "exclude.tex"),formatters = excl_accl_format, escape = False,na_rep=" ")
-    exclude_table = mask.drop(["Additional accelerometer vertical","Additional accelerometer horizontal"], axis = 1)
-    excl_format = [ex_in_clude] * len(exclude_table.columns)
-    exclude_table.to_latex(os.path.join(path, "exclude.tex"),formatters = excl_format, escape = False,na_rep="")
+    # exclude_table = mask.drop(["Additional accelerometer vertical","Additional accelerometer horizontal"], axis = 1)
+    # excl_format = [ex_in_clude] * len(exclude_table.columns)
+    # exclude_table.to_latex(os.path.join(path, "exclude.tex"),formatters = excl_format, escape = False,na_rep="")
 
 #make a pretty mask#
     #rename columns
@@ -1222,9 +1244,25 @@ def compare_vel_disp():
 
     vel_disp_compare.to_latex("C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Results\\compare.tex", escape = False)
     
+def clean_dir(in_dir = r'C:\Users\kunge\Downloads\KIRUNA\new_tests', out_dir=r'C:\Users\kunge\Downloads\KIRUNA\new_tests\1_ANALYSIS\single_impact', sample_type = "square"):
+    """cleans a bunch of files in in_dir at once and saves them in at out_dir as .npy"""    
+    file_list = make_file_list(in_dir, "asc")
+    for i in file_list:
+        out_file = os.path.join(out_dir, os.path.basename(i)[:-4] + '.npy')
+        print(out_file)
+        clean.clean_array(i, out_file, sample_type)
+    
 class NoFolderError(Exception):
     '''raise an error when a folder cannot be found'''
     def __init__(self, folder, directory):
 
         # Call the base class constructor with the parameters it needs
         super(NoFolderError, self).__init__('The folder {} could not be found in {}'.format(folder, directory))
+        
+def make_latex_input(dir = r"C:\Users\kunge\ownCloud\Work\Textbausteine", subdir = r"./"):
+    # takes all the files in a folder and creates input statements for latex
+    # dir is the folder of the documents
+    # subdir is the relative path from the main file to the subfile
+    for root, folders, files in os.walk(dir):
+            for file in files:
+                print(r"\input{" + subdir + file[:-4] + "}\n")
