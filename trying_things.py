@@ -56,6 +56,19 @@ latex_unit = {
         "Width 6" : r"\([\text{mm}]\)",
         }
 
-table = pd.read_excel(r"C:\Users\kunge\Downloads\KIRUNA\kiruna.xlsx", sheet_name = "python_dynamic", Index_col = 0, header = 0)
+table = pd.read_excel(r"C:\Users\kunge\Downloads\KIRUNA\kiruna.xlsx", sheet_name = "python_dynamic")
+table.set_index("element", inplace=True)
 
-print(table.index)
+a = ""
+short_index = []
+for i in table.index:
+    if a is i:
+        continue
+    else:
+        short_index.append(i)
+        a = i
+
+Table = table.T
+
+print(Table[short_index[0]].T)
+    
