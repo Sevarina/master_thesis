@@ -29,8 +29,6 @@ import pandas as pd
 from adjustText import adjust_text
 import locale
 locale.setlocale(locale.LC_ALL, 'deu_deu')
-import PySimpleGUI as sg
-
 
 from scipy.ndimage.filters import uniform_filter1d
 
@@ -263,7 +261,6 @@ def calc_multiple_impact(data,results):
 def iterate_multi(data, results,df):
     file_list = make_file_list(data, "npy")
     for i in file_list:
-        sg.OneLineProgressMeter('Progress', file_list.index(i), len(file_list) - 1, 'key','Progress of calculation')
         if os.path.basename(i)[:-4] in df.index: 
             res_file = open_df(results, "result")
             calc_multi_file(i,results,df,res_file, sample_type = df.at[os.path.basename(i)[:-4],"Sample type"])
@@ -316,7 +313,6 @@ def make_appendix_file(results):
 def iterate_single(direct,results,df,app_file):  
     file_list = make_file_list(direct, "npy")
     for i in file_list:
-        sg.OneLineProgressMeter('Progress', file_list.index(i), len(file_list) - 1, 'key','Progress of calculation')
         if os.path.basename(i)[:-4] in df.index: 
             res_file = open_df(results, "result")
             calc_single_file(i,results,df,res_file,app_file, sample_type = df.at[os.path.basename(i)[:-4],"Sample type"])
@@ -691,7 +687,6 @@ def draw_diagrams(metadata = r"C:\Users\kekaun\OneDrive - LKAB\Desktop\Fake", re
     #draw all the silly graphics    
     for j in res_df.columns:
         for i in res_df.columns:
-            sg.OneLineProgressMeter('Progress', counter, len(res_df.columns)**2, 'key','Drawing diagrams')
             counter += 1
             plot_correlation(i, j, mask, res_df, corr, df, path)
     
@@ -1244,7 +1239,7 @@ def compare_vel_disp():
 
     vel_disp_compare.to_latex("C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Results\\compare.tex", escape = False)
     
-def clean_dir(in_dir = r'C:\Users\kunge\Downloads\KIRUNA\new_tests', out_dir=r'C:\Users\kunge\Downloads\KIRUNA\new_tests\1_ANALYSIS\single_impact', sample_type = "square"):
+def clean_dir(in_dir = r'C:\Users\kunge\Downloads\KIRUNA', out_dir=r'C:\Users\kunge\Downloads\KIRUNA', sample_type = "square"):
     """cleans a bunch of files in in_dir at once and saves them in at out_dir as .npy"""    
     file_list = make_file_list(in_dir, "asc")
     for i in file_list:
