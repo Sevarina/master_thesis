@@ -30,8 +30,6 @@ from adjustText import adjust_text
 import locale
 locale.setlocale(locale.LC_ALL, 'deu_deu')
 
-from scipy.ndimage.filters import uniform_filter1d
-
 import clean_file as clean
 
 mpl.rcParams['text.latex.preamble'] = [r'\usepackage{helvet}\renewcommand\familydefault{\sfdefault}', r'\usepackage{amsmath}' , r'\usepackage[T1]{fontenc}'] 
@@ -595,7 +593,7 @@ def load_displacement_curve(file="C:\\Users\\kekaun\\OneDrive - LKAB\\roundSampl
 
 def find_start(array, index = 6, cushion=500): 
     x = np.where(array[:,index]==1)
-    short_array = array[x[0][0]:,]
+    # short_array = array[x[0][0]:,]
     #stack the filtered values
     #find where those value cross a threshold - that is your start
 
@@ -1254,10 +1252,21 @@ class NoFolderError(Exception):
         # Call the base class constructor with the parameters it needs
         super(NoFolderError, self).__init__('The folder {} could not be found in {}'.format(folder, directory))
         
-def make_latex_input(dir = r"C:\Users\kunge\ownCloud\Work\Textbausteine", subdir = r"./"):
+def make_latex_input(dir = r"C:\Users\kunge\ownCloud\Work\documents\new", subdir = r"./documents/new/"):
     # takes all the files in a folder and creates input statements for latex
     # dir is the folder of the documents
     # subdir is the relative path from the main file to the subfile
     for root, folders, files in os.walk(dir):
             for file in files:
-                print(r"\input{" + subdir + file[:-4] + "}\n")
+                print(r"\input{" + subdir + file[:-4] + "}" + "\n\n")
+                
+def make_excel(test_file_directory=r'C:\Users\kunge\Downloads\KIRUNA\test', output_directory=r'C:\Users\kunge\Downloads\KIRUNA\test\RESULTS'):
+    'make an appropriate excel file for data analysis'
+    column_list = ["Number", "Sample type", "Casting date", "Test date", "Age", "Drop weight", "Thickness", "Deformation"]
+    file_list =  make_file_list(test_file_directory, 'npy')
+    index = []
+    for i in file_list:
+        index.append(os.path.basename(i)[:-4])
+    df = pd.DataFrame(columns=column_list, index = index)
+    file_path = os.path.join(output_directory, 'test_data.xlsx')
+    df.to_excel(file_path, index_label = 'Name')
