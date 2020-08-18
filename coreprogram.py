@@ -216,15 +216,19 @@ class Dataset:
         plot(res_path,x = self.laser_time, y = self.laser ,xlabel= r"Time \([\text{s}]\)",ylabel=r"Displacement \([\text{mm}]\)", name="Laser_Displacement", limit=(-100,-1),appendix = app, dataset_name = self.name)
 
 #run all the things we really want on all files
-def calc(data=r"C:\Users\kunge\Downloads\KIRUNA\new_tests\1_ANALYSIS", results=r"C:\Users\kunge\Downloads\KIRUNA\new_tests\1_ANALYSIS\results" , extra_accel=False):
-    #do you want to calculate with the normal sensor array or for the extra accelerometers
-    if extra_accel == False:
-        calc_single_impact(data, results)
+def calc(data=r"C:\Users\kunge\Downloads\KIRUNA\new_tests\1_ANALYSIS", results=r"C:\Users\kunge\Downloads\KIRUNA\new_tests\1_ANALYSIS\results" , single_impact = True, latex = False):
+    '''data is the location of the .npy files for analysis
+    results marks the location of the results of the analysis
+    single_impact is true if every sample was hit just once. It is false if one sample was hit several times by drop weights.
+    latex is true if the programm should generate various latex files for later usage
+    if latex is set to false no files will be generated
+    '''
+    if single_impact == True:
+        calc_single_impact(data, results, latex)
     else:
-        calc_extra_accel()
-
-    #calculate basic array
-def calc_single_impact(data,results):
+        print('not implemented yet!')        
+        
+def calc_single_impact(data, results, latex):
     #split path into single_impact and metadata
     single_impact = os.path.join(data,'single_impact')
     metadata = os.path.join(data,'metadata')
@@ -233,14 +237,16 @@ def calc_single_impact(data,results):
     make_result_file(results)
     
     #make an appendix file which is necessary for latex
-    app_file = make_appendix_file(results)
-    
+    if latex:
+        app_file = make_appendix_file(results)
+    else:
+        app_file = False
+        
     #open the file with the test data
-
     df = open_df(metadata, 'test_data')
     
     #evaluate every impact and add the data to the results file
-    iterate_single(single_impact,results,df,app_file)
+    iterate_single(single_impact, results, df, app_file)
     
     # #draw the diagrams
     # draw_diagrams(metadata, results, df)
@@ -277,12 +283,13 @@ def calc_single_file(filename = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\D
         os.mkdir(res_path)
     
     #write to appendix
-    new_chapter_appendix(dataset_name = dataset.name, df = df , app_file = app_file)
+    if app_file:
+        new_chapter_appendix(dataset_name = dataset.name, df = df , app_file = app_file)
+# find me
     res_file = write_result(dataset,df,res_file)
     save_df(os.path.dirname(res_path),"result",res_file)
 
-    dataset.make_graphs(res_path, app = app_file)
-            
+    dataset.make_graphs(res_path, app_file)
                     
 def calc_multi_file():
     print("")
@@ -308,13 +315,14 @@ def make_appendix_file(results):
     
     return app
     
-def iterate_single(direct,results,df,app_file):  
+def iterate_single(direct, results, df, app_file):  
     file_list = make_file_list(direct, "npy")
     for i in file_list:
         if os.path.basename(i)[:-4] in df.index: 
             res_file = open_df(results, "result")
             calc_single_file(i,results,df,res_file,app_file, sample_type = df.at[os.path.basename(i)[:-4],"Sample type"])
-    app_file.close()
+    if app_file:
+        app_file.close()
 
 def find_folder(path, folder_name):
     #crawl a folder and return the path of the folder you are looking for:
@@ -347,18 +355,24 @@ def make_file_list(direct, extension = ""):
     return file_list
 
 def open_df(data, filename = "test_data"):
-    #using dynamic recasting to confuse the reader
+    '''looks for the .xlsx AND .csv file with the name "filename" in the folder "data"
+    always prioritises .xlsx files
+    uses some dynamic recasting to confuse the reader, the paths are first set as booleans and if no file is found they stay booleans
+    '''
     excel_path, csv_path = False, False
+    
     xlsx_list = make_file_list(data, extension = "xlsx")
     for i in xlsx_list:
         if os.path.basename(i).lower() == filename + ".xlsx":
             excel_path = i
             break
+        
     csv_list = make_file_list(data, extension = "csv")
     for j in csv_list:
         if os.path.basename(j).lower() == filename + ".csv":
             csv_path = j
             break
+        
     if excel_path:
         help_table = pd.read_excel(excel_path, header = 0, index_col = "Name")
         table_dtype = {}
@@ -373,13 +387,14 @@ def open_df(data, filename = "test_data"):
         table = pd.read_csv(csv_path, sep = ";", header = 0, index_col = "Name", converters = table_dtype)
     else:
         raise NameError("No " + filename + " file available!")
+        
     for i in table.index:
         if i == np.NaN or i == "" or i == " " or i == 0 or i == "0":
             table = table.drop(i, axis = 0)
     return table
 
 def save_df(data, filename, df):
-    #using dynamic recasting to confuse the reader
+    '''tries to save a df'''
     excel_path, csv_path = False, False
     xlsx_list = make_file_list(data, extension = "xlsx")
     for i in xlsx_list:
@@ -393,6 +408,9 @@ def save_df(data, filename, df):
             break
     if excel_path:
         df.to_excel(excel_path, index_label = "Name")
+        # open and close the file again so it looks nice
+        df_new = open_df(data, filename)
+        df_new.to_excel(excel_path)
     elif csv_path:
         df.to_csv(csv_path, sep = ";")
     else:
@@ -408,11 +426,8 @@ def make_meta_path(data):
 #write everything important to the result file        
 def write_result(dataset,df,res_file):
 #make a list to add each individual line
-    
     text = []  
-    #name
-#    add_list(text,dataset.name.replace("_","\_"))
-    
+
     #legend
     add_list(text,df.loc[dataset.name,"Number"])
         
@@ -427,7 +442,6 @@ def write_result(dataset,df,res_file):
 
     #thickness
     add_list(text,df.loc[dataset.name,"Thickness"])
-#    text.append(str(ponder.loc["thickness"]) + ";") 
     
     #drop weight
     add_list(text,weig,0)
@@ -458,7 +472,7 @@ def write_result(dataset,df,res_file):
     #highspeed camera
     text.append(df.loc[dataset.name, "High speed camera"] * 10)
     
-#    broken or cracked?
+#    broken or cracked?s
     if df.loc[dataset.name,"Broken/cracked"].lower() == "broken":
 
         #if broken just add nan
