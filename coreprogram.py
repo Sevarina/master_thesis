@@ -143,7 +143,7 @@ class Dataset:
         
         
         # #define datasets
-        self.load = self.array[:,self.indizes["load"]]
+        self.load = - self.array[:,self.indizes["load"]]
         plt.plot(self.load)
         plt.show()
         self.laser = self.array[:,self.indizes["laser"]]
@@ -224,12 +224,13 @@ def calc(data=r"C:\Users\kunge\Downloads\KIRUNA\new_tests\1_ANALYSIS", results=r
     if latex is set to false no files will be generated
     '''
     if single_impact == True:
-        calc_single_impact(data, results, latex)
+        calc_single_impact(data, results, latex, diagrams = True)
     else:
-        print('not implemented yet!')        
+      calc_multiple_impact(data, results, latex)
         
-def calc_single_impact(data, results, latex):
+def calc_single_impact(data, results, latex, diagrams = True):
     #split path into single_impact and metadata
+    print("Calculating single impact")
     single_impact = os.path.join(data,'single_impact')
     metadata = os.path.join(data,'metadata')
     
@@ -248,27 +249,77 @@ def calc_single_impact(data, results, latex):
     #evaluate every impact and add the data to the results file
     iterate_single(single_impact, results, df, app_file)
     
-    # #draw the diagrams
-    # draw_diagrams(metadata, results, df)
+    #draw the diagrams
+    if diagrams:   
+        draw_diagrams(metadata, results, df)
 
-def calc_multiple_impact(data,results):
-        #split path into single_impact and metadata
-    multiple_impact = os.path.join(data,'multiple_impact')
-    metadata = os.path.join(data,'metadata')
+def calc_multiple_impact(data=r"C:\Users\kunge\Downloads\KIRUNA\new_tests\1_ANALYSIS", results=r"C:\Users\kunge\Downloads\KIRUNA\new_tests\1_ANALYSIS\results"):
+    ## run simple analysis
+    # calc_single_impact(data, results, latex = True, diagrams = True)
 
-    #open the file with the test data
-    df = open_df(metadata, 'test_data')
+    print("individual analysis complete \n commence multi analysis")
+    #open result file
+    res_df = open_df(results, "result")
+    res_df = res_df.drop(res_df.index[0])
     
-    #iterate over data
-    iterate_multi(multiple_impact, results, df)
+    #sort results by energy level
+    res_df = res_df.sort_values(by = "Energy level", axis = 0)
     
-def iterate_multi(data, results,df):
-    file_list = make_file_list(data, "npy")
-    for i in file_list:
-        if os.path.basename(i)[:-4] in df.index: 
-            res_file = open_df(results, "result")
-            calc_multi_file(i,results,df,res_file, sample_type = df.at[os.path.basename(i)[:-4],"Sample type"])
+    stack = pd.DataFrame(index = res_df.index)
+    #stack the energy level, force, acceleration, Displacement, High speed camera
+    for i in ["Energy level", "Force", "Acceleration", "Displacement", "High speed camera"]:
+        name = i +" stacked"
+        stack[name] = stack_pandas(res_df[i])
+        
+    # #plot stacked value
+    # path = results + r"\stack"
+    # if os.path.isdir(path) == False:
+    #     os.mkdir(path)
+    # for j in stack.columns:
+    #     for k in stack.columns:
+    #         plot_stack(stack,j,k,path)
+            
+
+    #calculate spring constant
+    stack["Spring constant"] = [stack.at[i,"Force stacked"]/stack.at[i,"High speed camera stacked"] for i in stack.index]
+    print(stack["Spring constant"])
     
+def plot_stack(df, i, j, path):
+    #begin plot
+    ax = plt.subplot(111)
+    
+    mpl.rcParams["figure.figsize"] = (10,7)
+    ax.plot(df[i], df[j], "b.")
+    
+    #make limits nice
+    xlim = ax.get_xlim()
+    ax.set_xlim((xlim[0] - 0.05 * xlim[0],xlim[1]+ 0.05 * xlim[1]))
+    ylim = ax.get_ylim()
+    ax.set_ylim((ylim[0] - 0.05 * ylim[0], ylim[1] + 0.05 * ylim[1]))
+                    
+    #labels
+    ax.set_xlabel(i + " " + latex_unit[i[:-8]], usetex = True, fontsize = 14)
+    ax.set_ylabel(j + " " + latex_unit[j[:-8]], usetex = True, fontsize = 14)
+    
+    #grid
+    plt.grid()
+            
+    #save
+    filename = path + "\\" + j.replace(" ","-") + "_" + i.replace(" ","-") + ".png"
+    plt.savefig(filename)
+    plt.close()    
+
+def stack_pandas(series):
+    stack = 0
+    output = []
+    for i in series:
+        print(i)
+        # add new number to stack
+        stack = i + stack
+        # append stack to output list
+        output.append(stack)
+    return pd.Series(data = output, index = series.index)
+        
 def calc_single_file(filename = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\basic_array\cracked\2018-11-29_Rfrs_75_1,0.npy",results="",df = "sanity_check", res_file ="", app_file = "", sample_type = "Square"):
     print(filename)
     dataset = Dataset(filename, sample_type)
@@ -285,18 +336,14 @@ def calc_single_file(filename = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\D
     #write to appendix
     if app_file:
         new_chapter_appendix(dataset_name = dataset.name, df = df , app_file = app_file)
-# find me
+        
     res_file = write_result(dataset,df,res_file)
     save_df(os.path.dirname(res_path),"result",res_file)
 
     dataset.make_graphs(res_path, app_file)
-                    
-def calc_multi_file():
-    print("")
-    
-    
+                        
 def make_result_file(results):
-    index = ["Name", "Number", "Energy level", "Thickness", "Drop weight", "Drop height", "Age", "Velocity", "Force", "Acceleration", "Displacement", "High speed camera", "Broken/Cracked", "Crack area", "Opening angle"]    
+    index = ["Name", "Number", "Energy level", "Thickness", "Drop weight", "Drop height", "Age", "Velocity", "Force", "Acceleration", "Displacement", "High speed camera", "Broken/Cracked"] #, "Crack area", "Opening angle"]    
     data =  [short_unit[i] for i in index]
     res = pd.DataFrame(index = index, data = data)
     res = res.transpose()
@@ -308,11 +355,9 @@ def make_appendix_file(results):
     #open appendix file
     app_path = results + r"\appendix.tex"
     app = open(app_path,"w")
-    
     #write appendix
     #app.write("\includepdf[pages=-]{appendix/lacing.pdf}\n\n")
     app.write("\chapter{TSL}\n\n\includepdf[pages=-]{appendix/TSL.pdf}\n\n")
-    
     return app
     
 def iterate_single(direct, results, df, app_file):  
@@ -431,13 +476,9 @@ def write_result(dataset,df,res_file):
     #legend
     add_list(text,df.loc[dataset.name,"Number"])
         
-    #energy level
-
+    #energy leve
     weig = df.loc[dataset.name,"Drop weight"]
-
-    # heig = dataset.get_dropheight()
     heig = df.loc[dataset.name, "Drop height"]
-
     add_list(text,energy(heig,weig),2) 
 
     #thickness
@@ -474,17 +515,20 @@ def write_result(dataset,df,res_file):
     
 #    broken or cracked?s
     if df.loc[dataset.name,"Broken/cracked"].lower() == "broken":
-
-        #if broken just add nan
         add_list(text,"broken")
-        text.append("")
-        text.append("")
     else:
-
-        #if cracked add damage mapping
         add_list(text,"cracked")
-        add_list(text,df.loc[dataset.name,"Crack area"])
-        add_list(text,df.loc[dataset.name,"Opening angle"],1)
+        
+    # irrelevant for square samples
+    #     #if broken just add nan
+
+    #     text.append("")
+    #     text.append("")
+    # else:
+    #     #if cracked add damage mapping
+    #     add_list(text,"cracked")
+    #     add_list(text,df.loc[dataset.name,"Crack area"])
+    #     add_list(text,df.loc[dataset.name,"Opening angle"],1)
     series =pd.Series(data = text, name = dataset.name, index = res_file.columns)
     res_file = res_file.append(series)
     return res_file
@@ -613,7 +657,6 @@ def find_start(array, index = 6, cushion=500):
 
     # load = uniform_filter1d(short_array[:,1], size = 100)
     
-    
     x = np.where(array[:,index]==1)
     a = np.argmax(array[x[0][0]:],axis=0)
     c=[]
@@ -636,7 +679,7 @@ def true_peak(array):
 # impact energy from dropheight and drop weight
 def energy(height,weight):
     g = 9.8
-    return float(height) * int(weight) * g / 10**6
+    return float(height) * int(weight) * g / 10**3
     
 # get thickness
 def thickness(filename):
@@ -675,8 +718,10 @@ def draw_diagrams(metadata = r"C:\Users\kekaun\OneDrive - LKAB\Desktop\Fake", re
         df = open_df(metadata, "test_data")
     
     res_df = open_df(results, "result")
-    
-#    make_tables(res_df, results)
+    res_df = res_df.drop(res_df.index[0])
+
+    #make latex tables
+    make_tables(res_df, results)
     
     #make dir to save stuff
     path = results + "\\diagram"
@@ -685,23 +730,25 @@ def draw_diagrams(metadata = r"C:\Users\kekaun\OneDrive - LKAB\Desktop\Fake", re
             
     #throw useless info away
     res_df = res_df.drop(['Broken/Cracked',"Drop weight","Drop height","Velocity","Number"],axis = 1)
+
     
     #correlation dataframe
     corr = pd.DataFrame(index = res_df.columns, columns = res_df.columns, dtype = float)
     
-    
     mask = make_mask(metadata, results, index = df.index, res_df=res_df)
     
     #compare impact force to force at the load cells
-#    compare_force(metadata, results, df, res_df, mask)
-    
-    counter = 1    
+    compare_force(metadata, results, df, res_df, mask)
+      
     #draw all the silly graphics    
     for j in res_df.columns:
         for i in res_df.columns:
-            counter += 1
             plot_correlation(i, j, mask, res_df, corr, df, path)
     
+    #throw away empty columns
+    corr = corr[(corr != 0).any()]
+    corr = corr.loc[:, (corr != 0).any(axis=0)]
+    print(corr)
     #draw a heatmap
     heatmap(corr, results)
     
@@ -852,21 +899,18 @@ def plot_correlation(i, j, mask, res, corr, df, path):
         for m in sortx:
             sorty.append(m * slope + intercept)
         ax.plot(sortx, sorty,"b--", label="$R^2$ = %0.02f \nx = %0.04f \ny = %0.04f" %(r_value**2,slope,intercept))
-    #            ax.plot(sortx, sorty,"b--")
-        #put R2 in the correct spot of the dataframe
         corr[i][j] = r_value**2
         corr[j][i] = r_value**2
-#    except:
-#        print("no crack data!")
         
     Number = df['Number']
     try:
         Number = Number.astype(int)
     except:
-        Number = Number.astype(str)    
+        Number = Number.astype(str) 
+        
 #    #write numbers next to points             
-#    texts = [plt.text(res.at[k,i],res.at[k,j],Number.loc[k]) for k in res.index]  
-#    adjust_text(texts)
+    texts = [plt.text(res.at[k,i],res.at[k,j],Number.loc[k]) for k in res.index]  
+    adjust_text(texts)
 
     #legend            
     chartBox = ax.get_position()            
@@ -901,7 +945,7 @@ def make_tables(df,res_path):
     make_latex_table(test_values, path + "\\test_values.tex")
     
     #short_result
-    short_result = res[["Number", "Force", "Acceleration", "Displacement", "Crack area", "Opening angle"]]
+    short_result = res[["Number", "Force", "Acceleration", "Displacement"]]
     make_latex_table(short_result, path + "\\short_result.tex")
     
     #just cracks
@@ -911,18 +955,6 @@ def make_tables(df,res_path):
     
     #legend
     write_legend(res_path,df.iloc[1:]["Number"])
-    
-##    #result file, add units if they are not there already
-#    print(res.index[0])
-#    if res.index[0] != 0 or res.index[0] != "":
-#        new_unit = [short_unit[i] for i in res.columns]        
-#        res_w_unit = pd.DataFrame(data = new_unit, index = res.columns)#, columns = ['Name'])
-#        res_w_unit = res_w_unit.transpose()
-#        res_w_unit = res_w_unit.append(res)
-#        res_w_unit.index.rename("Name", inplace = True)    
-#        with pd.ExcelWriter(res_path + '\\result.xlsx') as writer:
-#                res_w_unit.to_excel(writer, sheet_name = "Results", na_rep="")
-   
     
 def make_mask(direct, results, index, res_df):
    #make a mask to filter out everything that is useless
@@ -962,8 +994,8 @@ def make_mask(direct, results, index, res_df):
     mask = mask.rename(columns = new_columns)
     new_data = [True] * len(index)
     
-    #turn cracks into two columns and exclude broken&cracked samples
-    mask.insert(loc = 0, column = 'Opening angle', value = mask.loc[:,'Crack area']) 
+    # #turn cracks into two columns and exclude broken&cracked samples
+    # mask.insert(loc = 0, column = 'Opening angle', value = mask.loc[:,'Crack area']) 
     
     #add the remaining columns as true                    
     for j in res_df.columns:
@@ -998,6 +1030,7 @@ def make_submask(i, j, mask,index, df):
     cracked = ~broken
     broken = broken & submask
     cracked = cracked & submask
+    print(broken)
     return exclude, broken, cracked
     
 #make a string to format latex
@@ -1283,4 +1316,14 @@ def make_excel(test_file_directory=r'C:\Users\kunge\Downloads\KIRUNA\test', outp
         index.append(os.path.basename(i)[:-4])
     df = pd.DataFrame(columns=column_list, index = index)
     file_path = os.path.join(output_directory, 'test_data.xlsx')
+    df.to_excel(file_path, index_label = 'Name')
+
+def make_exclude(test_file_directory=r'C:\Users\kunge\Downloads\KIRUNA\new_tests\1_ANALYSIS\single_impact', output_directory=r'C:\Users\kunge\Downloads\KIRUNA\new_tests\1_ANALYSIS\metadata'):
+    column_list = ["Acceleration", "Velocity", "Displacement", "High speed camera"]
+    file_list =  make_file_list(test_file_directory, 'npy')
+    index = []
+    for i in file_list:
+        index.append(os.path.basename(i)[:-4])
+    df = pd.DataFrame(columns=column_list, index = index, dtype = bool)
+    file_path = os.path.join(output_directory, 'exclude.xlsx')
     df.to_excel(file_path, index_label = 'Name')
