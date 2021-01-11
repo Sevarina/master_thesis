@@ -12,6 +12,7 @@ import matplotlib as mpl
 mpl.style.use('classic')
 mpl.rcParams['text.latex.preamble'] = [r'\usepackage{helvet}\renewcommand\familydefault{\sfdefault}', r'\usepackage{amsmath}' , r'\usepackage[T1]{fontenc}'] 
 
+import random
 #"fix" matplotlib font - it´s arial instead of helvetica but better than nothing
 #plt.rcParams['mathtext.fontset'] = 'custom'
 mpl.rcParams['font.sans-serif'] = "Arial"
@@ -23,7 +24,7 @@ import coreprogram as core
 
 from scipy.ndimage.filters import uniform_filter1d
 
-
+import math
 latex_unit = {
         "Acceleration" : r"\(\Big[\frac{\text{m}}{\text{s}^\text{2}}\Big]\)",
         "Age" : r"\([\text{days}]\)",
@@ -56,147 +57,23 @@ latex_unit = {
         "Width 6" : r"\([\text{mm}]\)",
         }
 
-def make_marker_list():
-# build a marker array
-    color = ["b", "g", "r", "c","m", "y", "k"]
-    shape = [".", "v", "^", "1", "s", "*", "+", "x", "D"]
-    marker_list = []
-    for c in color:
-        for s in shape:
-            marker_list.append(s+c)
-    return marker_list
-
-def plot_dynamic(sheet = r"C:\Users\kunge\Downloads\KIRUNA\kiruna.xlsx"):
-    table = pd.read_excel(sheet, sheet_name = "python_dynamic")
-    table.set_index("element", inplace=True)
-    a = ""
-    short_index = []
-    for i in table.index:
-        if a is i:
-            continue
-        else:
-            short_index.append(i)
-            a = i
-    
-    Table = table.T
-    marker_list = make_marker_list()
-    for j in short_index:
-        energy = Table[j].T["energy [kJ/m2]"]
-        deformation = Table[j].T["deflection [m]"]
-        plt.plot(deformation, energy, marker_list.pop(0), label = j)
-    xlim = (0, 0.65)
-    ylim = (0, 18)
-    plt.plot(xlim, ylim, 'r-', alpha=0.0)      
-    plt.xlabel("Deflection [m]")
-    plt.ylabel(r"Energy $\Big[\frac{\text{kJ}}{\text{m}^\text{2}}\Big]$", usetex = True)
-    plt.grid()
-    plt.legend(bbox_to_anchor=(1.04,1), loc="upper left")
-    plt.savefig(r"C:\Users\kunge\OneDrive\Desktop\dynamic.png", bbox_inches='tight')
-
-def plot_static(sheet = r"C:\Users\kunge\Downloads\KIRUNA\kiruna.xlsx"):
-    table = pd.read_excel(sheet, sheet_name = "python_static")
-    table.set_index("element", inplace=True)
-    
-    a = ""
-    short_index = []
-    for i in table.index:
-        if a is i:
-            continue
-        else:
-            short_index.append(i)
-            a = i
-    
-    Table = table.T
-    marker_list = make_marker_list()
-    for j in short_index:
-        energy = Table[j].T["energy [kJ/m2]"]
-        deformation = Table[j].T["deflection [m]"]
-        plt.plot(deformation, energy, marker_list.pop(0), label = j)
- # plt.xlim is not working so I am adding and invisble line to make the plot fit the boundaries
-    xlim = (0, 0.4)
-    ylim = (0, 0.25)
-    plt.plot(xlim, ylim, alpha=0.0)        
-    plt.xlabel("Deflection [m]")
-    plt.ylabel(r"Energy $\Big[\frac{\text{kJ}}{\text{m}^\text{2}}\Big]$", usetex = True)
-    # plt.title("Results of Static Tests")
-    plt.grid()
-    plt.legend(bbox_to_anchor=(1.04,1), loc="upper left")
-    plt.savefig(r"C:\Users\kunge\OneDrive\Desktop\static.png", bbox_inches='tight')
 
 
 
-def common_member(a, b): 
-    a_set = set(a) 
-    b_set = set(b) 
-  
-    if (a_set & b_set): 
-        return (a_set & b_set) 
-    else: 
-        return "No common elements" 
+# edge = 305
+# table = pd.read_excel(r"C:\Users\kunge\Downloads\KIRUNA\kiruna_static_data.xlsx", sheet_name = "AAS2")
+# force = table["Force 1"].iloc[:edge].to_numpy()
+# deformation = table["Deformation"].iloc[:edge].to_numpy()
+# plt.plot(deformation, force)
+# energy = np.trapz(force, deformation)
+# print("Energy = " + str(energy/1000) + "\n" + "Deformation = " + str(deformation[-1]))
+# load_force = table[["Force 1", "Deformation"]].iloc[:edge].to_numpy()
+# energy_curve = np.cumsum(load_force, axis = 0)
+# plt.plot(energy_curve[:,1], energy_curve[:,0])
 
-
-def update_limits(df, limit):
-    if df.max() > limit:
-        return df.max()
-    else:
-        return limit
-
-def compare_static_dynamic(sheet = r"C:\Users\kunge\Downloads\KIRUNA\kiruna.xlsx"):
-    dynamic= pd.read_excel(sheet, sheet_name = "python_dynamic")
-    dynamic.set_index("element", inplace=True)
-    
-    a = ""
-    dynamic_index = []
-    for i in dynamic.index:
-        if a is i:
-            continue
-        else:
-            dynamic_index.append(i)
-            a = i
-            
-    static = pd.read_excel(sheet, sheet_name = "python_static")
-    static.set_index("element", inplace=True)
-    a = ""
-    static_index = []
-    for i in static.index:
-        if a is i:
-            continue
-        else:
-            static_index.append(i)
-            a = i
-    combined_index = common_member(dynamic_index, static_index)
-    if combined_index == "No common elements":
-        return combined_index
-    marker_list = make_marker_list()
-    Dynamic = dynamic.T
-    Static = static.T
-    for i in combined_index:
-        xlim = [0,0]
-        ylim = [0,0]
-        static_energy = Static[i].T["energy [kJ/m2]"]
-        ylim[1] = update_limits(static_energy, ylim[1])
-        static_deformation = Static[i].T["deflection [m]"]
-        xlim[1] = update_limits(static_deformation, xlim[1])
-        plt.plot(static_deformation, static_energy, marker_list.pop(0), label = "static")
-        
-        dynamic_energy = Dynamic[i].T["energy [kJ/m2]"]
-        ylim[1] = update_limits(dynamic_energy, ylim[1])        
-        dynamic_deformation = Dynamic[i].T["deflection [m]"]
-        xlim[1] = update_limits(static_deformation, xlim[1])        
-        plt.plot(dynamic_deformation, dynamic_energy, marker_list.pop(0), label = "dynamic")
-        
-        xlim[1] = xlim[1] * 1.2
-        ylim[1] = ylim[1] * 1.2
-        plt.plot(xlim, ylim, alpha=0.0)
-        
-        plt.xlabel("Deflection [m]")
-        plt.ylabel(r"Energy $\Big[\frac{\text{kJ}}{\text{m}^\text{2}}\Big]$", usetex = True)
-        plt.title(i)
-        plt.grid()
-        plt.legend(bbox_to_anchor=(1.04,1), loc="upper left")
-        plt.savefig(r"C:\Users\kunge\OneDrive\Desktop" + "\\" + i + ".png", bbox_inches='tight')
-        plt.close()
-
-
-compare_static_dynamic()
-
+num = [13.33, 10]
+area = 5.5**2 * np.pi / 4
+strength = [360, 630]
+for i in num:
+    for j in strength:
+        print(i*area*j/1000)

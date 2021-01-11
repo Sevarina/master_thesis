@@ -39,7 +39,7 @@ mpl.rcParams['text.latex.preamble'] = [r'\usepackage{helvet}\renewcommand\family
 mpl.rcParams['font.sans-serif'] = "Arial"
 mpl.rcParams['font.family'] = "sans-serif"
 mpl.rcParams['mathtext.default']='default'
-
+mpl.rcParams['legend.numpoints'] = 1
 ###############################################################
 
     #keep the unit
@@ -49,7 +49,7 @@ latex_unit = {
         "Average crack width" : r"\([\text{mm}]\)",
         "Broken/Cracked" : "",
         "Crack area" : r"\([\text{mm}^\text{2}]\)",
-        "Displacement" : r"\([\text{mm}]\)",
+        "Deformation" : r"\([\text{mm}]\)",
         "Drop height" :  r"\([\text{mm}]\)",
         "Drop weight" :  r"\([\text{kg}]\)",
         "Energy level" : r"\([\text{kJ}]\)",
@@ -64,6 +64,7 @@ latex_unit = {
         "Name" : "",
         "Number" : "",
         "Opening angle": r"\([\text{\textdegree}]\)",
+        "Spring constant" : r"\(\Big[\frac{\text{kN}}{\text{mm}\Big]\)",
         "Thickness" : r"\([\text{mm}]\)",
         "Velocity" : r"\(\big[\frac{\text{m}}{\text{s}}\big]\)",
         "Width 1" : r"\([\text{mm}]\)",
@@ -80,7 +81,7 @@ short_unit = {
         "Average crack width" : r"[mm]",
         "Broken/Cracked" : "",
         "Crack area" : r"[mm2]",
-        "Displacement" : r"[mm]",
+        "Deformation" : r"[mm]",
         "Drop height" :  r"[mm]",
         "Drop weight" :  r"[kg]",
         "Energy level" : r"[kJ]",
@@ -95,6 +96,7 @@ short_unit = {
         "Name" : "",
         "Number" : "",
         "Opening angle": r"[degrees]",
+        "Spring constant" : r"[kN/mm2]",
         "Thickness" : r"[mm]",
         "Velocity" : r"[m/s]",
         "Width 1" : r"[mm]",
@@ -125,7 +127,7 @@ class Dataset:
                     "distance_down":9}
         
         # 4 load cells
-        if self.type == "square":
+        elif self.type == "square":
             indizes = {
                     "time":0,
                     "load":(1,2,3,4),
@@ -135,38 +137,41 @@ class Dataset:
                     "telfer_reset":8,
                     "distance_up":9,
                     "distance_down":10}
-        
-        if self.type != "square" and self.type != "round":
+        else:
             raise ValueError ("Sample type unknown") 
             
         self.indizes = indizes
         
-        
         # #define datasets
-        self.load = - self.array[:,self.indizes["load"]]
-        plt.plot(self.load)
-        plt.show()
+        self.time = self.array[:,self.indizes["time"]]
+        self.load = self.array[:,self.indizes["load"]]
         self.laser = self.array[:,self.indizes["laser"]]
         self.accel = self.array[:,self.indizes["accelerometer"]]
+
         # calculate loadcellsum from loadcells
         loadcells = self.load
         self.loadsum = np.sum(loadcells,axis=1)
         
         #set the lengths
         start_accel, end_accel, start_load, end_load, start_laser, end_laser = calc_scope(self.array, self.indizes["magnetventil"])
+        # start_accel, end_accel, start_load, end_load, start_laser, end_laser = 0,-1,0,-1,0,-1
         
         #define datasets
         self.load = self.array[start_load:end_load,self.indizes["load"]]
         self.laser = self.array[start_laser:end_laser,self.indizes["laser"]]
         self.accel = self.array[start_accel:end_accel,self.indizes["accelerometer"]]
         #calculate loadcellsum from loadcells
-        loadcells = self.load
-        self.loadsum = np.sum(loadcells,axis=1)
+        self.loadsum = np.sum(self.load,axis=1)
         
         #define corresponding time
-        self.load_time = self.array[start_load:end_load,self.indizes["time"]]
-        self.laser_time = self.array[start_laser:end_laser,self.indizes["time"]]
-        self.accel_time = self.array[start_accel:end_accel,self.indizes["time"]]
+
+        self.load_time = self.time[start_load:end_load]
+        self.laser_time =  self.time[start_laser:end_laser]
+        self.accel_time =  self.time[start_accel:end_accel]
+
+        # self.load_time = self.array[start_load:end_load,self.indizes["time"]]
+        # self.laser_time = self.array[start_laser:end_laser,self.indizes["time"]]
+        # self.accel_time = self.array[start_accel:end_accel,self.indizes["time"]]
         
 
     def peak_loads(self):
@@ -207,26 +212,36 @@ class Dataset:
     
     #    plot individual load cells
         for i in range(1, self.load.shape[1] + 1):
-            plot(res_path,x = self.load_time, y = self.load[:,i-1] ,xlabel= r"Time \([\text{s}]\)",ylabel=r"Load \([\text{kN}]\)", name="Loadcell_" + str(i),appendix = app, dataset_name = self.name)
+            plot(res_path,x = self.load_time, y = self.load[:,i-1] ,xlabel= r"Time \([\text{s}]\)",ylabel=r"Load \([\text{kN}]\)", name="Loadcell_" + str(i),appendix = False, dataset_name = self.name)
         
     #    plot sum of all loadcells
-        plot(res_path,x = self.load_time, y = self.loadsum ,xlabel= r"Time \([\text{s}]\)",ylabel=r"Load \([\text{kN}]\)", name="Loadcell_sum",appendix = app, dataset_name = self.name)
-    
+        plot(res_path,x = self.load_time, y = self.loadsum ,xlabel= r"Time \([\text{s}]\)",ylabel=r"Load \([\text{kN}]\)", name="Loadcell_sum",appendix = False, dataset_name = self.name)
+        
+    # plot compilation of load
+        load_name = []
+        for i in range(1,5):
+            load_name.append("load cell " + str(i))
+        load_name.append("load cell sum")
+        plot_load(res_path,x = self.load_time, load = self.load, loadsum= self.loadsum ,xlabel= r"Time \([\text{s}]\)",ylabel=r"Load \([\text{kN}]\)", name = load_name,appendix = app, dataset_name = self.name)
+            
     # plot laser
-        plot(res_path,x = self.laser_time, y = self.laser ,xlabel= r"Time \([\text{s}]\)",ylabel=r"Displacement \([\text{mm}]\)", name="Laser_Displacement", limit=(-100,-1),appendix = app, dataset_name = self.name)
+        # plot(res_path,x = self.laser_time, y = self.laser ,xlabel= r"Time \([\text{s}]\)",ylabel=r"Displacement \([\text{mm}]\)", name="Laser_Displacement", limit=(-100,-1),appendix = app, dataset_name = self.name)
 
 #run all the things we really want on all files
-def calc(data=r"C:\Users\kunge\Downloads\KIRUNA\new_tests\1_ANALYSIS", results=r"C:\Users\kunge\Downloads\KIRUNA\new_tests\1_ANALYSIS\results" , single_impact = True, latex = False):
+def calc(data=r"C:\Users\kunge\Downloads\KIRUNA\Tests\welded\single", results="" , single_impact = True, latex = True):
     '''data is the location of the .npy files for analysis
     results marks the location of the results of the analysis
     single_impact is true if every sample was hit just once. It is false if one sample was hit several times by drop weights.
     latex is true if the programm should generate various latex files for later usage
     if latex is set to false no files will be generated
     '''
+    results = data + r"\results"
+    
     if single_impact == True:
-        calc_single_impact(data, results, latex, diagrams = True)
+        calc_single_impact(data, results, latex, diagrams = False)
     else:
-      calc_multiple_impact(data, results, latex)
+        print("multi!")
+        calc_multiple_impact(data, results)
         
 def calc_single_impact(data, results, latex, diagrams = True):
     #split path into single_impact and metadata
@@ -249,14 +264,14 @@ def calc_single_impact(data, results, latex, diagrams = True):
     #evaluate every impact and add the data to the results file
     iterate_single(single_impact, results, df, app_file)
     
-    #draw the diagrams
+    # #draw the diagrams
     if diagrams:   
         draw_diagrams(metadata, results, df)
 
-def calc_multiple_impact(data=r"C:\Users\kunge\Downloads\KIRUNA\new_tests\1_ANALYSIS", results=r"C:\Users\kunge\Downloads\KIRUNA\new_tests\1_ANALYSIS\results"):
-    ## run simple analysis
-    # calc_single_impact(data, results, latex = True, diagrams = True)
-
+def calc_multiple_impact(data, results):
+    # run simple analysis
+    calc_single_impact(data, results, latex = True, diagrams = True)
+    path = os.path.join(results, "stacked")
     print("individual analysis complete \n commence multi analysis")
     #open result file
     res_df = open_df(results, "result")
@@ -267,22 +282,22 @@ def calc_multiple_impact(data=r"C:\Users\kunge\Downloads\KIRUNA\new_tests\1_ANAL
     
     stack = pd.DataFrame(index = res_df.index)
     #stack the energy level, force, acceleration, Displacement, High speed camera
-    for i in ["Energy level", "Force", "Acceleration", "Displacement", "High speed camera"]:
-        name = i +" stacked"
+    for i in ["Energy level", "Force", "Acceleration",]:
+        name = i 
         stack[name] = stack_pandas(res_df[i])
         
-    # #plot stacked value
-    # path = results + r"\stack"
-    # if os.path.isdir(path) == False:
-    #     os.mkdir(path)
-    # for j in stack.columns:
-    #     for k in stack.columns:
-    #         plot_stack(stack,j,k,path)
+    stack["Deformation"] = res_df["Deformation"]
+    
+    #plot stacked value
+    if os.path.isdir(path) == False:
+        os.mkdir(path)
+    for j in stack.columns:
+        for k in stack.columns:
+            plot_stack(stack,j,k,path)
             
-
     #calculate spring constant
-    stack["Spring constant"] = [stack.at[i,"Force stacked"]/stack.at[i,"High speed camera stacked"] for i in stack.index]
-    print(stack["Spring constant"])
+    stack["Spring constant"] = [stack.at[i,"Force"]/stack.at[i,"Deformation"] for i in stack.index]
+    make_latex_table(stack, path + r"/stack.tex")
     
 def plot_stack(df, i, j, path):
     #begin plot
@@ -298,8 +313,8 @@ def plot_stack(df, i, j, path):
     ax.set_ylim((ylim[0] - 0.05 * ylim[0], ylim[1] + 0.05 * ylim[1]))
                     
     #labels
-    ax.set_xlabel(i + " " + latex_unit[i[:-8]], usetex = True, fontsize = 14)
-    ax.set_ylabel(j + " " + latex_unit[j[:-8]], usetex = True, fontsize = 14)
+    ax.set_xlabel(i + " " + latex_unit[i], usetex = True, fontsize = 14)
+    ax.set_ylabel(j + " " + latex_unit[j], usetex = True, fontsize = 14)
     
     #grid
     plt.grid()
@@ -343,7 +358,7 @@ def calc_single_file(filename = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\D
     dataset.make_graphs(res_path, app_file)
                         
 def make_result_file(results):
-    index = ["Name", "Number", "Energy level", "Thickness", "Drop weight", "Drop height", "Age", "Velocity", "Force", "Acceleration", "Displacement", "High speed camera", "Broken/Cracked"] #, "Crack area", "Opening angle"]    
+    index = ["Name", "Number", "Energy level", "Thickness", "Drop weight", "Drop height", "Age", "Velocity", "Force", "Acceleration", "Deformation", "Broken/Cracked"] #, "Crack area", "Opening angle"]    
     data =  [short_unit[i] for i in index]
     res = pd.DataFrame(index = index, data = data)
     res = res.transpose()
@@ -357,7 +372,7 @@ def make_appendix_file(results):
     app = open(app_path,"w")
     #write appendix
     #app.write("\includepdf[pages=-]{appendix/lacing.pdf}\n\n")
-    app.write("\chapter{TSL}\n\n\includepdf[pages=-]{appendix/TSL.pdf}\n\n")
+    # app.write("\chapter{TSL}\n\n\includepdf[pages=-]{appendix/TSL.pdf}\n\n")
     return app
     
 def iterate_single(direct, results, df, app_file):  
@@ -506,12 +521,12 @@ def write_result(dataset,df,res_file):
     #peak accel
     add_list(text,filtered_peak(dataset.accel),2)
 
-    #peak deformation
-    deform = filtered_peak(-dataset.laser)
-    add_list(text,deform,1)
+    # #peak deformation
+    # deform = filtered_peak(-dataset.laser)
+    # add_list(text,deform,1)
     
     #highspeed camera
-    text.append(df.loc[dataset.name, "High speed camera"] * 10)
+    text.append(df.loc[dataset.name, "Deformation"])
     
 #    broken or cracked?s
     if df.loc[dataset.name,"Broken/cracked"].lower() == "broken":
@@ -537,8 +552,8 @@ def new_chapter_appendix(app_file,df,dataset_name):
     app_file.write("\\chapter{" + dataset_name.replace("_","\_") + "}\n\n")
     # add Picture into appendix
     pic_path =".\\appendix\\" + dataset_name + ".jpg"
-    if df.loc[dataset_name,"Broken/cracked"] == "cracked":
-        write_appendix(app_file,pic_path,"Picture of the sample after the test")
+    #if df.loc[dataset_name,"Broken/cracked"] == "cracked":
+     #   write_appendix(app_file,pic_path,"Picture of the sample after the test")
 
     #calculate exra accelerometer    
 def calc_extra_accel():
@@ -557,6 +572,27 @@ def set_limit(limit):
         plt.ylim(bottom = limit[0])
     if top > limit[1]  and limit[1] != -1:
         plt.ylim(top = limit[1])
+
+# plot(res_path,x = self.load_time, y = self.load[:,i-1] ,xlabel= r"Time \([\text{s}]\)",ylabel=r"Load \([\text{kN}]\)", name="Loadcell_" + str(i),appendix = app, dataset_name = self.name)
+        
+    #    plot sum of all loadcells
+        # plot(res_path,x = self.load_time, y = self.loadsum ,xlabel= r"Time \([\text{s}]\)",ylabel=r"Load \([\text{kN}]\)", name="Loadcell_sum",appendix = app, dataset_name = self.name)
+    
+
+def plot_load(direct,x,load, loadsum, limit=(-1,-1),xlabel="",ylabel="",name="", appendix = False, dataset_name = ""):
+    for i in range(4):
+        plt.plot(x,sig.medfilt(load[:,i]), label = name[i])
+    plt.plot(x, sig.medfilt(loadsum), label = "load cell sum")
+    set_limit(limit)
+    plt.grid()
+    plt.ylabel(ylabel, usetex= True)
+    plt.xlabel(xlabel, usetex= True)
+    plt.legend(loc='center left', bbox_to_anchor=(1.0, 0.75), ncol=1)
+    fig_path = direct + "\\load.png"
+    plt.savefig(fig_path, bbox_inches='tight')
+    plt.close()
+    if appendix != False:
+        write_appendix(appendix, ".\\appendix\\" + dataset_name + "\\" + "load.png", "load")
         
 def plot(direct,x,y,limit=(-1,-1),xlabel="",ylabel="",name="", appendix = False, dataset_name = ""):
     plt.plot(x,sig.medfilt(y))
@@ -570,8 +606,32 @@ def plot(direct,x,y,limit=(-1,-1),xlabel="",ylabel="",name="", appendix = False,
     if appendix != False:
         write_appendix(appendix, ".\\appendix\\" + dataset_name + "\\" + name + ".png", name)
 
+
+def find_start(array, index = 6, cushion=500):
+    # dx = 0.1
+    # derivate = np.diff(array[:,index])/dx
+    # peaks = sp.signal.find_peaks(derivate)
+    
+    # new solution
+    # make a derivate
+    # look at the peaks of the derivate
+    # where most peaks are, is our start
+    
+    ### old solution
+    # after the magnetventil opens look for peaks
+    x = np.where(array[:,index]==1)
+    dx = 0.1
+    derivate = np.diff(array)/dx
+    a = np.argmin(derivate[x[0][0]:],axis=0)
+    # a = np.argmax(array[x[0][0]:],axis=0)
+    c=[]
+    for i in range(1,4):
+# # just the load cells        
+        c.append(a[i])
+    return(int(math.floor(stat.median(c)) - cushion + x[0][0]))
+
 def calc_scope(array,index):
-    start_load = find_start(array, index, cushion=2000)
+    start_load = find_start(array, index, cushion=3000)
     
     # #if the program cannot find a start, just start from the beginning and end at the end
     # if start_load is None:    
@@ -647,24 +707,7 @@ def load_displacement_curve(file="C:\\Users\\kekaun\\OneDrive - LKAB\\roundSampl
 
     plt.savefig("C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Results\\" + os.path.basename(file)[:-4] + "_energy.png")
     plt.close()
-
-
-def find_start(array, index = 6, cushion=500): 
-    x = np.where(array[:,index]==1)
-    # short_array = array[x[0][0]:,]
-    #stack the filtered values
-    #find where those value cross a threshold - that is your start
-
-    # load = uniform_filter1d(short_array[:,1], size = 100)
-    
-    x = np.where(array[:,index]==1)
-    a = np.argmax(array[x[0][0]:],axis=0)
-    c=[]
-    for i in range(1,4):
-# just the load cells        
-        c.append(a[i])
-    return(int(math.floor(stat.median(c)) - cushion + x[0][0]))
-    
+  
 #get peak of anything, input: sliced array, uses a medium filter
     
 def filtered_peak(array):
@@ -735,7 +778,7 @@ def draw_diagrams(metadata = r"C:\Users\kekaun\OneDrive - LKAB\Desktop\Fake", re
     #correlation dataframe
     corr = pd.DataFrame(index = res_df.columns, columns = res_df.columns, dtype = float)
     
-    mask = make_mask(metadata, results, index = df.index, res_df=res_df)
+    mask = make_mask(metadata, results, res_df.index, res_df)
     
     #compare impact force to force at the load cells
     compare_force(metadata, results, df, res_df, mask)
@@ -748,45 +791,53 @@ def draw_diagrams(metadata = r"C:\Users\kekaun\OneDrive - LKAB\Desktop\Fake", re
     #throw away empty columns
     corr = corr[(corr != 0).any()]
     corr = corr.loc[:, (corr != 0).any(axis=0)]
-    print(corr)
+
     #draw a heatmap
     heatmap(corr, results)
     
-def compare_force(metadata = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data", results = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Results", df = None, res_df = None, mask = None):
+def compare_force(metadata = r"C:\Users\kunge\Downloads\KIRUNA\Tests\welded\single\metadata", results = r"C:\Users\kunge\Downloads\KIRUNA\Tests\welded\single\results", df = None, res_df = None, mask = None):
     i = 'Acceleration'
     j = 'Force'
     if df is None:
         df = open_df(metadata, "test_data")
     if res_df is None:
         res_df = open_df(results, "result")
+        res_df = res_df.drop(res_df.index[0])
     if mask is None:
         mask = make_mask(direct = metadata, results = results, index = df.index, res_df = res_df)
-    
+
     ax = plt.subplot(111)
     impact = res_df[i] * df['Drop weight'] *0.001
     loadcell = res_df[j]
     ##make submask
     exclude, broken, cracked = make_submask(i, j, mask, index = df.index ,df = df)
     
-    ex_impact = impact[exclude]
-    cr_impact = impact[cracked]
-    br_impact = impact[broken] 
+    print(impact)
     
-    ex_loadcell = loadcell[exclude]
-    cr_loadcell = loadcell[cracked]
-    br_loadcell = loadcell[broken]
+    ax.plot(impact, loadcell, "b.", label = "Measured \nvalues")
+    cr_impact = impact
+    cr_loadcell = loadcell
+    # ax.plot(ex_impact, ex_loadcell,"xk", label = "excluded")  
     
-    mpl.rcParams["figure.figsize"] = (10,7)
+    # # ex_impact = impact[exclude]
+    # cr_impact = impact[cracked]
+    # br_impact = impact[broken] 
+    
+    # # ex_loadcell = loadcell[exclude]
+    # cr_loadcell = loadcell[cracked]
+    # br_loadcell = loadcell[broken]
+    
+    # mpl.rcParams["figure.figsize"] = (10,7)
 
-    ax.plot(cr_impact, cr_loadcell, "b.",label="cracked")
-    ax.plot(br_impact, br_loadcell, "r.", label = "broken")
-    ax.plot(ex_impact, ex_loadcell,"xk", label = "excluded")       
+    # ax.plot(cr_impact, cr_loadcell, "b.",label="cracked")
+    # ax.plot(br_impact, br_loadcell, "r.", label = "broken")
+    # ax.plot(ex_impact, ex_loadcell,"xk", label = "excluded")       
     #
-    #make limits nice
-    xlim = ax.get_xlim()
-    ax.set_xlim((xlim[0] - 0.05 * xlim[0],xlim[1]+ 0.05 * xlim[1]))
-    ylim = ax.get_ylim()
-    ax.set_ylim((ylim[0] - 0.05 * ylim[0], ylim[1] + 0.05 * ylim[1]))
+    # make limits nice
+    # xlim = ax.get_xlim()
+    # ax.set_xlim((xlim[0] - 0.05 * xlim[0],xlim[1]+ 0.05 * xlim[1]))
+    # ylim = ax.get_ylim()
+    # ax.set_ylim((ylim[0] - 0.05 * ylim[0], ylim[1] + 0.05 * ylim[1]))
     #            
     #labels
     ax.set_xlabel(r"Impact force \([\text{kN}]\)", usetex = True, fontsize = 14)
@@ -796,13 +847,13 @@ def compare_force(metadata = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data
     plt.grid()
     #
     ##linear interpolation
-    if not cr_impact.empty or not cr_loadcell.empty:
-        slope, intercept, r_value, p_value, std_err = sp.stats.linregress(cr_impact.astype(float),cr_loadcell.astype(float))
-        sortx = list(cr_impact.astype(float).sort_values())
-        sorty =[]
-        for m in sortx:
-            sorty.append(m * slope + intercept)
-        ax.plot(sortx, sorty, 'b--', label="Linear \ncorrelation \n$R^2$ = %0.04f \n x = %0.04f \n y = %0.04f" %(r_value**2,slope,intercept))
+    # if not cr_impact.empty or not cr_loadcell.empty:
+        # slope, intercept, r_value, p_value, std_err = sp.stats.linregress(cr_impact.astype(float),cr_loadcell.astype(float))
+        # sortx = list(cr_impact.astype(float).sort_values())
+        # sorty =[]
+        # for m in sortx:
+        #     sorty.append(m * slope + intercept)
+        # ax.plot(sortx, sorty, 'b--', label="Linear \ncorrelation \n$R^2$ = %0.04f \n x = %0.04f \n y = %0.04f" %(r_value**2,slope,intercept))
     
     ##draw the idealized line
     max_value1 = impact.max()
@@ -923,12 +974,18 @@ def plot_correlation(i, j, mask, res, corr, df, path):
     plt.close()
     
 def make_latex_table(df, path):
+    index = ["Name"] + df.columns.tolist()
+    data =  [latex_unit[i] for i in index]
+    res = pd.DataFrame(index = index, data = data)
+    res = res.transpose()
+    res = res.set_index("Name")
+    res = res.append(df)
     ## format latex table
     form = column_format(len(df.columns) + 1)
     ## format numbers with thousand separator . and decimal separator ,
     decimal = [number_format] * len(df.columns)
 #    df  = add_slash(df)
-    df.to_latex(path, na_rep="", formatters = decimal, column_format = form, escape=True)
+    res.to_latex(path, na_rep="", formatters = decimal, column_format = form, escape=False)
     
 #make a latex table out of the .csv       
 def make_tables(df,res_path):
@@ -945,7 +1002,7 @@ def make_tables(df,res_path):
     make_latex_table(test_values, path + "\\test_values.tex")
     
     #short_result
-    short_result = res[["Number", "Force", "Acceleration", "Displacement"]]
+    short_result = res[["Number", "Force", "Acceleration", "Deformation"]]
     make_latex_table(short_result, path + "\\short_result.tex")
     
     #just cracks
@@ -988,14 +1045,12 @@ def make_mask(direct, results, index, res_df):
     new_columns={
     'Loadcells' : 'Force',
      'Accelerometer' : 'Acceleration',
-     'Laser sensor' : 'Displacement',
-     'Cracks' : 'Crack area',
+     'Laser sensor' : 'Deformation',
      }
     mask = mask.rename(columns = new_columns)
     new_data = [True] * len(index)
-    
-    # #turn cracks into two columns and exclude broken&cracked samples
-    # mask.insert(loc = 0, column = 'Opening angle', value = mask.loc[:,'Crack area']) 
+      
+    res_df = res_df.drop(res_df.index[0])
     
     #add the remaining columns as true                    
     for j in res_df.columns:
@@ -1284,7 +1339,7 @@ def compare_vel_disp():
 
     vel_disp_compare.to_latex("C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Results\\compare.tex", escape = False)
     
-def clean_dir(in_dir = r'C:\Users\kunge\Downloads\KIRUNA', out_dir=r'C:\Users\kunge\Downloads\KIRUNA', sample_type = "square"):
+def clean_dir(in_dir = r'C:\Users\kunge\Downloads\KIRUNA\Tests\welded\single\rawdata', out_dir=r'C:\Users\kunge\Downloads\KIRUNA\Tests\welded\single\single_impact', sample_type = "square"):
     """cleans a bunch of files in in_dir at once and saves them in at out_dir as .npy"""    
     file_list = make_file_list(in_dir, "asc")
     for i in file_list:
@@ -1299,7 +1354,7 @@ class NoFolderError(Exception):
         # Call the base class constructor with the parameters it needs
         super(NoFolderError, self).__init__('The folder {} could not be found in {}'.format(folder, directory))
         
-def make_latex_input(dir = r"C:\Users\kunge\ownCloud\Work\documents\new", subdir = r"./documents/new/"):
+def make_latex_input(dir = r"C:\Users\kunge\ownCloud\Work\documents\old", subdir = r"./documents/old/"):
     # takes all the files in a folder and creates input statements for latex
     # dir is the folder of the documents
     # subdir is the relative path from the main file to the subfile
@@ -1307,23 +1362,29 @@ def make_latex_input(dir = r"C:\Users\kunge\ownCloud\Work\documents\new", subdir
             for file in files:
                 print(r"\input{" + subdir + file[:-4] + "}" + "\n\n")
                 
-def make_excel(test_file_directory=r'C:\Users\kunge\Downloads\KIRUNA\test', output_directory=r'C:\Users\kunge\Downloads\KIRUNA\test\RESULTS'):
-    'make an appropriate excel file for data analysis'
-    column_list = ["Number", "Sample type", "Casting date", "Test date", "Age", "Drop weight", "Thickness", "Deformation"]
-    file_list =  make_file_list(test_file_directory, 'npy')
-    index = []
-    for i in file_list:
-        index.append(os.path.basename(i)[:-4])
-    df = pd.DataFrame(columns=column_list, index = index)
+def make_test_data(test_file_directory=r'C:\Users\kunge\Downloads\KIRUNA\Tests\SINGLE\single_impact', output_directory=r'C:\Users\kunge\Downloads\KIRUNA\Tests\SINGLE\metadata'):
+    '''make an appropriate excel file for data analysis'''
     file_path = os.path.join(output_directory, 'test_data.xlsx')
-    df.to_excel(file_path, index_label = 'Name')
+    if os.path.isfile(file_path):
+        print("File already exists!")
+    else:
+        column_list = ["Number", "Sample type", "Casting date", "Test date", "Age", "Drop weight", "Drop height", "Thickness", r"Broken/cracked", "Deformation"]
+        file_list =  make_file_list(test_file_directory, 'npy')
+        index = []
+        for i in file_list:
+            index.append(os.path.basename(i)[:-4])
+        df = pd.DataFrame(columns=column_list, index = index)
+        df.to_excel(file_path, index_label = 'Name')
 
-def make_exclude(test_file_directory=r'C:\Users\kunge\Downloads\KIRUNA\new_tests\1_ANALYSIS\single_impact', output_directory=r'C:\Users\kunge\Downloads\KIRUNA\new_tests\1_ANALYSIS\metadata'):
-    column_list = ["Acceleration", "Velocity", "Displacement", "High speed camera"]
-    file_list =  make_file_list(test_file_directory, 'npy')
-    index = []
-    for i in file_list:
-        index.append(os.path.basename(i)[:-4])
-    df = pd.DataFrame(columns=column_list, index = index, dtype = bool)
+def make_exclude(test_file_directory=r'C:\Users\kunge\Downloads\KIRUNA\Tests\SINGLE', output_directory=r'C:\Users\kunge\Downloads\KIRUNA\Tests\SINGLE\metadata'):
     file_path = os.path.join(output_directory, 'exclude.xlsx')
-    df.to_excel(file_path, index_label = 'Name')
+    if os.path.isfile(file_path):
+        print("File already exists!")
+    else:
+        column_list = ["Acceleration", "Velocity", "Deformation"]
+        file_list =  make_file_list(test_file_directory, 'npy')
+        index = []
+        for i in file_list:
+            index.append(os.path.basename(i)[:-4])
+        df = pd.DataFrame(columns=column_list, index = index, dtype = bool)
+        df.to_excel(file_path, index_label = 'Name')
