@@ -228,7 +228,7 @@ class Dataset:
         # plot(res_path,x = self.laser_time, y = self.laser ,xlabel= r"Time \([\text{s}]\)",ylabel=r"Displacement \([\text{mm}]\)", name="Laser_Displacement", limit=(-100,-1),appendix = app, dataset_name = self.name)
 
 #run all the things we really want on all files
-def calc(data=r"C:\Users\kunge\Downloads\KIRUNA\Tests\welded\single", results="" , single_impact = True, latex = True):
+def calc(data=r"C:\Users\kunge\Downloads\KIRUNA\Tests\100sc+geobrugg", results="" , single_impact = False, latex = True):
     '''data is the location of the .npy files for analysis
     results marks the location of the results of the analysis
     single_impact is true if every sample was hit just once. It is false if one sample was hit several times by drop weights.
@@ -282,6 +282,7 @@ def calc_multiple_impact(data, results):
     
     stack = pd.DataFrame(index = res_df.index)
     #stack the energy level, force, acceleration, Displacement, High speed camera
+
     for i in ["Energy level", "Force", "Acceleration",]:
         name = i 
         stack[name] = stack_pandas(res_df[i])
@@ -298,6 +299,7 @@ def calc_multiple_impact(data, results):
     #calculate spring constant
     stack["Spring constant"] = [stack.at[i,"Force"]/stack.at[i,"Deformation"] for i in stack.index]
     make_latex_table(stack, path + r"/stack.tex")
+    stack.to_excel(path + r"/stack.xlsx")
     
 def plot_stack(df, i, j, path):
     #begin plot
@@ -811,9 +813,8 @@ def compare_force(metadata = r"C:\Users\kunge\Downloads\KIRUNA\Tests\welded\sing
     loadcell = res_df[j]
     ##make submask
     exclude, broken, cracked = make_submask(i, j, mask, index = df.index ,df = df)
-    
-    print(impact)
-    
+    print(["loadcell\n",loadcell])
+    print(["impact\n",impact])
     ax.plot(impact, loadcell, "b.", label = "Measured \nvalues")
     cr_impact = impact
     cr_loadcell = loadcell
