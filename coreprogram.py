@@ -1363,7 +1363,7 @@ def make_latex_input(dir = r"C:\Users\kunge\ownCloud\Work\documents\old", subdir
             for file in files:
                 print(r"\input{" + subdir + file[:-4] + "}" + "\n\n")
                 
-def make_test_data(test_file_directory=r'C:\Users\kunge\Downloads\KIRUNA\Tests\SINGLE\single_impact', output_directory=r'C:\Users\kunge\Downloads\KIRUNA\Tests\SINGLE\metadata'):
+def make_test_data(test_file_directory=r'C:\Users\kunge\Downloads', output_directory=r'C:\Users\kunge\Downloads'):
     '''make an appropriate excel file for data analysis'''
     file_path = os.path.join(output_directory, 'test_data.xlsx')
     if os.path.isfile(file_path):

@@ -48,7 +48,6 @@ latex_unit = {
         "Number" : "",
         "Opening angle": r"\([\text{\textdegree}]\)",
         "Thickness" : r"\([\text{mm}]\)",
-        "Time" : r"\([\text{s}]\)",
         "Velocity" : r"\(\big[\frac{\text{m}}{\text{s}}\big]\)",
         "Width 1" : r"\([\text{mm}]\)",
         "Width 2" : r"\([\text{mm}]\)",
@@ -59,49 +58,22 @@ latex_unit = {
         }
 
 
-fps = 1.0 * 10 ** 3 # frames per second
 
-# read data
-def read_table(filepath):
-    table = pd.read_csv(filepath, sep = ",", dtype= {'x': np.float64, 'y': np.float64}, index_col=0 ) #skiprows = 1 ) 
-    return table
-#built time
 
-def fix_time(table):
-    time = [0.0]
-    for i in range(table.shape[0] - 1):
-        time.append(round(time[-1] + 1 / fps, 5))
-    table["t"] = time
-    return table
+# edge = 305
+# table = pd.read_excel(r"C:\Users\kunge\Downloads\KIRUNA\kiruna_static_data.xlsx", sheet_name = "AAS2")
+# force = table["Force 1"].iloc[:edge].to_numpy()
+# deformation = table["Deformation"].iloc[:edge].to_numpy()
+# plt.plot(deformation, force)
+# energy = np.trapz(force, deformation)
+# print("Energy = " + str(energy/1000) + "\n" + "Deformation = " + str(deformation[-1]))
+# load_force = table[["Force 1", "Deformation"]].iloc[:edge].to_numpy()
+# energy_curve = np.cumsum(load_force, axis = 0)
+# plt.plot(energy_curve[:,1], energy_curve[:,0])
 
-# print(table)
-def fix_x(table):
-    table["x"] =  (table["x"] - table["x"].iloc[0]) * - 1.0
-    return table
-
-def plot(table, filepath):
-    plt.plot(table["t"], table["x"])
-    fig_path = filepath[:-4] +  ".pdf"
-    plt.grid()
-    plt.xlabel("Time "+ latex_unit["Time"], usetex= True)
-    plt.ylabel("Displacement "+ latex_unit["Displacement"], usetex= True)
-    plt.savefig(fig_path, format = "pdf")
-    fig_path = filepath[:-4] + ".png"
-    plt.savefig(fig_path, format = "png")
-    plt.close()
-
-def fix_data(filepath):
-    table = read_table(filepath)
-    table = fix_time(table)
-    table = fix_x(table)
-    plot(table, filepath)
-    # save_path = os.path.dirname(filepath) + r"/fixed/" + os.path.basename(filepath)
-    # table.to_csv(save_path)
-
-def fix_tracker_data(direct = r"C:\Users\kunge\Downloads\KIRUNA\Tests\100sc+geobrugg\raw_data\Videos scale\fixed"):
-    file_list = core.make_file_list(direct, "tsv")
-    for i in file_list:
-        fix_data(i)
-
-# fix_data(r"C:\Users\kunge\Downloads\KIRUNA\Tests\100sc+geobrugg\raw_data\Videos scale\2kJ.tsv")
-fix_tracker_data()
+num = [13.33, 10]
+area = 5.5**2 * np.pi / 4
+strength = [360, 630]
+for i in num:
+    for j in strength:
+        print(i*area*j/1000)
