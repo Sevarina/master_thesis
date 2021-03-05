@@ -235,7 +235,8 @@ def calc(data=r"C:\Users\kunge\Downloads\KIRUNA\Tests\100sc+geobrugg", results="
     latex is true if the programm should generate various latex files for later usage
     if latex is set to false no files will be generated
     '''
-    results = data + r"\results"
+    if results == "":
+        results = data + r"\results"
     
     if single_impact == True:
         calc_single_impact(data, results, latex, diagrams = False)
