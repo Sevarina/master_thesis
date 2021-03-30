@@ -52,19 +52,24 @@ latex_unit = {
         "Deformation" : r"\([\text{mm}]\)",
         "Drop height" :  r"\([\text{mm}]\)",
         "Drop weight" :  r"\([\text{kg}]\)",
+        "Elastic" : r"\([\text{mm}]\)",
         "Energy level" : r"\([\text{kJ}]\)",
         "Force" : r"\([\text{kN}]\)",
         "High speed camera" : r"\([\text{mm}]\)",
+        "Jump" : r"\([\text{mm}]\)",      
         "Length 1" : r"\([\text{mm}]\)",
         "Length 2" : r"\([\text{mm}]\)",
         "Length 3" : r"\([\text{mm}]\)",
         "Length 4" : r"\([\text{mm}]\)",
         "Length 5" : r"\([\text{mm}]\)",
         "Length 6" : r"\([\text{mm}]\)",
+        "Mix" : r"\([\text{mm}]\)",
         "Name" : "",
         "Number" : "",
         "Opening angle": r"\([\text{\textdegree}]\)",
+        "Plastic" : r"\([\text{mm}]\)",
         "Spring constant" : r"\(\Big[\frac{\text{kN}}{\text{mm}\Big]\)",
+        "stacked Plastic" : r"\([\text{mm}]\)",
         "Thickness" : r"\([\text{mm}]\)",
         "Velocity" : r"\(\big[\frac{\text{m}}{\text{s}}\big]\)",
         "Width 1" : r"\([\text{mm}]\)",
@@ -271,24 +276,30 @@ def calc_single_impact(data, results, latex, diagrams = True):
 
 def calc_multiple_impact(data, results):
     # run simple analysis
-    calc_single_impact(data, results, latex = True, diagrams = True)
+    # calc_single_impact(data, results, latex = True, diagrams = True)
     path = os.path.join(results, "stacked")
     print("individual analysis complete \n commence multi analysis")
+    
     #open result file
     res_df = open_df(results, "result")
     res_df = res_df.drop(res_df.index[0])
+    deformation = open_df(data, "deformation")
     
     #sort results by energy level
     res_df = res_df.sort_values(by = "Energy level", axis = 0)
-    
     stack = pd.DataFrame(index = res_df.index)
-    #stack the energy level, force, acceleration, Displacement, High speed camera
-
-    for i in ["Energy level", "Force", "Acceleration",]:
-        name = i 
-        stack[name] = stack_pandas(res_df[i])
-        
-    stack["Deformation"] = res_df["Deformation"]
+    
+    stack["Energy level"] = stack_pandas(res_df["Energy level"])
+    #put Force and acceleration from result into stacked
+    for j in ["Force", "Acceleration"]:
+        stack[j] = res_df[j]
+    
+    # put everything from deformation into stacked
+    for i in deformation.columns:
+        stack[i] = deformation[i]
+    
+    #stack the energy level and the plastic deformation
+    stack["stacked Plastic"] = stack_pandas(stack["Plastic"])
     
     #plot stacked value
     if os.path.isdir(path) == False:
@@ -298,7 +309,7 @@ def calc_multiple_impact(data, results):
             plot_stack(stack,j,k,path)
             
     #calculate spring constant
-    stack["Spring constant"] = [stack.at[i,"Force"]/stack.at[i,"Deformation"] for i in stack.index]
+    stack["Spring constant"] = [stack.at[i,"Force"]/stack.at[i,"Elastic"] for i in stack.index]
     make_latex_table(stack, path + r"/stack.tex")
     stack.to_excel(path + r"/stack.xlsx")
     
@@ -328,14 +339,15 @@ def plot_stack(df, i, j, path):
     plt.close()    
 
 def stack_pandas(series):
+    series = series.fillna(0)
     stack = 0
     output = []
     for i in series:
-        print(i)
-        # add new number to stack
+    # add new number to stack
         stack = i + stack
-        # append stack to output list
+    # append stack to output list
         output.append(stack)
+        
     return pd.Series(data = output, index = series.index)
         
 def calc_single_file(filename = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\basic_array\cracked\2018-11-29_Rfrs_75_1,0.npy",results="",df = "sanity_check", res_file ="", app_file = "", sample_type = "Square"):
@@ -876,7 +888,7 @@ def compare_force(metadata = r"C:\Users\kunge\Downloads\KIRUNA\Tests\welded\sing
     
     #write numbers next to points             
     texts = [plt.text(impact.loc[k],loadcell.loc[k],Number.loc[k]) for k in res_df.index]  
-    adjust_text(texts)
+    #adjust_text(texts)
     
     #
     #legend            
@@ -963,7 +975,7 @@ def plot_correlation(i, j, mask, res, corr, df, path):
         
 #    #write numbers next to points             
     texts = [plt.text(res.at[k,i],res.at[k,j],Number.loc[k]) for k in res.index]  
-    adjust_text(texts)
+    #adjust_text(texts)
 
     #legend            
     chartBox = ax.get_position()            
