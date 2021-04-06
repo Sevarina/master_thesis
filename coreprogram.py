@@ -42,6 +42,44 @@ mpl.rcParams['mathtext.default']='default'
 mpl.rcParams['legend.numpoints'] = 1
 ###############################################################
 
+
+si_unit = {
+        "Acceleration" : r"\meter\per\second\cubic",
+        "Age" : r"{days}",
+        "Average crack width" : r"\milli\metre",
+        "Broken/Cracked" : "",
+        "Crack area" : r"\milli\metre\cubic",
+        "Deformation" : r"\milli\metre",
+        "Drop height" :  r"\milli\metre",
+        "Drop weight" :  r"\kilo\gram",
+        "Elastic" : r"\milli\metre",
+        "Energy level" : r"\kilo\joule",
+        "Force" : r"\kilo\newton",
+        "High speed camera" : r"\milli\metre",
+        "Jump" : r"\milli\metre",      
+        "Length 1" : r"\milli\metre",
+        "Length 2" : r"\milli\metre",
+        "Length 3" : r"\milli\metre",
+        "Length 4" : r"\milli\metre",
+        "Length 5" : r"\milli\metre",
+        "Length 6" : r"\milli\metre",
+        "Mix" : r"\milli\metre",
+        "Name" : "",
+        "Number" : "",
+        "Opening angle": r"\degree",
+        "Total" : r"\milli\metre",
+        "Plastic" : r"\milli\metre",
+        "Pre-damage" : r"\milli\metre",
+        "Spring constant" : r"\kilo\newton\per\milli\meter\cubic",
+        "Thickness" : r"\milli\metre",
+        "Velocity" : r"\meter\per\second",
+        "Width 1" : r"\milli\metre",
+        "Width 2" : r"\milli\metre",
+        "Width 3" : r"\milli\metre",
+        "Width 4" : r"\milli\metre",
+        "Width 5" : r"\milli\metre",
+        "Width 6" : r"\milli\metre",
+        }
     #keep the unit
 latex_unit = {
         "Acceleration" : r"\(\Big[\frac{\text{m}}{\text{s}^\text{2}}\Big]\)",
@@ -67,9 +105,10 @@ latex_unit = {
         "Name" : "",
         "Number" : "",
         "Opening angle": r"\([\text{\textdegree}]\)",
+        "Total" : r"\([\text{mm}]\)",
         "Plastic" : r"\([\text{mm}]\)",
+        "Pre-damage" : r"\([\text{mm}]\)",
         "Spring constant" : r"\(\Big[\frac{\text{kN}}{\text{mm}\Big]\)",
-        "stacked Plastic" : r"\([\text{mm}]\)",
         "Thickness" : r"\([\text{mm}]\)",
         "Velocity" : r"\(\big[\frac{\text{m}}{\text{s}}\big]\)",
         "Width 1" : r"\([\text{mm}]\)",
@@ -79,6 +118,44 @@ latex_unit = {
         "Width 5" : r"\([\text{mm}]\)",
         "Width 6" : r"\([\text{mm}]\)",
         }
+
+names = {
+    "2020-04-07-frs+c_0,5" : "FRS+chain-link_0,5kJ_single",
+    "2020-04-07-frs+c_2,0m5" : "FRS+chain-link_2_multi_5kJ",
+    "2020-04-07-frs+c_1,0m1,5" : "FRS+chain-link_1_multi_1,5kJ",
+    "2020-04-07-frs+c_1,5m3" : "FRS+chain-link_1,5_multi_3kJ",
+    "2020-04-07-frs+c_3,0m10,5" : "FRS+chain-link_3_multi_10,5kJ",
+    "2020-04-07-frs+c_3,5m14" : "FRS+chain-link_13,5_multi_14kJ",
+    "2020-04-07-frs+c_4,0m18" : "FRS+chain-link_4_multi_18kJ",
+    "2020-04-07-frs+c_4,5m22,5" : "FRS+chain-link_4,5_multi_22,5kJ",
+    "2020-04-07-frs+c_5,0m27,5" : "FRS+chain-link_5_multi_27,5kJ",
+    "2020-04-07-frs+c_5,5m33" : "FRS+chain-link_5,5_multi_33kJ", 
+    "2020-04-07-frs+c_6,0m39" : "FRS+chain-link_6_multi_39kJ",
+    "2020-04-07-frs+c_6,5m45,5" : "FRS+chain-link_6,5_multi_45,5kJ",
+    "2020-04-07-frs+c_7,0m52,5" : "FRS+chain-link_7_multi_52,5kJ",
+    "2020-04-23_c_1,0m1,5" : "chain-link_1_multi_1,5kJ",
+    "2020-04-23_c_1,5m3,0" : "chain-link_1,5_multi_3kJ",
+    "2020-04-23_c_2,0m5,0" : "chain-link_2_multi_5kJ",
+    "2020-04-23_c_2,5m7,5" : "chain-link_2,5_multi_7,5kJ",
+    "2020-04-23_c_3,0m10,5" : "chain-link_3_multi_10,5kJ",
+    "2020-04-23_c_3,5m14,0" : "chain-link_3,5_multi_14J",
+    "2020-04-23_c_4,0m18,0" : "chain-link_4_multi_18kJ",
+    "2020-04-23_c_4,5m22,5" : "chain-link_4,5_multi_22,5kJ",
+    "2020-05-15_w_0,5" : "welded_0,5kJ_single",
+    "2020-05-15_w_1,0m1,5" : "welded_1_multi_1,5kJ",
+    "2020-05-15_w_1,5m3,0" : "welded_1,5_multi_3kJ",
+    "2020-05-15_w_2,0m5,0" : "welded_2_multi_5kJ",
+    "2020-05-15_w_2,5m7,5" : "welded_2,5_multi_7,5kJ",
+    "2020-05-15_w_3,0m10,5" : "welded_3_multi_10,5kJ",
+    "2020-05-15_w_3,5m14,0" : "welded_3,5_multi_14J",
+    "2020-05-15_w_3,5" : "welded_3,5kJ_single",
+    "2020-05-25_w_5,0" : "welded_5,0kJ_single",
+    "2020-06-09_w_7,0" : "welded_7,0kJ_single",
+    "2020-06-11_w_9,0" : "welded_9,0kJ_single",
+    "2020-06-17_w_11,0" : "welded_11,0kJ_single",
+    "2020-06-17_w_13,0" : "welded_13,0kJ_single",
+    "2020-06-17_w_15,0" : "welded_15,0kJ_single"
+    }
 
 short_unit = {       
         "Acceleration" : r"[m/s2]",
@@ -145,31 +222,22 @@ class Dataset:
         else:
             raise ValueError ("Sample type unknown") 
             
-        self.indizes = indizes
-        
-        # #define datasets
+        self.indizes = indizes        
         self.time = self.array[:,self.indizes["time"]]
-        self.load = self.array[:,self.indizes["load"]]
-        self.laser = self.array[:,self.indizes["laser"]]
-        self.accel = self.array[:,self.indizes["accelerometer"]]
-
-        # calculate loadcellsum from loadcells
-        loadcells = self.load
-        self.loadsum = np.sum(loadcells,axis=1)
         
         #set the lengths
         start_accel, end_accel, start_load, end_load, start_laser, end_laser = calc_scope(self.array, self.indizes["magnetventil"])
         # start_accel, end_accel, start_load, end_load, start_laser, end_laser = 0,-1,0,-1,0,-1
-        
+                
+               
         #define datasets
-        self.load = self.array[start_load:end_load,self.indizes["load"]]
+        self.load = - self.array[start_load:end_load,self.indizes["load"]]
         self.laser = self.array[start_laser:end_laser,self.indizes["laser"]]
         self.accel = self.array[start_accel:end_accel,self.indizes["accelerometer"]]
         #calculate loadcellsum from loadcells
         self.loadsum = np.sum(self.load,axis=1)
         
         #define corresponding time
-
         self.load_time = self.time[start_load:end_load]
         self.laser_time =  self.time[start_laser:end_laser]
         self.accel_time =  self.time[start_accel:end_accel]
@@ -203,7 +271,7 @@ class Dataset:
         
     def make_graphs(self,res_path,app):
         # plot accel
-        plot(res_path,x = self.accel_time, y = self.accel ,xlabel= r"Time \([\text{s}]\)",ylabel= r"Acceleration \Big[\(\frac{\text{m}}{\text{s}^2}\)\Big]",name="Acceleration", limit = (-1000,-1),appendix = app, dataset_name = self.name)
+        plot(res_path,x = self.accel_time, y = sig.medfilt(self.accel) ,xlabel= r"Time \([\text{s}]\)",ylabel= r"Acceleration \Big[\(\frac{\text{m}}{\text{s}^2}\)\Big]",name="Acceleration", limit = (-1000,-1),appendix = app, dataset_name = self.name)
             
     ##   plot calc velocity
     #    velo_time = accel_time
@@ -217,17 +285,17 @@ class Dataset:
     
     #    plot individual load cells
         for i in range(1, self.load.shape[1] + 1):
-            plot(res_path,x = self.load_time, y = self.load[:,i-1] ,xlabel= r"Time \([\text{s}]\)",ylabel=r"Load \([\text{kN}]\)", name="Loadcell_" + str(i),appendix = False, dataset_name = self.name)
+            plot(res_path,x = self.load_time, y = sig.medfilt(self.load[:,i-1]) ,xlabel= r"Time \([\text{s}]\)",ylabel=r"Load \([\text{kN}]\)", name="Loadcell_" + str(i),appendix = False, dataset_name = self.name)
         
     #    plot sum of all loadcells
-        plot(res_path,x = self.load_time, y = self.loadsum ,xlabel= r"Time \([\text{s}]\)",ylabel=r"Load \([\text{kN}]\)", name="Loadcell_sum",appendix = False, dataset_name = self.name)
+        plot(res_path,x = self.load_time, y = sig.medfilt(self.loadsum) ,xlabel= r"Time \([\text{s}]\)",ylabel=r"Load \([\text{kN}]\)", name="Loadcell_sum",appendix = False, dataset_name = self.name)
         
     # plot compilation of load
         load_name = []
         for i in range(1,5):
             load_name.append("load cell " + str(i))
         load_name.append("load cell sum")
-        plot_load(res_path,x = self.load_time, load = self.load, loadsum= self.loadsum ,xlabel= r"Time \([\text{s}]\)",ylabel=r"Load \([\text{kN}]\)", name = load_name,appendix = app, dataset_name = self.name)
+        plot_load(res_path,x = self.load_time, load = sig.medfilt(self.load), loadsum= self.loadsum ,xlabel= r"Time \([\text{s}]\)",ylabel=r"Load \([\text{kN}]\)", name = load_name,appendix = app, dataset_name = self.name)
             
     # plot laser
         # plot(res_path,x = self.laser_time, y = self.laser ,xlabel= r"Time \([\text{s}]\)",ylabel=r"Displacement \([\text{mm}]\)", name="Laser_Displacement", limit=(-100,-1),appendix = app, dataset_name = self.name)
@@ -244,7 +312,7 @@ def calc(data=r"C:\Users\kunge\Downloads\KIRUNA\Tests\100sc+geobrugg", results="
         results = data + r"\results"
     
     if single_impact == True:
-        calc_single_impact(data, results, latex, diagrams = False)
+        calc_single_impact(data, results, latex, diagrams = True)
     else:
         print("multi!")
         calc_multiple_impact(data, results)
@@ -276,9 +344,11 @@ def calc_single_impact(data, results, latex, diagrams = True):
 
 def calc_multiple_impact(data, results):
     # run simple analysis
-    # calc_single_impact(data, results, latex = True, diagrams = True)
+    calc_single_impact(data, results, latex = True, diagrams = True)
+    print("individual analysis complete \n commence multi analysis")    
+
+    #make save folder
     path = os.path.join(results, "stacked")
-    print("individual analysis complete \n commence multi analysis")
     
     #open result file
     res_df = open_df(results, "result")
@@ -293,15 +363,18 @@ def calc_multiple_impact(data, results):
     #put Force and acceleration from result into stacked
     for j in ["Force", "Acceleration"]:
         stack[j] = res_df[j]
+        
+    #pre damage
+    stack["Pre-damage"] = stack_pandas(deformation["Plastic"], pre_damage=True)
     
     # put everything from deformation into stacked
     for i in deformation.columns:
         stack[i] = deformation[i]
     
-    #stack the energy level and the plastic deformation
-    stack["stacked Plastic"] = stack_pandas(stack["Plastic"])
-    
-    #plot stacked value
+    # total deformation = pre-damage + mixed
+    stack["Total"] = stack["Pre-damage"] + stack["Mix"]
+
+    #plot stacked values
     if os.path.isdir(path) == False:
         os.mkdir(path)
     for j in stack.columns:
@@ -336,18 +409,29 @@ def plot_stack(df, i, j, path):
     #save
     filename = path + "\\" + j.replace(" ","-") + "_" + i.replace(" ","-") + ".png"
     plt.savefig(filename)
+    filename = path + "\\" + j.replace(" ","-") + "_" + i.replace(" ","-") + ".pdf"
+    plt.savefig(filename)
     plt.close()    
 
-def stack_pandas(series):
+def stack_pandas(series, pre_damage = False):
     series = series.fillna(0)
     stack = 0
     output = []
-    for i in series:
-    # add new number to stack
-        stack = i + stack
-    # append stack to output list
-        output.append(stack)
-        
+    #to calculate the pre_damage 
+    
+    if pre_damage != True:
+        for i in series:
+        # add new number to stack
+            stack = i + stack
+        # append stack to output list
+            output.append(stack)
+    else:
+        output.append(0)
+        for i in series[:-1]:
+        # add new number to stack
+            stack = i + stack
+        # append stack to output list
+            output.append(stack)
     return pd.Series(data = output, index = series.index)
         
 def calc_single_file(filename = r"C:\Users\kekaun\OneDrive - LKAB\roundSamples\Data\basic_array\cracked\2018-11-29_Rfrs_75_1,0.npy",results="",df = "sanity_check", res_file ="", app_file = "", sample_type = "Square"):
@@ -531,10 +615,10 @@ def write_result(dataset,df,res_file):
     #needs array and some reworking /take just a tiny snip of the accel array
 
     #load sum
-    add_list(text,filtered_peak(dataset.loadsum),2)
+    add_list(text,true_peak(dataset.loadsum),2)
 
     #peak accel
-    add_list(text,filtered_peak(dataset.accel),2)
+    add_list(text,true_peak(dataset.accel),2)
 
     # #peak deformation
     # deform = filtered_peak(-dataset.laser)
@@ -605,9 +689,11 @@ def plot_load(direct,x,load, loadsum, limit=(-1,-1),xlabel="",ylabel="",name="",
     plt.legend(loc='center left', bbox_to_anchor=(1.0, 0.75), ncol=1)
     fig_path = direct + "\\load.png"
     plt.savefig(fig_path, bbox_inches='tight')
+    fig_path = direct + "\\load.pdf"
+    plt.savefig(fig_path, bbox_inches='tight')
     plt.close()
     if appendix != False:
-        write_appendix(appendix, ".\\appendix\\" + dataset_name + "\\" + "load.png", "load")
+        write_appendix(appendix, ".\\appendix\\" + dataset_name + "\\" + "load.pdf", "load")
         
 def plot(direct,x,y,limit=(-1,-1),xlabel="",ylabel="",name="", appendix = False, dataset_name = ""):
     plt.plot(x,sig.medfilt(y))
@@ -615,11 +701,13 @@ def plot(direct,x,y,limit=(-1,-1),xlabel="",ylabel="",name="", appendix = False,
     plt.grid()
     plt.ylabel(ylabel, usetex= True)
     plt.xlabel(xlabel, usetex= True)
+    fig_path = direct + "\\" + name + ".pdf"
+    plt.savefig(fig_path)
     fig_path = direct + "\\" + name + ".png"
     plt.savefig(fig_path)
     plt.close()
     if appendix != False:
-        write_appendix(appendix, ".\\appendix\\" + dataset_name + "\\" + name + ".png", name)
+        write_appendix(appendix, ".\\appendix\\" + dataset_name + "\\" + name + ".pdf", name)
 
 
 def find_start(array, index = 6, cushion=500):
@@ -708,7 +796,7 @@ def load_displacement_curve(file="C:\\Users\\kekaun\\OneDrive - LKAB\\roundSampl
     plt.grid()
     plt.legend()
     plt.show()
-    plt.savefig("C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Results\\" + os.path.basename(file)[:-4] + "_load_displacement.png")
+    plt.savefig("C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Results\\" + os.path.basename(file)[:-4] + "_load_displacement.pdf")
     plt.close()
     plt.grid()
 
@@ -720,7 +808,7 @@ def load_displacement_curve(file="C:\\Users\\kekaun\\OneDrive - LKAB\\roundSampl
     plt.ylabel("Force [$kN$]")
     plt.xlabel("Displacement [$mm$]")
 
-    plt.savefig("C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Results\\" + os.path.basename(file)[:-4] + "_energy.png")
+    plt.savefig("C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Results\\" + os.path.basename(file)[:-4] + "_energy.pdf")
     plt.close()
   
 #get peak of anything, input: sliced array, uses a medium filter
@@ -770,7 +858,7 @@ def ex_in_clude(boolean):
         return "faulty"
 
 
-def draw_diagrams(metadata = r"C:\Users\kekaun\OneDrive - LKAB\Desktop\Fake", results = r"C:\Users\kekaun\OneDrive - LKAB\Desktop\Fake", df = ""):
+def draw_diagrams(metadata = r"C:\Users\kunge\Downloads\KIRUNA\Tests\SINGLE\metadata", results = r"C:\Users\kunge\Downloads\KIRUNA\Tests\SINGLE\results", df = ""):
     #if df is not open yet, open it
     if isinstance(df, str):
         df = open_df(metadata, "test_data")
@@ -787,7 +875,7 @@ def draw_diagrams(metadata = r"C:\Users\kekaun\OneDrive - LKAB\Desktop\Fake", re
         os.makedirs(path)
             
     #throw useless info away
-    res_df = res_df.drop(['Broken/Cracked',"Drop weight","Drop height","Velocity","Number"],axis = 1)
+    res_df = res_df.drop(['Broken/Cracked',"Drop weight","Drop height","Velocity","Number", "Age", "Thickness"],axis = 1)
 
     
     #correlation dataframe
@@ -888,7 +976,7 @@ def compare_force(metadata = r"C:\Users\kunge\Downloads\KIRUNA\Tests\welded\sing
     
     #write numbers next to points             
     texts = [plt.text(impact.loc[k],loadcell.loc[k],Number.loc[k]) for k in res_df.index]  
-    #adjust_text(texts)
+    adjust_text(texts)
     
     #
     #legend            
@@ -897,7 +985,7 @@ def compare_force(metadata = r"C:\Users\kunge\Downloads\KIRUNA\Tests\welded\sing
     ax.legend(loc='center left', bbox_to_anchor=(1.0, 0.75), ncol=1,fontsize = 14)
     #
     ##save
-    filename = results + r"\compare_impact_loadcell_force.png"
+    filename = results + r"\compare_impact_loadcell_force.pdf"
     plt.savefig(filename)
     plt.close()
     
@@ -975,7 +1063,7 @@ def plot_correlation(i, j, mask, res, corr, df, path):
         
 #    #write numbers next to points             
     texts = [plt.text(res.at[k,i],res.at[k,j],Number.loc[k]) for k in res.index]  
-    #adjust_text(texts)
+    adjust_text(texts)
 
     #legend            
     chartBox = ax.get_position()            
@@ -985,21 +1073,60 @@ def plot_correlation(i, j, mask, res, corr, df, path):
     #save
     filename = path + "\\" + j.replace(" ","-") + "_" + i.replace(" ","-") + ".png"
     plt.savefig(filename)
+    filename = path + "\\" + j.replace(" ","-") + "_" + i.replace(" ","-") + ".pdf"
+    plt.savefig(filename)
     plt.close()
     
 def make_latex_table(df, path):
-    index = ["Name"] + df.columns.tolist()
-    data =  [latex_unit[i] for i in index]
-    res = pd.DataFrame(index = index, data = data)
-    res = res.transpose()
-    res = res.set_index("Name")
-    res = res.append(df)
-    ## format latex table
-    form = column_format(len(df.columns) + 1)
-    ## format numbers with thousand separator . and decimal separator ,
-    decimal = [number_format] * len(df.columns)
-#    df  = add_slash(df)
-    res.to_latex(path, na_rep="", formatters = decimal, column_format = form, escape=False)
+    #trying to see if it works or is problematic
+#     index = ["Name"] + df.columns.tolist()
+#     data =  [latex_unit[i] for i in index]
+#     res = pd.DataFrame(index = index, data = data)
+#     res = res.transpose()
+#     res = res.set_index("Name")
+#     res = res.append(df)
+#     ## format latex table
+#     form = column_format(len(df.columns) + 1)
+#     ## format numbers with thousand separator . and decimal separator ,
+#     decimal = [number_format] * len(df.columns)
+# #    df  = add_slash(df)
+#     res.to_latex(path, na_rep="", formatters = decimal, column_format = form, escape=False)
+    
+# def pandas_to_latex(df, path):
+    df = df.round(2)
+    df = df.fillna("x")
+    table = r"\begin{tabular}{l "
+    for i in range(df.shape[1]):
+        table = table + "S[table-format=3.2] "
+    if df.index.name:
+        table = table + r"""}
+        \toprule
+        {"""   +  df.index.name + "}"
+    else:
+        table = table + r"""}
+        \toprule
+        {}"""
+    for j in df.columns:
+        table = table + "&{" + str(j) + "}"
+    table = table + r"""\\
+    """
+    for m in df.columns:
+        table = table + r"&\si{" + si_unit[m] + "}"
+    table = table + r"""\\
+        \midrule
+        """
+    for k in df.index:
+        table = table + str(names[k]).replace("_" , r"\_" )
+        for l in df.columns:
+            table = table + "&" + str(df.loc[k,l])
+        table = table + r"""\\
+            """
+    table = table + r"""\bottomrule
+    \end{tabular}"""
+    #print(table)
+    file = open(path, "w")
+    file.write(table)
+    file.close()
     
 #make a latex table out of the .csv       
 def make_tables(df,res_path):
@@ -1012,7 +1139,7 @@ def make_tables(df,res_path):
     make_latex_table(res, path + "\\result.tex")
     
     #test_values
-    test_values = res[["Number","Energy level", "Thickness", "Drop weight", "Drop height", "Age"]]
+    test_values = res[["Number","Energy level", "Thickness", "Drop weight", "Drop height"]]
     make_latex_table(test_values, path + "\\test_values.tex")
     
     #short_result
@@ -1243,7 +1370,7 @@ def heatmap(df,direct):
     sns_plot = sns.heatmap(df,  center = 0, annot=True, fmt='.2f',cmap = "LKAB", vmin = 0.0, vmax = 1.00,)
     plt.tight_layout()
     fig = sns_plot.get_figure()
-    fig.savefig(direct + r"\heatmap.png")
+    fig.savefig(direct + r"\heatmap.pdf")
     plt.close()
     
 def helpline(start,end,offset,array):
@@ -1296,7 +1423,7 @@ def extra_accel(file="C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\extraAcc
     plt.xlabel("Time [s]")
     plt.ylabel(r"Acceleration \Big[\(\frac{\text{m}}{\text{s}^2}\)\Big]", usetex=True)
     plt.grid()
-    plt.savefig(file[:-4] + "_acceleration.png")
+    plt.savefig(file[:-4] + "_acceleration.pdf")
     plt.close()
     
     # VELOCITY
@@ -1306,7 +1433,7 @@ def extra_accel(file="C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\extraAcc
     plt.grid()
     plt.xlabel("Time [s]")
     plt.ylabel(r"Velocity \big[\(\frac{\text{m}}{\text{s}}\)\big]", usetex=True)
-    plt.savefig(file[:-4] + "_velocity.png")
+    plt.savefig(file[:-4] + "_velocity.pdf")
     plt.close()
     #
     ### DISPLACEMENT
@@ -1314,7 +1441,7 @@ def extra_accel(file="C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\extraAcc
     plt.xlabel("Time [s]")
     plt.ylabel(r"Displacement [mm]")
     plt.grid()
-    plt.savefig(file[:-4] + "_displacement.png")
+    plt.savefig(file[:-4] + "_displacement.pdf")
     plt.close()
     
 def replace_(string):
