@@ -124,8 +124,10 @@ names = {
     "2020-04-07-frs+c_2,0m5" : "FRS+chain-link_2_multi_5kJ",
     "2020-04-07-frs+c_1,0m1,5" : "FRS+chain-link_1_multi_1,5kJ",
     "2020-04-07-frs+c_1,5m3" : "FRS+chain-link_1,5_multi_3kJ",
+    "2020-04-07-frs+c_2,0m5" : "FRS+chain-link_2_multi_5kJ",
+    "2020-04-07-frs+c_2,5m7,5" : "FRS+chain-link_2,5_multi_7,5kJ",
     "2020-04-07-frs+c_3,0m10,5" : "FRS+chain-link_3_multi_10,5kJ",
-    "2020-04-07-frs+c_3,5m14" : "FRS+chain-link_13,5_multi_14kJ",
+    "2020-04-07-frs+c_3,5m14" : "FRS+chain-link_3,5_multi_14kJ",
     "2020-04-07-frs+c_4,0m18" : "FRS+chain-link_4_multi_18kJ",
     "2020-04-07-frs+c_4,5m22,5" : "FRS+chain-link_4,5_multi_22,5kJ",
     "2020-04-07-frs+c_5,0m27,5" : "FRS+chain-link_5_multi_27,5kJ",
@@ -133,6 +135,7 @@ names = {
     "2020-04-07-frs+c_6,0m39" : "FRS+chain-link_6_multi_39kJ",
     "2020-04-07-frs+c_6,5m45,5" : "FRS+chain-link_6,5_multi_45,5kJ",
     "2020-04-07-frs+c_7,0m52,5" : "FRS+chain-link_7_multi_52,5kJ",
+    "2020-04-23_c_0,5" : "chain-link_0,5kJ_single",
     "2020-04-23_c_1,0m1,5" : "chain-link_1_multi_1,5kJ",
     "2020-04-23_c_1,5m3,0" : "chain-link_1,5_multi_3kJ",
     "2020-04-23_c_2,0m5,0" : "chain-link_2_multi_5kJ",
@@ -301,7 +304,7 @@ class Dataset:
         # plot(res_path,x = self.laser_time, y = self.laser ,xlabel= r"Time \([\text{s}]\)",ylabel=r"Displacement \([\text{mm}]\)", name="Laser_Displacement", limit=(-100,-1),appendix = app, dataset_name = self.name)
 
 #run all the things we really want on all files
-def calc(data=r"C:\Users\kunge\Downloads\KIRUNA\Tests\100sc+geobrugg", results="" , single_impact = False, latex = True):
+def calc(data=r"C:\Users\kunge\Downloads\KIRUNA\Tests\geobrugg", results="" , single_impact = False, latex = True):
     '''data is the location of the .npy files for analysis
     results marks the location of the results of the analysis
     single_impact is true if every sample was hit just once. It is false if one sample was hit several times by drop weights.
@@ -312,7 +315,7 @@ def calc(data=r"C:\Users\kunge\Downloads\KIRUNA\Tests\100sc+geobrugg", results="
         results = data + r"\results"
     
     if single_impact == True:
-        calc_single_impact(data, results, latex, diagrams = True)
+        calc_single_impact(data, results, latex, diagrams = False)
     else:
         print("multi!")
         calc_multiple_impact(data, results)
@@ -344,8 +347,8 @@ def calc_single_impact(data, results, latex, diagrams = True):
 
 def calc_multiple_impact(data, results):
     # run simple analysis
-    calc_single_impact(data, results, latex = True, diagrams = True)
-    print("individual analysis complete \n commence multi analysis")    
+    # calc_single_impact(data, results, latex = True, diagrams = True)
+    print("individual analysis complete \ncommence multi analysis")    
 
     #make save folder
     path = os.path.join(results, "stacked")
@@ -381,10 +384,53 @@ def calc_multiple_impact(data, results):
         for k in stack.columns:
             plot_stack(stack,j,k,path)
             
+    plot_stacked_deformation(stack, results)
+            
     #calculate spring constant
     stack["Spring constant"] = [stack.at[i,"Force"]/stack.at[i,"Elastic"] for i in stack.index]
     make_latex_table(stack, path + r"/stack.tex")
     stack.to_excel(path + r"/stack.xlsx")
+    
+def plot_stacked_deformation(stack, results):
+    stack = stack.drop(["Acceleration", "Force"], axis = 1)
+    stack = stack.dropna()
+    
+    ax = plt.subplot(111)
+    
+    mpl.rcParams["figure.figsize"] = (10,7)
+
+    ax.plot(stack["Mix"], stack["Energy level"], "g-", label = "Mix")
+    ax.plot(stack["Elastic"], stack["Energy level"], "y-", label = "Elastic")
+    ax.plot(stack["Plastic"], stack["Energy level"],"b-",label ="Plastic")
+    ax.plot(stack["Pre-damage"], stack["Energy level"], "r-", label= "Pre-damage")
+    ax.plot(stack["Total"], stack["Energy level"], "k-", label = "Total")
+    # ax.plot(stack["Jump"], stack["Energy level"], "m-", label = "Jump")
+    
+    #make limits nice
+    # xlim = ax.get_xlim()
+    # ax.set_xlim((xlim[0] - 0.05 * xlim[0],xlim[1]+ 0.05 * xlim[1]))
+    # ylim = ax.get_ylim()
+    # ax.set_ylim((ylim[0] - 0.05 * ylim[0], ylim[1] + 0.05 * ylim[1]))
+                    
+    #labels
+    ax.set_xlabel("Deformation" + " " + latex_unit["Deformation"], usetex = True, fontsize = 14)
+    ax.set_ylabel("Energy level" + " " + latex_unit["Energy level"], usetex = True, fontsize = 14)
+
+    
+    # legend            
+    chartBox = ax.get_position()            
+    ax.set_position([chartBox.x0, chartBox.y0, chartBox.width*0.8, chartBox.height])
+    ax.legend(loc='center left', bbox_to_anchor=(1.0, 0.75), ncol=1,fontsize = 14)
+    
+    #grid
+    plt.grid()
+            
+    #save
+    filename = results + "\\stacked\\Deformation.png"
+    plt.savefig(filename)
+    filename = filename[:-3] + "pdf"
+    plt.savefig(filename)
+    plt.close()    
     
 def plot_stack(df, i, j, path):
     #begin plot
@@ -858,7 +904,7 @@ def ex_in_clude(boolean):
         return "faulty"
 
 
-def draw_diagrams(metadata = r"C:\Users\kunge\Downloads\KIRUNA\Tests\SINGLE\metadata", results = r"C:\Users\kunge\Downloads\KIRUNA\Tests\SINGLE\results", df = ""):
+def draw_diagrams(metadata = r"C:\Users\kunge\Downloads\KIRUNA\Tests\geobrugg\metadata", results = r"C:\Users\kunge\Downloads\KIRUNA\Tests\geobrugg\results", df = ""):
     #if df is not open yet, open it
     if isinstance(df, str):
         df = open_df(metadata, "test_data")
@@ -898,7 +944,7 @@ def draw_diagrams(metadata = r"C:\Users\kunge\Downloads\KIRUNA\Tests\SINGLE\meta
     #draw a heatmap
     heatmap(corr, results)
     
-def compare_force(metadata = r"C:\Users\kunge\Downloads\KIRUNA\Tests\welded\single\metadata", results = r"C:\Users\kunge\Downloads\KIRUNA\Tests\welded\single\results", df = None, res_df = None, mask = None):
+def compare_force(metadata = r"C:\Users\kunge\Downloads\KIRUNA\Tests\geobrugg\metadata", results = r"C:\Users\kunge\Downloads\KIRUNA\Tests\geobrugg\results", df = None, res_df = None, mask = None):
     i = 'Acceleration'
     j = 'Force'
     if df is None:
@@ -914,49 +960,15 @@ def compare_force(metadata = r"C:\Users\kunge\Downloads\KIRUNA\Tests\welded\sing
     loadcell = res_df[j]
     ##make submask
     exclude, broken, cracked = make_submask(i, j, mask, index = df.index ,df = df)
-    print(["loadcell\n",loadcell])
-    print(["impact\n",impact])
     ax.plot(impact, loadcell, "b.", label = "Measured \nvalues")
-    cr_impact = impact
-    cr_loadcell = loadcell
-    # ax.plot(ex_impact, ex_loadcell,"xk", label = "excluded")  
-    
-    # # ex_impact = impact[exclude]
-    # cr_impact = impact[cracked]
-    # br_impact = impact[broken] 
-    
-    # # ex_loadcell = loadcell[exclude]
-    # cr_loadcell = loadcell[cracked]
-    # br_loadcell = loadcell[broken]
-    
-    # mpl.rcParams["figure.figsize"] = (10,7)
-
-    # ax.plot(cr_impact, cr_loadcell, "b.",label="cracked")
-    # ax.plot(br_impact, br_loadcell, "r.", label = "broken")
-    # ax.plot(ex_impact, ex_loadcell,"xk", label = "excluded")       
-    #
-    # make limits nice
-    # xlim = ax.get_xlim()
-    # ax.set_xlim((xlim[0] - 0.05 * xlim[0],xlim[1]+ 0.05 * xlim[1]))
-    # ylim = ax.get_ylim()
-    # ax.set_ylim((ylim[0] - 0.05 * ylim[0], ylim[1] + 0.05 * ylim[1]))
-    #            
+       
     #labels
     ax.set_xlabel(r"Impact force \([\text{kN}]\)", usetex = True, fontsize = 14)
     ax.set_ylabel(r"Loadcell force \([\text{kN}]\)", usetex = True, fontsize = 14)
-    #
+
     #grid
     plt.grid()
-    #
-    ##linear interpolation
-    # if not cr_impact.empty or not cr_loadcell.empty:
-        # slope, intercept, r_value, p_value, std_err = sp.stats.linregress(cr_impact.astype(float),cr_loadcell.astype(float))
-        # sortx = list(cr_impact.astype(float).sort_values())
-        # sorty =[]
-        # for m in sortx:
-        #     sorty.append(m * slope + intercept)
-        # ax.plot(sortx, sorty, 'b--', label="Linear \ncorrelation \n$R^2$ = %0.04f \n x = %0.04f \n y = %0.04f" %(r_value**2,slope,intercept))
-    
+  
     ##draw the idealized line
     max_value1 = impact.max()
     max_value2 = loadcell.max()
@@ -974,17 +986,22 @@ def compare_force(metadata = r"C:\Users\kunge\Downloads\KIRUNA\Tests\welded\sing
     except:
         Number = Number.astype(str)    
     
-    #write numbers next to points             
+    #write numbers next to points   
+    # print(res_df.index)  
+    # print(Number)  
+    # k = "2020-04-23_c_2,5m7,5"
+    # print(impact.loc[k])
+    # print(loadcell.loc[k])
+    # plt.text(impact.loc[k],loadcell.loc[k],Number.loc[k])        
     texts = [plt.text(impact.loc[k],loadcell.loc[k],Number.loc[k]) for k in res_df.index]  
     adjust_text(texts)
     
-    #
     #legend            
     chartBox = ax.get_position()            
     ax.set_position([chartBox.x0, chartBox.y0, chartBox.width*0.8, chartBox.height])
     ax.legend(loc='center left', bbox_to_anchor=(1.0, 0.75), ncol=1,fontsize = 14)
-    #
-    ##save
+    
+    # ##save
     filename = results + r"\compare_impact_loadcell_force.pdf"
     plt.savefig(filename)
     plt.close()
@@ -1036,11 +1053,13 @@ def plot_correlation(i, j, mask, res, corr, df, path):
     #labels
     ax.set_xlabel(i + " " + latex_unit[i], usetex = True, fontsize = 14)
     ax.set_ylabel(j + " " + latex_unit[j], usetex = True, fontsize = 14)
-    
+    # ax.set_xlabel(i + " " + short_unit[i], fontsize = 14)
+    # ax.set_ylabel(j + " " + short_unit[j], fontsize = 14)
+
     #grid
     plt.grid()
     
-    #linear interpolation (if there are values for it)
+    # linear interpolation (if there are values for it)
     if crack[i].empty or crack[j].empty:
         corr[i][j] = 0
         corr[j][i] = 0
@@ -1065,12 +1084,14 @@ def plot_correlation(i, j, mask, res, corr, df, path):
     texts = [plt.text(res.at[k,i],res.at[k,j],Number.loc[k]) for k in res.index]  
     adjust_text(texts)
 
-    #legend            
+    # legend            
     chartBox = ax.get_position()            
     ax.set_position([chartBox.x0, chartBox.y0, chartBox.width*0.8, chartBox.height])
     ax.legend(loc='center left', bbox_to_anchor=(1.0, 0.75), ncol=1,fontsize = 14)
 
     #save
+    # filename = path + "\\" + j.replace(" ","-") + "_" + i.replace(" ","-") + ".svg"
+    # plt.savefig(filename, backend = "Cairo")
     filename = path + "\\" + j.replace(" ","-") + "_" + i.replace(" ","-") + ".png"
     plt.savefig(filename)
     filename = path + "\\" + j.replace(" ","-") + "_" + i.replace(" ","-") + ".pdf"
