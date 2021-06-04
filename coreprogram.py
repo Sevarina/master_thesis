@@ -304,15 +304,17 @@ class Dataset:
         # plot(res_path,x = self.laser_time, y = self.laser ,xlabel= r"Time \([\text{s}]\)",ylabel=r"Displacement \([\text{mm}]\)", name="Laser_Displacement", limit=(-100,-1),appendix = app, dataset_name = self.name)
 
 #run all the things we really want on all files
-def calc(data=r"C:\Users\kunge\Downloads\KIRUNA\Tests\geobrugg", results="" , single_impact = False, latex = True):
+def calc(data=r"C:\Users\kunge\OneDrive\Desktop\kiruna_example", results="" , single_impact = False, latex = True):
     '''data is the location of the .npy files for analysis
     results marks the location of the results of the analysis
     single_impact is true if every sample was hit just once. It is false if one sample was hit several times by drop weights.
     latex is true if the programm should generate various latex files for later usage
     if latex is set to false no files will be generated
     '''
-    if results == "":
-        results = data + r"\results"
+    if results != True:
+        results = os.path.join(data, "results")
+        if os.path.exists(results) != True:
+            os.mkdir(results)
     
     if single_impact == True:
         calc_single_impact(data, results, latex, diagrams = False)
@@ -336,7 +338,7 @@ def calc_single_impact(data, results, latex, diagrams = True):
         app_file = False
         
     #open the file with the test data
-    df = open_df(metadata, 'test_data')
+    df = open_df(data, 'test_data')
     
     #evaluate every impact and add the data to the results file
     iterate_single(single_impact, results, df, app_file)
@@ -347,7 +349,7 @@ def calc_single_impact(data, results, latex, diagrams = True):
 
 def calc_multiple_impact(data, results):
     # run simple analysis
-    # calc_single_impact(data, results, latex = True, diagrams = True)
+    calc_single_impact(data, results, latex = True, diagrams = True)
     print("individual analysis complete \ncommence multi analysis")    
 
     #make save folder
@@ -904,7 +906,7 @@ def ex_in_clude(boolean):
         return "faulty"
 
 
-def draw_diagrams(metadata = r"C:\Users\kunge\Downloads\KIRUNA\Tests\geobrugg\metadata", results = r"C:\Users\kunge\Downloads\KIRUNA\Tests\geobrugg\results", df = ""):
+def draw_diagrams(metadata = r"C:\Users\kunge\Downloads\KIRUNA\Tests\welded\multiple - Kopie\metadata", results = r"C:\Users\kunge\Downloads\KIRUNA\Tests\welded\multiple - Kopie\results", df = ""):
     #if df is not open yet, open it
     if isinstance(df, str):
         df = open_df(metadata, "test_data")
@@ -930,7 +932,7 @@ def draw_diagrams(metadata = r"C:\Users\kunge\Downloads\KIRUNA\Tests\geobrugg\me
     mask = make_mask(metadata, results, res_df.index, res_df)
     
     #compare impact force to force at the load cells
-    compare_force(metadata, results, df, res_df, mask)
+    # compare_force(metadata, results, df, res_df, mask)
       
     #draw all the silly graphics    
     for j in res_df.columns:
@@ -940,11 +942,16 @@ def draw_diagrams(metadata = r"C:\Users\kunge\Downloads\KIRUNA\Tests\geobrugg\me
     #throw away empty columns
     corr = corr[(corr != 0).any()]
     corr = corr.loc[:, (corr != 0).any(axis=0)]
+    # corr = corr.dropna()
+    # corr = corr.dropna(axis = 1)
+    
+    corr = corr.drop("Deformation")
+    corr = corr.drop("Deformation", axis = 1)
 
     #draw a heatmap
     heatmap(corr, results)
     
-def compare_force(metadata = r"C:\Users\kunge\Downloads\KIRUNA\Tests\geobrugg\metadata", results = r"C:\Users\kunge\Downloads\KIRUNA\Tests\geobrugg\results", df = None, res_df = None, mask = None):
+def compare_force(metadata = r"C:\Users\kunge\Downloads\KIRUNA\Tests\welded\multiple\metadata", results = r"C:\Users\kunge\Downloads\KIRUNA\Tests\welded\multiple\results", df = None, res_df = None, mask = None):
     i = 'Acceleration'
     j = 'Force'
     if df is None:
@@ -1137,7 +1144,8 @@ def make_latex_table(df, path):
         \midrule
         """
     for k in df.index:
-        table = table + str(names[k]).replace("_" , r"\_" )
+        # table = table + str(names[k]).replace("_" , r"\_" )
+        table = table + k.replace("_" , r"\_" )
         for l in df.columns:
             table = table + "&" + str(df.loc[k,l])
         table = table + r"""\\
@@ -1501,7 +1509,7 @@ def compare_vel_disp():
 
     vel_disp_compare.to_latex("C:\\Users\\kekaun\\OneDrive - LKAB\\roundSamples\\Results\\compare.tex", escape = False)
     
-def clean_dir(in_dir = r'C:\Users\kunge\Downloads\KIRUNA\Tests\welded\single\rawdata', out_dir=r'C:\Users\kunge\Downloads\KIRUNA\Tests\welded\single\single_impact', sample_type = "square"):
+def clean_dir(in_dir = r'C:\Users\kunge\OneDrive\Desktop\kiruna_example\raw_data', out_dir=r'C:\Users\kunge\OneDrive\Desktop\kiruna_example\single_impact', sample_type = "square"):
     """cleans a bunch of files in in_dir at once and saves them in at out_dir as .npy"""    
     file_list = make_file_list(in_dir, "asc")
     for i in file_list:
@@ -1524,7 +1532,7 @@ def make_latex_input(dir = r"C:\Users\kunge\ownCloud\Work\documents\old", subdir
             for file in files:
                 print(r"\input{" + subdir + file[:-4] + "}" + "\n\n")
                 
-def make_test_data(test_file_directory=r'C:\Users\kunge\Downloads', output_directory=r'C:\Users\kunge\Downloads'):
+def make_test_data(test_file_directory=r'C:\Users\kunge\OneDrive\Desktop\kiruna_example\single_impact', output_directory=r'C:\Users\kunge\OneDrive\Desktop\kiruna_example\metadata'):
     '''make an appropriate excel file for data analysis'''
     file_path = os.path.join(output_directory, 'test_data.xlsx')
     if os.path.isfile(file_path):
@@ -1538,7 +1546,7 @@ def make_test_data(test_file_directory=r'C:\Users\kunge\Downloads', output_direc
         df = pd.DataFrame(columns=column_list, index = index)
         df.to_excel(file_path, index_label = 'Name')
 
-def make_exclude(test_file_directory=r'C:\Users\kunge\Downloads\KIRUNA\Tests\SINGLE', output_directory=r'C:\Users\kunge\Downloads\KIRUNA\Tests\SINGLE\metadata'):
+def make_exclude(test_file_directory=r'C:\Users\kunge\OneDrive\Desktop\kiruna_example\single_impact', output_directory=r'C:\Users\kunge\OneDrive\Desktop\kiruna_example\metadata'):
     file_path = os.path.join(output_directory, 'exclude.xlsx')
     if os.path.isfile(file_path):
         print("File already exists!")
@@ -1549,4 +1557,18 @@ def make_exclude(test_file_directory=r'C:\Users\kunge\Downloads\KIRUNA\Tests\SIN
         for i in file_list:
             index.append(os.path.basename(i)[:-4])
         df = pd.DataFrame(columns=column_list, index = index, dtype = bool)
+        df.to_excel(file_path, index_label = 'Name')
+
+def make_deformation(test_file_directory=r'C:\Users\kunge\OneDrive\Desktop\kiruna_example\single_impact', output_directory=r'C:\Users\kunge\OneDrive\Desktop\kiruna_example\metadata'):
+    '''make an appropriate excel file for data analysis'''
+    file_path = os.path.join(output_directory, 'deformation.xlsx')
+    if os.path.isfile(file_path):
+        print("File already exists!")
+    else:
+        column_list = ["Mix", "Plastic", "Elastic", "Jump"]
+        file_list =  make_file_list(test_file_directory, 'npy')
+        index = []
+        for i in file_list:
+            index.append(os.path.basename(i)[:-4])
+        df = pd.DataFrame(columns=column_list, index = index)
         df.to_excel(file_path, index_label = 'Name')

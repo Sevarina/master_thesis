@@ -1,61 +1,60 @@
 import os
-import PySimpleGUI as sg
 import pandas as pd
-import scipy as sp
-import numpy as np
-import scipy.signal as sig
-from adjustText import adjust_text
-#import drop_test_analysis as gui
-import matplotlib as mpl
-#import clean_array as clean
-#make all plots look nice
-mpl.style.use('classic')
-mpl.rcParams['text.latex.preamble'] = [r'\usepackage{helvet}\renewcommand\familydefault{\sfdefault}', r'\usepackage{amsmath}' , r'\usepackage[T1]{fontenc}'] 
 
-import random
-#"fix" matplotlib font - it´s arial instead of helvetica but better than nothing
-#plt.rcParams['mathtext.fontset'] = 'custom'
-mpl.rcParams['font.sans-serif'] = "Arial"
-mpl.rcParams['font.family'] = "sans-serif"
-mpl.rcParams['mathtext.default']='default'
-import matplotlib.pyplot as plt
-import coreprogram as core
-# 5import plotly.graph_objects as go
+#note: this script assumes that first row is an index row
+#if there is no index row, it will require some changes
+#remove index_col from read_excel or set it to "none" 
+#why are the column names in {}? if you want to use anything but "l c r" it can be helpful
 
-from scipy.ndimage.filters import uniform_filter1d
+path = r"C:\Users\kunge\Downloads\book1.xlsx"
+table = pd.read_excel(path,index_col = 0) #file path of the table
+save_path = os.path.join(os.path.dirname(path), os.path.basename(path)[:-5] + ".tex") #builds the file path were the table will be saved
 
-import math
-latex_unit = {
-        "Acceleration" : r"\(\Big[\frac{\text{m}}{\text{s}^\text{2}}\Big]\)",
-        "Age" : r"\([\text{days}]\)",
-        "Average crack width" : r"\([\text{mm}]\)",
-        "Broken/Cracked" : "",
-        "Crack area" : r"\([\text{mm}^\text{2}]\)",
-        "Displacement" : r"\([\text{mm}]\)",
-        "Drop height" :  r"\([\text{mm}]\)",
-        "Drop weight" :  r"\([\text{kg}]\)",
-        "Energy level" : r"\([\text{kJ}]\)",
-        "Energy per area" : r"\(\big[\frac{\text{kJ}}{\text{m}^2}\big]\)",
-        "Force" : r"\([\text{kN}]\)",
-        "High speed camera" : r"\([\text{mm}]\)",
-        "Length 1" : r"\([\text{mm}]\)",
-        "Length 2" : r"\([\text{mm}]\)",
-        "Length 3" : r"\([\text{mm}]\)",
-        "Length 4" : r"\([\text{mm}]\)",
-        "Length 5" : r"\([\text{mm}]\)",
-        "Length 6" : r"\([\text{mm}]\)",
-        "Name" : "",
-        "Number" : "",
-        "Opening angle": r"\([\text{\textdegree}]\)",
-        "Thickness" : r"\([\text{mm}]\)",
-        "Time" : r"\([\text{s}]\)",
-        "Velocity" : r"\(\big[\frac{\text{m}}{\text{s}}\big]\)",
-        "Width 1" : r"\([\text{mm}]\)",
-        "Width 2" : r"\([\text{mm}]\)",
-        "Width 3" : r"\([\text{mm}]\)",
-        "Width 4" : r"\([\text{mm}]\)",
-        "Width 5" : r"\([\text{mm}]\)",
-        "Width 6" : r"\([\text{mm}]\)",
-        }
+def to_latex(table, save_path):
+    table = table.round(2) #round all values to two decimal places
+    table = table.fillna("x") #replace NaN with "x"
+    tex_table = r"\begin{tabular}{l "
+    for i in range(table.shape[1]):
+        tex_table = tex_table + "r "
+    if table.index.name:
+        tex_table = tex_table + r"""}
+\toprule
+{"""   +  table.index.name + "}"
+    else:
+        tex_table = tex_table + r"""}
+\toprule
+"""
+    for j in table.columns:
+        tex_table = tex_table + "&{" + str(j) + "}\t"
+    tex_table = tex_table + r"""\\
+\midrule
+"""
+    # if you define a dict with that has colum names and the assigned units you can uncomment the following:
+    # for m in table.columns:
+    #     tex_table = tex_table + r"&\si{" + si_unit[m] + "}"
+    # tex_table = tex_table + r"""\\
+        # \midrule
+        # """
+    if table.index.name: #check if there is an index so it will included
+        for k in table.index:
+            tex_table = tex_table + str(k).replace("_" , r"\_" )
+            for l in table.columns:
+                tex_table = tex_table + "\t&" + str(table.loc[k,l])
+            tex_table = tex_table + "\n"
+    else:
+        for k in table.index:   #if there is no index, no need to include it
+            for l in table.columns:
+                tex_table = tex_table + "\t&" + str(table.loc[k,l])
+            tex_table = tex_table + "\n"
 
-        
+    tex_table = tex_table + r"""\bottomrule
+\end{tabular}"""
+    file = open(save_path, "w")
+    file.write(tex_table)
+    file.close()
+
+try: #try to do the manual implementation, if it fails, resort to standard implementation
+    to_latex(table, save_path)
+except:
+    table.to_latex(save_path,index = False)
+    
